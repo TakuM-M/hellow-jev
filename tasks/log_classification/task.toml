@@ -1,46 +1,36 @@
 # EC ログ分類のタスク定義（暫定）。
 # 比較の公平性のため、データセット・ラベルはモデル別 config ではなくここで一元管理する。
-# keywords はルールベース baseline 用。モデル側のプロンプトには description を渡す。
 # モデルに渡すテキスト（instructions / description / prompt.md）は英語で統一する。
 
 # 評価データ（リポジトリルートからの相対パス）。実行時は --dataset で上書き可。
 dataset = "data/samples/ec_logs_sample.jsonl"
-# baseline がどのキーワードにも当たらなかったときのラベル
-default_label = "normal"
 # 全モデル共通の指示文。LLM は prompt.md の {instructions}、Jev / Laya は choice 質問の instructions に入る
 instructions = "Classify this e-commerce system log line into exactly one of the following categories."
 
 [[labels]]
 name = "payment"
 description = "Payment, billing, or card authorization failures and anomalies"
-keywords = ["payment", "card", "charge", "refund", "stripe", "3ds"]
 
 [[labels]]
 name = "auth"
 description = "Login, session, or token issues"
-keywords = ["login", "token", "session", "password", "unauthorized", "401"]
 
 [[labels]]
 name = "inventory"
 description = "Stock reservation, out-of-stock, or SKU sync issues"
-keywords = ["stock", "inventory", "sku", "out of stock", "reserve"]
 
 [[labels]]
 name = "shipping"
 description = "Shipping, fulfillment, or carrier integration issues"
-keywords = ["shipping", "shipment", "carrier", "tracking", "delivery"]
 
 [[labels]]
 name = "performance"
 description = "Latency degradation, timeouts, or resource exhaustion"
-keywords = ["timeout", "latency", "slow", "p99", "memory", "cpu"]
 
 [[labels]]
 name = "security"
 description = "Unauthorized access, attacks, or suspected bots"
-keywords = ["sql injection", "brute force", "blocked ip", "waf", "suspicious", "bot"]
 
 [[labels]]
 name = "normal"
 description = "Normal informational logs (no action needed)"
-keywords = ["completed", "success", "ok", "healthcheck"]

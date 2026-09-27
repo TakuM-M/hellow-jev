@@ -1,8 +1,19 @@
 name = "llm_local"
 task = "log_classification"
+# モデルロード・初回推論のコストを除くため、計測前に空打ちする件数
+warmup = 2
+# 比較表の「実行環境」列。レイテンシは推論マシン依存なので必ず書く
+# hardware = "GPU (RTX 4090)"
 
 [classifier]
 type = "llm"
 backend = "local"
-# endpoint = "http://localhost:8000/v1"
-# model = ""
+api_format = "openai"      # OpenAI 互換 /chat/completions（Ollama / vLLM / llama.cpp server）
+# endpoint = "http://localhost:11434/v1"   # 未指定なら環境変数 LLM_LOCAL_ENDPOINT → Ollama 既定
+model = "qwen3:4b"         # Ollama のタグ。vLLM なら "Qwen/Qwen3-4B" など
+temperature = 0.0
+max_tokens = 16
+# リクエスト body に追加するサーバ固有パラメータ。
+# Qwen3 は思考モードだと出力が <think> で埋まり max_tokens を使い切る（→ ラベル外になる）ので、
+# サーバ側で思考を切る。指定方法はサーバごとに違うため、実サーバで確認してから有効にする（未検証）
+# extra_body = { chat_template_kwargs = { enable_thinking = false } }   # vLLM

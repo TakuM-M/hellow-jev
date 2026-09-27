@@ -21,7 +21,7 @@ EC などのログ分類タスクを題材に、**Jev / Laya / LLM** の 3 つ�
 ├── results/                 # 実行結果（git 管理外）
 ├── scripts/                 # 一括実行などのスクリプト
 ├── src/hellow_jev/
-│   ├── classifiers/         # baseline / jev / laya / llm の分類器
+│   ├── classifiers/         # jev / laya / llm の分類器
 │   ├── metrics.py           # 評価指標
 │   ├── run.py               # ベンチマーク実行 CLI
 │   ├── report.py            # 比較表（Markdown）の集計 CLI
@@ -35,8 +35,8 @@ EC などのログ分類タスクを題材に、**Jev / Laya / LLM** の 3 つ�
 ```bash
 cp .env.example .env         # API キー等を設定
 
-# 単体実行（baseline はモデル不要で動く）
-uv run hellow-jev --config configs/baseline.toml
+# 単体実行（LLM API。LLM_API_KEY が必要）
+uv run hellow-jev --config configs/llm_api.toml
 
 # 全設定を一括実行
 ./scripts/run_all.sh
