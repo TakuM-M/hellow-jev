@@ -44,7 +44,8 @@ class SystemOneClassifier(Classifier):
 
     def build_request(self, text: str) -> dict[str, Any]:
         body: dict[str, Any] = {
-            # state は文字列も受け付けるが、Jev 実呼び出しで確認済みのオブジェクト形式に揃える
+            # state は文字列も受け付けるが、実例（docs/notes/jev.md）と同じオブジェクト形式に揃える。
+            # 実例のキーは "body" で、"log" キー・質問 ID "label" での実 API 呼び出しは未検証
             "state": {"log": text},
             "questions": {
                 QUESTION_ID: {
