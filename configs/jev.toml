@@ -1,5 +1,5 @@
 name = "jev"
-dataset = "data/samples/ec_logs_sample.jsonl"
+task = "log_classification"
 
 [classifier]
 type = "jev"

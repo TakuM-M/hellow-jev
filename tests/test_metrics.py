@@ -12,3 +12,10 @@ def test_partial():
     assert abs(m["accuracy"] - 2 / 3) < 1e-9
     assert m["per_class"]["a"]["recall"] == 0.5
     assert m["per_class"]["b"]["precision"] == 0.5
+
+
+def test_invalid_prediction():
+    m = evaluate(["a", "b"], ["a", None], ["a", "b"])
+    assert m["accuracy"] == 0.5
+    assert m["invalid_rate"] == 0.5
+    assert m["confusion"]["b"] == {"<invalid>": 1}

@@ -4,10 +4,14 @@ from __future__ import annotations
 
 from collections import Counter
 
+INVALID = "<invalid>"  # ラベル外出力（Prediction.label が None）を混同行列で表す名前
 
-def evaluate(y_true: list[str], y_pred: list[str], labels: list[str]) -> dict:
+
+def evaluate(y_true: list[str], y_pred: list[str | None], labels: list[str]) -> dict:
     assert len(y_true) == len(y_pred)
     n = len(y_true)
+    invalid = sum(p is None for p in y_pred)
+    y_pred = [INVALID if p is None else p for p in y_pred]
     correct = sum(t == p for t, p in zip(y_true, y_pred))
 
     confusion: dict[str, Counter] = {t: Counter() for t in labels}
@@ -36,6 +40,7 @@ def evaluate(y_true: list[str], y_pred: list[str], labels: list[str]) -> dict:
         "n": n,
         "accuracy": correct / n if n else 0.0,
         "macro_f1": macro_f1,
+        "invalid_rate": invalid / n if n else 0.0,
         "per_class": per_class,
         "confusion": {t: dict(c) for t, c in confusion.items()},
     }

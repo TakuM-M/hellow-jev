@@ -22,6 +22,8 @@ REGISTRY: dict[str, type[Classifier]] = {
 def build_classifier(config: dict[str, Any], task: Task) -> Classifier:
     options = dict(config)
     kind = options.pop("type")
+    if kind not in REGISTRY:
+        raise ValueError(f"unknown classifier type {kind!r} (available: {', '.join(REGISTRY)})")
     return REGISTRY[kind](task, **options)
 
 
