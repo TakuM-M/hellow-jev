@@ -5,13 +5,26 @@ from __future__ import annotations
 from collections import Counter
 
 INVALID = "<invalid>"  # ラベル外出力（Prediction.label が None）を混同行列で表す名前
+ERROR = "<error>"  # リトライしても応答が得られなかった件（HTTP エラー・タイムアウトなど）
 
 
-def evaluate(y_true: list[str], y_pred: list[str | None], labels: list[str]) -> dict:
+def evaluate(
+    y_true: list[str],
+    y_pred: list[str | None],
+    labels: list[str],
+    errors: list[bool] | None = None,
+) -> dict:
+    """errors[i] が True の件は不正解として数え、invalid_rate ではなく error_rate に集計する。
+
+    エラー件を分母から外すと、モデルごとに評価対象がずれて比較できなくなるため外さない。
+    """
     assert len(y_true) == len(y_pred)
+    errors = errors or [False] * len(y_true)
+    assert len(errors) == len(y_true)
     n = len(y_true)
-    invalid = sum(p is None for p in y_pred)
-    y_pred = [INVALID if p is None else p for p in y_pred]
+    error_count = sum(errors)
+    invalid = sum(p is None and not e for p, e in zip(y_pred, errors))
+    y_pred = [ERROR if e else INVALID if p is None else p for p, e in zip(y_pred, errors)]
     correct = sum(t == p for t, p in zip(y_true, y_pred))
 
     confusion: dict[str, Counter] = {t: Counter() for t in labels}
@@ -41,6 +54,7 @@ def evaluate(y_true: list[str], y_pred: list[str | None], labels: list[str]) -> 
         "accuracy": correct / n if n else 0.0,
         "macro_f1": macro_f1,
         "invalid_rate": invalid / n if n else 0.0,
+        "error_rate": error_count / n if n else 0.0,
         "per_class": per_class,
         "confusion": {t: dict(c) for t, c in confusion.items()},
     }

@@ -14,8 +14,16 @@ from pathlib import Path
 
 from hellow_jev.task import REPO_ROOT
 
+# 行どうしで一致していないと同一条件の比較にならない meta の項目
+CONSISTENCY_KEYS = {
+    "dataset_sha256": "データセット",
+    "task_toml_sha256": "タスク定義（instructions・ラベル説明）",
+    "prompt_sha256": "プロンプト",
+    "git_commit": "コード（git commit）",
+}
+
 COLUMNS = [
-    "model", "n", "Acc", "Macro-F1", "ラベル外率", "p50 ms", "p95 ms", "件/秒",
+    "model", "n", "Acc", "Macro-F1", "ラベル外率", "エラー率", "p50 ms", "p95 ms", "件/秒",
     "サーバ p50 ms", "入力tok/件", "コスト/1万件", "実行環境", "run",
 ]
 
@@ -73,6 +81,7 @@ def row(run: dict) -> list[str]:
         f"{m['accuracy']:.3f}",
         f"{m['macro_f1']:.3f}",
         f"{m.get('invalid_rate', 0):.3f}",
+        f"{m['error_rate']:.3f}" if "error_rate" in m else "-",
         ms(lat, "p50_ms"),
         ms(lat, "p95_ms"),
         f"{m['throughput_per_sec']:.1f}" if "throughput_per_sec" in m else "-",
@@ -84,6 +93,18 @@ def row(run: dict) -> list[str]:
     ]
 
 
+def consistency_warnings(runs: list[dict]) -> list[str]:
+    """ラベル説明だけ直して一部のモデルを再実行した、などの条件ずれを表の下に警告する。"""
+    warnings = []
+    for key, what in CONSISTENCY_KEYS.items():
+        if len({r["meta"].get(key) for r in runs}) > 1:
+            warnings.append(f"- ⚠️ {what}が run 間で異なる（同一条件の比較になっていない）")
+    dirty = [r["config"]["name"] for r in runs if r["meta"].get("git_dirty")]
+    if dirty:
+        warnings.append(f"- ⚠️ 未コミットの変更がある状態で実行: {', '.join(dirty)}")
+    return warnings
+
+
 def render(runs: list[dict]) -> str:
     lines = [
         "| " + " | ".join(COLUMNS) + " |",
@@ -92,13 +113,12 @@ def render(runs: list[dict]) -> str:
     lines += ["| " + " | ".join(row(r)) + " |" for r in runs]
     notes = [
         "",
-        "- p50 / p95 はクライアント側の往復時間（API はネットワーク込み）。warmup 分は除外",
+        "- p50 / p95 はクライアント側の往復時間（API はネットワーク込み）。warmup 分・エラー件は除外",
+        "- エラー率はリトライしても応答が得られなかった件の割合（Acc では不正解として数える）",
         "- サーバ p50 はサーバが返す純推論時間（Laya の X-Inference-Time-Ms など、取れる場合のみ）",
         "- コストは config の [pricing]（USD / 1M tokens）から概算。未設定は -",
     ]
-    datasets = {r["meta"].get("dataset_sha256") for r in runs}
-    if len(datasets) > 1:
-        notes.append("- ⚠️ データセットのハッシュが run 間で異なる（同一条件の比較になっていない）")
+    notes += consistency_warnings(runs)
     return "\n".join(lines + notes) + "\n"
 
 
