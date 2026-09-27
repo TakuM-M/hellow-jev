@@ -1,0 +1,25 @@
+# jevbench の公表値（AG News, n=500, 新ラベル説明）。公表表の「jev (new descriptions)」行だけを載せる。
+# 比較表（hellow-jev-report）が参照値として読む。task.toml と分けているのは、参照値を直しても
+# task_toml_sha256（モデル入力の変更検知に使う）が変わらないようにするため。
+# 出典: jevbench（MIT）c983cc4 の docs/results/2026-09-22-n500-summary.md。% は 0〜1 の小数に直した。
+# ECE とスループットは載せない（スループットは jevbench が並列実行で測っており、逐次実行の本リポジトリと比べられない）。
+# 本リポジトリの値と比べるときの注意（詳細は tasks/JEVBENCH.md）:
+# - Acc: jevbench はエラー件を分母から除外する。本リポジトリは不正解に数える
+#   （脚注は "Acc/F1 exclude errored examples" だが、コード上 Macro-F1 はエラー件を見逃し（FN）として数え、本リポジトリと同じ）
+# - p50 / p95 はどちらも逐次実行。jevbench の Jev・LLM は OpenRouter 経由、ローカルモデルは Apple silicon の Mac で計測
+# - 行は jev だけ（公表表で新ラベル説明の行は jev しかない）
+source = "jevbench"
+url = "https://github.com/dhruvmehra/jevbench/blob/c983cc4/docs/results/2026-09-22-n500-summary.md"
+note = "jevbench 公表値の jev (new descriptions) 行（n=500, seed=0, 新ラベル説明）。Acc はエラー件を除外（本リポジトリは不正解扱い）。Jev・LLM のレイテンシは OpenRouter 経由。スループットは並列計測のため省略"
+
+# 本リポジトリの configs/jev.toml に対応。model_id は OpenRouter 上の ID（configs/jev.toml は TypeSafe 直の jev-1.13.0）
+# 公表表の「jev (new descriptions)」行（新ラベル説明で jev を測り直した行）
+[[rows]]
+model = "jev"
+model_id = "typesafe/jev-1.13"
+accuracy = 0.858
+macro_f1 = 0.859
+error_rate = 0.0
+p50_ms = 378.0
+p95_ms = 648.0
+cost_per_1k_usd = 0.0214

@@ -4,8 +4,13 @@ Laya の `laya-serve` は Jev と同じプロトコルを話すため、接続�
 同じリクエストを両者に投げられる（docs/notes/jev.md, docs/notes/laya.md 参照）。
 
 リクエスト:
-    {"model": ..., "state": {"log": <ログ>},
+    {"model": ..., "state": <state>,
      "questions": {"label": {"type": "choice", "instructions": ..., "criteria": {name: desc}}}}
+    state の形はタスクの state_format（task.toml）で選ぶ。Jev / Laya のどちらにも同じ形で渡る:
+      "object"（既定）: {"log": <テキスト>}
+      "string"        : <テキスト>（jevbench と同じ。tasks/JEVBENCH.md）
+    Laya は dict の state を JSON 文字列にしてから読む（laya の serialize_state）ため、
+    形式が違うとモデルへの入力も変わる。
 レスポンス:
     {"model": ..., "answers": {"label": {"choice": ..., "probabilities": {...}}},
      "usage": {"input_tokens": ..., "output_tokens": ...}}
@@ -43,11 +48,22 @@ class SystemOneClassifier(Classifier):
         self.max_retries = max_retries
         self.http = HTTPClient(timeout=timeout, max_retries=max_retries)
 
+    def build_state(self, text: str) -> str | dict[str, str]:
+        fmt = self.task.state_format
+        if fmt == "object":
+            # 実例（docs/notes/jev.md）と同じオブジェクト形式。
+            # 実例のキーは "body" で、"log" キー・質問 ID "label" での実 API 呼び出しは未検証
+            return {"log": text}
+        if fmt == "string":
+            # jevbench と同じ（テキストそのもの）。jevbench は Jev を OpenRouter の Decisions API 経由、
+            # Laya を laya ライブラリ直接で、どちらもこの形・質問 ID "label" で呼んでいる
+            return text
+        # load_task で検証済みだが、Task を直接作った場合に黙って既定の形で送らないよう止める
+        raise ValueError(f"unknown state_format: {fmt!r}")
+
     def build_request(self, text: str) -> dict[str, Any]:
         body: dict[str, Any] = {
-            # state は文字列も受け付けるが、実例（docs/notes/jev.md）と同じオブジェクト形式に揃える。
-            # 実例のキーは "body" で、"log" キー・質問 ID "label" での実 API 呼び出しは未検証
-            "state": {"log": text},
+            "state": self.build_state(text),
             "questions": {
                 QUESTION_ID: {
                     "type": "choice",
