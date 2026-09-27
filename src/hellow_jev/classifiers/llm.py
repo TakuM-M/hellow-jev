@@ -14,20 +14,16 @@ backend = "local" : 既定 api_format="openai"、接続先は endpoint → LLM_L
 
 from __future__ import annotations
 
-import json
 import os
 import re
-import time
-import urllib.error
-import urllib.request
 from typing import Any
 
+from hellow_jev.classifiers._http import post_json
 from hellow_jev.classifiers.base import Classifier, Prediction
 
 ANTHROPIC_BASE_URL = "https://api.anthropic.com"
 ANTHROPIC_VERSION = "2023-06-01"
 LOCAL_ENDPOINT = "http://localhost:11434/v1"  # Ollama の OpenAI 互換エンドポイント
-RETRY_STATUS = {429, 500, 502, 503, 504, 529}
 # Qwen3 などの思考モードが出力に混ぜる推論部分
 THINK_RE = re.compile(r"<think>.*?</think>", re.DOTALL)
 
@@ -52,6 +48,11 @@ class LLMClassifier(Classifier):
         super().__init__(task, **options)
         if not model:
             raise ValueError("LLM の model を config で指定してください（再現性のため固定する）")
+        # backend ごとに使うキーが違う。もう一方を書いても無視されて別の接続先に行くので拒否する
+        if backend == "api" and endpoint:
+            raise ValueError("backend='api' の接続先は base_url で指定してください（endpoint ではなく）")
+        if backend == "local" and base_url:
+            raise ValueError("backend='local' の接続先は endpoint で指定してください（base_url ではなく）")
         if backend == "api":
             self.api_format = api_format or "anthropic"
             self.api_key = os.environ.get("LLM_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")
@@ -125,26 +126,10 @@ class LLMClassifier(Classifier):
 
     # --- 実行 ---------------------------------------------------------------
 
-    def _post(self, url: str, headers: dict[str, str], body: dict[str, Any]) -> dict[str, Any]:
-        data = json.dumps(body, ensure_ascii=False).encode("utf-8")
-        for attempt in range(self.max_retries + 1):
-            req = urllib.request.Request(url, data=data, headers=headers, method="POST")
-            try:
-                with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-                    return json.loads(resp.read())
-            except urllib.error.HTTPError as e:
-                detail = e.read().decode("utf-8", "replace")[:500]
-                if e.code in RETRY_STATUS and attempt < self.max_retries:
-                    # レート制限・過負荷は待って再試行（その分レイテンシに乗る点に注意）
-                    retry_after = e.headers.get("retry-after")
-                    time.sleep(float(retry_after) if retry_after else 2**attempt)
-                    continue
-                raise RuntimeError(f"{url} returned HTTP {e.code}: {detail}") from e
-        raise AssertionError("unreachable")
-
     def classify(self, text: str) -> Prediction:
         url, headers, body = self.build_request(text)
-        raw = self._post(url, headers, body)
-        output, usage = self.parse_response(raw)
+        resp = post_json(url, headers, body, timeout=self.timeout, max_retries=self.max_retries)
+        output, usage = self.parse_response(resp.body)
         answer = THINK_RE.sub("", output)
-        return Prediction(label=self.normalize(answer), raw=raw, usage=usage)
+        return Prediction(label=self.normalize(answer), raw=resp.body, usage=usage,
+                          attempts=resp.attempts)

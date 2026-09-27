@@ -23,9 +23,10 @@
 ## 調査で分かった前提（2026-09-27）
 
 - Jev / Laya は **プロンプト文字列を受け取らない**。`state`（ログ）＋ `choice` 質問（`criteria` = ラベル定義）で判定する
-- よって「同じプロンプト」ではなく **同じラベル定義（`labels.toml` の description）と同じ指示文** で揃える
+- よって「同じプロンプト」ではなく **同じラベル定義（`tasks/log_classification/task.toml` の description）と同じ指示文** で揃える
   - Jev/Laya: `instructions` = 指示文、`criteria` = `{name: description}`
   - LLM: `prompt.md` に同じ指示文と description を埋め込む
+  - 差分: LLM プロンプトには役割文（"You are a log classifier…"）と回答形式（"Answer with the label name only."）が追加で入る。生成モデルに出力形式を伝えるための最小限の差で、Jev/Laya には相当する入力がない
 - Laya の `laya-serve` は Jev とワイヤ互換 → **同一クライアント**で `base_url` だけ切替可能
 - 詳細は `docs/notes/{jev,laya,llm}.md`
 

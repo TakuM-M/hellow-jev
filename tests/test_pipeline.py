@@ -41,3 +41,28 @@ def test_dataset_validation(tmp_path):
         path.write_text(content)
         with pytest.raises(ValueError, match=message):
             load_dataset(path, names)
+
+
+def test_unknown_classifier_option_is_rejected():
+    import pytest
+
+    from hellow_jev.classifiers import build_classifier
+
+    task = load_task("log_classification")
+    with pytest.raises(ValueError, match="temprature"):
+        build_classifier({"type": "llm", "backend": "local", "model": "m", "temprature": 1.0}, task)
+    with pytest.raises(ValueError, match="timeout_sec"):
+        build_classifier({"type": "laya", "timeout_sec": 1}, task)
+
+
+def test_wrong_endpoint_key_is_rejected():
+    import pytest
+
+    from hellow_jev.classifiers import build_classifier
+
+    task = load_task("log_classification")
+    with pytest.raises(ValueError, match="endpoint"):
+        build_classifier({"type": "laya", "base_url": "http://x"}, task)
+    with pytest.raises(ValueError, match="endpoint"):
+        build_classifier({"type": "llm", "backend": "local", "model": "m",
+                          "base_url": "http://x"}, task)

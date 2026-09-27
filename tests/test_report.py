@@ -25,4 +25,4 @@ def test_report_latest_and_cost(tmp_path):
     assert len(runs) == 1
     table = render(runs)
     # 100 tok/件 × $0.5/1M × 1 万件 = $0.5
-    assert "| jev | 2 | 1.000 | 0.500 | 0.000 | 250.0 | 310.0 | 4.0 | - | 100 | $0.5000 | x86_64 4cpu |" in table
+    assert "| jev | 2 | 1.000 | 0.500 | 0.000 | - | 250.0 | 310.0 | 4.0 | - | 100 | $0.5000 | x86_64 4cpu |" in table

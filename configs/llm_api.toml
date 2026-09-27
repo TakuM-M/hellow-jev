@@ -14,7 +14,7 @@ max_tokens = 16            # ラベル名 1 語だけ返させる
 # base_url = "https://api.anthropic.com"   # 未指定なら環境変数 LLM_API_BASE_URL → この既定値
 # API キーは環境変数 LLM_API_KEY（無ければ ANTHROPIC_API_KEY）。config には書かない
 
-# 比較表のコスト列用（USD / 1M tokens）。公式料金ページで確認してから使う
+# 比較表のコスト列用（USD / 1M tokens）。⚠️ 仮置き（公式料金ページで未確認。docs/notes/llm.md）
 [pricing]
 input_per_mtok = 1.0
 output_per_mtok = 5.0
