@@ -2,14 +2,14 @@
 
 - 利用形態: open weight
 - 実装: `src/hellow_jev/classifiers/laya.py`
-- 設定: `configs/laya.toml` / 環境変数 `LAYA_ENDPOINT`（, `LAYA_API_KEY`）
+- 設定: `configs/laya.toml` / 環境変数 `LAYA_ENDPOINT`（サーバ側でキーを設定した場合は `LAYA_API_KEY` も）
 
 ## 概要（2026-09-27 調査）
 
 - 開発: Convai Innovations。**Apache-2.0**。PyPI `laya`（調査時 v0.3.20）
 - **Jev 互換の OSS 判定モデル**。非自己回帰（BERT 系エンコーダ）で 1 forward pass で判定
 - 入出力は Jev と同じ `state` + `questions`（`choice` / `score` / `noul`）
-- 汎用 LLM でも「vLLM 等で動かす生成モデル」でもない点に注意
+- 汎用 LLM ではなく、vLLM などで動かす生成モデルでもない点に注意
 
 ## チェックポイント
 
@@ -19,22 +19,22 @@
 | `laya-multilingual` | 322M（mmBERT-base） | 1,024（最大 8,192） | 100+ 言語（日本語含む） |
 | `laya-typed-decisions` | 421M | 1,024 | typed ワークフロー向け FT 版 |
 
-- 重みは 1GB 未満。CPU でも動く。Router が質問ごとにチェックポイントを自動選択
+- 重みは 1GB 未満で、CPU でも動く。model を指定しなければ Router が質問ごとにチェックポイントを自動選択する（本リポジトリでは固定する）
 
-## 推論方法の選択肢
+## 推論方法の選択肢（✅ = 確認済み）
 
-- [x] **Python ライブラリ直接**: `pip install laya` → `Router().predict(state, questions)`
-- [x] **HTTP サーバ（推奨）**: `pip install "laya[serve]"` → `laya-serve`
+- ✅ **Python ライブラリを直接使う**: `pip install laya` → `Router().predict(state, questions)`
+- ✅ **HTTP サーバ（採用）**: `pip install "laya[serve]"` → `laya-serve`
   - `POST /v1/systemone` で **Jev とワイヤ互換**
-  - レスポンスヘッダ `X-Inference-Time-Ms` で純推論時間も取れる。ただし **GitHub の main のみ**。PyPI 版 0.3.20 の serve.py には無い（どちらも version は 0.3.20 で区別できない）。必要なら `pip install "laya[serve] @ git+https://github.com/NandhaKishorM/laya"`
-  - 環境変数: `LAYA_DEVICE`, `LAYA_MODELS`, `LAYA_THREADS`, `LAYA_API_KEY` ほか
+  - レスポンスヘッダ `X-Inference-Time-Ms` で純推論時間も取れる。ただし **GitHub の main 版のみ**で、PyPI 版 0.3.20 の serve.py には無い（どちらも version 表記は 0.3.20 で見分けられない）。必要なら `pip install "laya[serve] @ git+https://github.com/NandhaKishorM/laya"`
+  - 主な環境変数: `LAYA_DEVICE`, `LAYA_MODELS`, `LAYA_THREADS`, `LAYA_API_KEY`
   - Docker / compose（CUDA 版あり）も同梱
-- [ ] ONNX（`laya[onnx]`）/ MLX（Mac 向け別 repo `laya-mlx`）
+- 未確認: ONNX（`laya[onnx]`）/ MLX（Mac 向けの別リポジトリ `laya-mlx`）
 - vLLM / llama.cpp は **対象外**（生成モデルではないため）
-- ファインチューニング: 公式に手順あり。まずは zero-shot で評価
+- ファインチューニング: 公式に手順がある。まずは zero-shot で評価する
 
 → HTTP サーバ経由にすれば **Jev と同じクライアントコード** で比較でき、公平。
-ただし依存追加（torch 等）はサーバ側に閉じ、本リポジトリは標準ライブラリのままにできる。
+さらに torch などの依存はサーバ側に閉じるので、本リポジトリは標準ライブラリのままにできる。
 
 ## 性能（公式 BENCHMARKS.md、Tesla T4）
 
@@ -45,7 +45,7 @@
 
 - スループット 103–332 問/秒（バッチ時）
 - 精度（公表）: AG News 0.953 / Emotion 0.600 / **Banking77（77 クラス）0.425〜0.492**
-- ベース版は typed-decisions ベンチでは多数派ベースライン以下（0.36）。FT 版で 0.766
+- ベース版は typed-decisions ベンチで多数派ベースラインを下回る（0.36）。FT 版では 0.766
 - 日本語（MASSIVE intent 20 択）: english 0.530 / multilingual 0.640
 
 ## laya-serve のモデル指定（ソースで確認: PyPI 0.3.20 と GitHub main の serve.py / router.py）
@@ -55,21 +55,21 @@
   - → `LAYA_MODELS=multilingual` で起動して `model="english"` を送っても english で推論される（初回だけ遅い）
 - `model` は `english` / `multilingual` / `typed-decisions`（と `en` などの別名）。**未知の名前はエラーにならず、言語判定による自動選択に黙って切り替わる**
   - `convaiinnovations/laya`（ルートの HF ID）も自動選択扱い
-  - → `classifiers/laya.py` で 3 つの正式名以外を拒否し、レスポンスの `routing.model` と一致しなければエラーにする
+  - → `classifiers/laya.py` では 3 つの正式名以外を拒否し、レスポンスの `routing.model` が config と一致しなければエラーにする
 - レスポンスのトップレベル `model` は固定値 `"laya-rl-agent"`。実際のチェックポイントは `routing.model`（`routing.reason` に選択理由）
 
 ## 注意点
 
-- **選択肢は ~20 個以下推奨**（選択肢説明が 192〜256 トークン枠を共有）。本タスクは 7 ラベルなので OK
-  - ただし `criteria` の説明文が長いと枠を圧迫 → 説明は短めに
-- english 版は 512 トークン上限。ログ 1 行なら問題なし
+- **選択肢は 20 個程度までが推奨**（全選択肢の説明で 192〜256 トークンの枠を共有する）。本タスクは 7 ラベルなので問題ない
+  - ただし `criteria` の説明文が長いと枠を圧迫するので、説明は短めにする
+- english 版の入力上限は 512 トークン。ログ 1 行なら問題ない
 - 日本語や文脈依存の判定は弱め: 中国語業務判定 64 件で multilingual ベースは 20/64（Jev は 64/64）
-- 較正は出荷時 over-confident（温度フィットで改善）
+- 出荷時の確率は過信気味（over-confident）。温度スケーリングで改善する
 
 ## 必要リソース
 
 - CPU で可（`LAYA_THREADS` は物理コア数以下に）。GPU なら T4 級で十分
-- ディスク: multilingual のみで約 678MB
+- ディスク: multilingual だけで約 678MB
 
 ## 参考
 
