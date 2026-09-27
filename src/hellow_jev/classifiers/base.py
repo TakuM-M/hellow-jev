@@ -15,6 +15,7 @@ class Prediction:
     raw: Any = None  # モデルの生出力（デバッグ・誤り分析用）
     usage: dict[str, Any] = field(default_factory=dict)  # トークン数などコスト情報
     server_ms: float | None = None  # サーバ側の純推論時間（取れる場合のみ。ネットワーク除く）
+    attempts: int = 1  # HTTP 試行回数。2 以上ならリトライ待ちがレイテンシに乗っている
 
 
 class Classifier(ABC):

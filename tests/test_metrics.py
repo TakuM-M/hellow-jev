@@ -39,3 +39,11 @@ def test_usage_stats():
     s = usage_stats([{"input_tokens": 10, "output_tokens": 0}, {"input_tokens": 30}, {}])
     assert s["total"] == {"input_tokens": 40, "output_tokens": 0}
     assert abs(s["per_record"]["input_tokens"] - 40 / 3) < 1e-9
+
+
+def test_errors_are_wrong_but_not_invalid():
+    m = evaluate(["a", "b", "b"], ["a", None, None], ["a", "b"], errors=[False, True, False])
+    assert abs(m["accuracy"] - 1 / 3) < 1e-9
+    assert abs(m["error_rate"] - 1 / 3) < 1e-9
+    assert abs(m["invalid_rate"] - 1 / 3) < 1e-9
+    assert m["confusion"]["b"] == {"<error>": 1, "<invalid>": 1}

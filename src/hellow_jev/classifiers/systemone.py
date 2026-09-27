@@ -13,11 +13,9 @@ Laya の `laya-serve` は Jev と同じプロトコルを話すため、接続�
 
 from __future__ import annotations
 
-import json
-import urllib.error
-import urllib.request
 from typing import Any
 
+from hellow_jev.classifiers._http import post_json
 from hellow_jev.classifiers.base import Classifier, Prediction
 
 QUESTION_ID = "label"
@@ -34,6 +32,7 @@ class SystemOneClassifier(Classifier):
         api_key: str | None = None,
         model: str | None = None,
         timeout: float = 60.0,
+        max_retries: int = 3,  # LLM と同じ既定値（リトライ条件を揃える）
         **options: Any,
     ) -> None:
         super().__init__(task, **options)
@@ -41,6 +40,7 @@ class SystemOneClassifier(Classifier):
         self.api_key = api_key
         self.model = model
         self.timeout = timeout
+        self.max_retries = max_retries
 
     def build_request(self, text: str) -> dict[str, Any]:
         body: dict[str, Any] = {
@@ -59,18 +59,13 @@ class SystemOneClassifier(Classifier):
         return body
 
     def classify(self, text: str) -> Prediction:
-        data = json.dumps(self.build_request(text), ensure_ascii=False).encode("utf-8")
         headers = {"Content-Type": "application/json"}
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
-        req = urllib.request.Request(self.url, data=data, headers=headers, method="POST")
-        try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-                raw = json.loads(resp.read())
-                server_ms = resp.headers.get("X-Inference-Time-Ms")
-        except urllib.error.HTTPError as e:
-            detail = e.read().decode("utf-8", "replace")[:500]
-            raise RuntimeError(f"{self.url} returned HTTP {e.code}: {detail}") from e
+        resp = post_json(self.url, headers, self.build_request(text),
+                         timeout=self.timeout, max_retries=self.max_retries)
+        raw = resp.body
+        server_ms = resp.headers.get("X-Inference-Time-Ms")
 
         answer = raw.get("answers", {}).get(QUESTION_ID, {})
         choice = answer.get("choice")
@@ -80,4 +75,5 @@ class SystemOneClassifier(Classifier):
             raw=raw,
             usage=raw.get("usage", {}),
             server_ms=float(server_ms) if server_ms else None,
+            attempts=resp.attempts,
         )

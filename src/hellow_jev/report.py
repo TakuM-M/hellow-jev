@@ -15,7 +15,7 @@ from pathlib import Path
 from hellow_jev.task import REPO_ROOT
 
 COLUMNS = [
-    "model", "n", "Acc", "Macro-F1", "ラベル外率", "p50 ms", "p95 ms", "件/秒",
+    "model", "n", "Acc", "Macro-F1", "ラベル外率", "エラー率", "p50 ms", "p95 ms", "件/秒",
     "サーバ p50 ms", "入力tok/件", "コスト/1万件", "実行環境", "run",
 ]
 
@@ -73,6 +73,7 @@ def row(run: dict) -> list[str]:
         f"{m['accuracy']:.3f}",
         f"{m['macro_f1']:.3f}",
         f"{m.get('invalid_rate', 0):.3f}",
+        f"{m['error_rate']:.3f}" if "error_rate" in m else "-",
         ms(lat, "p50_ms"),
         ms(lat, "p95_ms"),
         f"{m['throughput_per_sec']:.1f}" if "throughput_per_sec" in m else "-",
@@ -92,7 +93,8 @@ def render(runs: list[dict]) -> str:
     lines += ["| " + " | ".join(row(r)) + " |" for r in runs]
     notes = [
         "",
-        "- p50 / p95 はクライアント側の往復時間（API はネットワーク込み）。warmup 分は除外",
+        "- p50 / p95 はクライアント側の往復時間（API はネットワーク込み）。warmup 分・エラー件は除外",
+        "- エラー率はリトライしても応答が得られなかった件の割合（Acc では不正解として数える）",
         "- サーバ p50 はサーバが返す純推論時間（Laya の X-Inference-Time-Ms など、取れる場合のみ）",
         "- コストは config の [pricing]（USD / 1M tokens）から概算。未設定は -",
     ]
