@@ -16,6 +16,7 @@ class Prediction:
     usage: dict[str, Any] = field(default_factory=dict)  # トークン数などコスト情報
     server_ms: float | None = None  # サーバ側の純推論時間（取れる場合のみ。ネットワーク除く）
     attempts: int = 1  # HTTP 試行回数。2 以上ならリトライ待ちがレイテンシに乗っている
+    new_connection: bool = False  # 接続を張り直したか。True なら TCP/TLS 確立の時間がレイテンシに乗っている
 
 
 class Classifier(ABC):

@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from hellow_jev.classifiers._http import post_json
+from hellow_jev.classifiers._http import HTTPClient
 from hellow_jev.classifiers.base import Classifier, Prediction
 
 QUESTION_ID = "label"
@@ -41,6 +41,7 @@ class SystemOneClassifier(Classifier):
         self.model = model
         self.timeout = timeout
         self.max_retries = max_retries
+        self.http = HTTPClient(timeout=timeout, max_retries=max_retries)
 
     def build_request(self, text: str) -> dict[str, Any]:
         body: dict[str, Any] = {
@@ -63,8 +64,7 @@ class SystemOneClassifier(Classifier):
         headers = {"Content-Type": "application/json"}
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
-        resp = post_json(self.url, headers, self.build_request(text),
-                         timeout=self.timeout, max_retries=self.max_retries)
+        resp = self.http.post(self.url, headers, self.build_request(text))
         raw = resp.body
         server_ms = resp.headers.get("X-Inference-Time-Ms")
 
@@ -77,4 +77,5 @@ class SystemOneClassifier(Classifier):
             usage=raw.get("usage", {}),
             server_ms=float(server_ms) if server_ms else None,
             attempts=resp.attempts,
+            new_connection=resp.new_connection,
         )

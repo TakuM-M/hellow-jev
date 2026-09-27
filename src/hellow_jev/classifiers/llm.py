@@ -18,7 +18,7 @@ import os
 import re
 from typing import Any
 
-from hellow_jev.classifiers._http import post_json
+from hellow_jev.classifiers._http import HTTPClient
 from hellow_jev.classifiers.base import Classifier, Prediction
 
 ANTHROPIC_BASE_URL = "https://api.anthropic.com"
@@ -79,6 +79,7 @@ class LLMClassifier(Classifier):
         self.timeout = timeout
         self.max_retries = max_retries
         self.extra_body = extra_body or {}
+        self.http = HTTPClient(timeout=timeout, max_retries=max_retries)
 
     # --- リクエスト組み立て -------------------------------------------------
 
@@ -128,8 +129,8 @@ class LLMClassifier(Classifier):
 
     def classify(self, text: str) -> Prediction:
         url, headers, body = self.build_request(text)
-        resp = post_json(url, headers, body, timeout=self.timeout, max_retries=self.max_retries)
+        resp = self.http.post(url, headers, body)
         output, usage = self.parse_response(resp.body)
         answer = THINK_RE.sub("", output)
         return Prediction(label=self.normalize(answer), raw=resp.body, usage=usage,
-                          attempts=resp.attempts)
+                          attempts=resp.attempts, new_connection=resp.new_connection)

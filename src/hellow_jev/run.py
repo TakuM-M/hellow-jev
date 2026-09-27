@@ -122,6 +122,7 @@ def main() -> None:
                 "error": error,
                 "latency_ms": (time.perf_counter() - t0) * 1000,
                 "attempts": pred.attempts,
+                "new_connection": pred.new_connection,
                 "server_ms": pred.server_ms,
                 "usage": pred.usage,
                 "raw": pred.raw,
@@ -154,6 +155,8 @@ def main() -> None:
     metrics["usage"] = usage_stats([p["usage"] for p in predictions])
     # リトライ待ちは latency に含まれる。p95 の悪化がレート制限由来か見分けるために残す
     metrics["retried"] = sum(p["attempts"] > 1 for p in ok)
+    # 接続は使い回すので、warmup 後は通常 0。多ければサーバが keep-alive せず、毎回の接続確立が乗っている
+    metrics["new_connections"] = sum(p["new_connection"] for p in ok)
 
     (out_dir / "metrics.json").write_text(json.dumps(metrics, ensure_ascii=False, indent=2))
 

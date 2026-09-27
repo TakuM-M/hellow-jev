@@ -114,6 +114,7 @@ def render(runs: list[dict]) -> str:
     notes = [
         "",
         "- p50 / p95 はクライアント側の往復時間（API はネットワーク込み）。warmup 分・エラー件は除外",
+        "- 接続は使い回す（keep-alive）。張り直した件数は metrics.json の new_connections",
         "- エラー率はリトライしても応答が得られなかった件の割合（Acc では不正解として数える）",
         "- サーバ p50 はサーバが返す純推論時間（X-Inference-Time-Ms ヘッダがある場合のみ。PyPI 版 laya 0.3.20 は返さない）",
         "- コストは config の [pricing]（USD / 1M tokens）から概算。未設定は -",
