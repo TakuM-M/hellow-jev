@@ -19,3 +19,23 @@ def test_invalid_prediction():
     assert m["accuracy"] == 0.5
     assert m["invalid_rate"] == 0.5
     assert m["confusion"]["b"] == {"<invalid>": 1}
+
+
+def test_percentile_and_latency_stats():
+    from hellow_jev.metrics import latency_stats, percentile
+
+    assert percentile([], 50) == 0.0
+    assert percentile([10.0], 95) == 10.0
+    assert percentile([1.0, 2.0, 3.0, 4.0], 50) == 2.5
+    s = latency_stats([float(i) for i in range(1, 101)])
+    assert abs(s["p50_ms"] - 50.5) < 1e-9
+    assert abs(s["p95_ms"] - 95.05) < 1e-9
+    assert s["min_ms"] == 1.0 and s["max_ms"] == 100.0
+
+
+def test_usage_stats():
+    from hellow_jev.metrics import usage_stats
+
+    s = usage_stats([{"input_tokens": 10, "output_tokens": 0}, {"input_tokens": 30}, {}])
+    assert s["total"] == {"input_tokens": 40, "output_tokens": 0}
+    assert abs(s["per_record"]["input_tokens"] - 40 / 3) < 1e-9
