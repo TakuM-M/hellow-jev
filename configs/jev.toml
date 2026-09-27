@@ -1,7 +1,16 @@
 name = "jev"
 task = "log_classification"
+# 接続確立などの初回コストを除くため、計測前に空打ちする件数
+warmup = 2
 
 [classifier]
 type = "jev"
-# base_url = ""   # 未指定なら環境変数 JEV_API_BASE_URL
-# model = ""
+# 再現性のためモデルは固定する（2026-09 時点で観測された ID）
+model = "jev-1.13.0"
+# base_url = "https://api.typesafe.ai"   # 未指定なら環境変数 JEV_API_BASE_URL → この既定値
+# API キーは環境変数 JEV_API_KEY（config には書かない）
+
+# 比較表のコスト列用（USD / 1M tokens）。公式料金を確認して埋める
+# [pricing]
+# input_per_mtok = 0.0
+# output_per_mtok = 0.0

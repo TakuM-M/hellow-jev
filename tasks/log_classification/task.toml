@@ -6,6 +6,8 @@
 dataset = "data/samples/ec_logs_sample.jsonl"
 # baseline がどのキーワードにも当たらなかったときのラベル
 default_label = "normal"
+# 全モデル共通の指示文。LLM は prompt.md の {instructions}、Jev / Laya は choice 質問の instructions に入る
+instructions = "Classify this e-commerce system log line into exactly one of the following categories."
 
 [[labels]]
 name = "payment"

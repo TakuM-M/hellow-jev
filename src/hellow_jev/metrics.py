@@ -44,3 +44,39 @@ def evaluate(y_true: list[str], y_pred: list[str | None], labels: list[str]) -> 
         "per_class": per_class,
         "confusion": {t: dict(c) for t, c in confusion.items()},
     }
+
+
+def percentile(values: list[float], q: float) -> float:
+    """線形補間による分位点（q は 0〜100）。空なら 0.0。"""
+    if not values:
+        return 0.0
+    xs = sorted(values)
+    pos = (len(xs) - 1) * q / 100
+    lo = int(pos)
+    hi = min(lo + 1, len(xs) - 1)
+    return xs[lo] + (xs[hi] - xs[lo]) * (pos - lo)
+
+
+def latency_stats(latencies_ms: list[float]) -> dict:
+    """1 件あたりレイテンシの要約。比較表では p50 / p95 を主に使う。"""
+    n = len(latencies_ms)
+    return {
+        "n": n,
+        "mean_ms": sum(latencies_ms) / n if n else 0.0,
+        "p50_ms": percentile(latencies_ms, 50),
+        "p95_ms": percentile(latencies_ms, 95),
+        "p99_ms": percentile(latencies_ms, 99),
+        "min_ms": min(latencies_ms) if n else 0.0,
+        "max_ms": max(latencies_ms) if n else 0.0,
+    }
+
+
+def usage_stats(usages: list[dict]) -> dict:
+    """usage の数値項目（input_tokens など）を合計し、1 件あたり平均も出す。"""
+    total: dict[str, float] = {}
+    for u in usages:
+        for key, value in u.items():
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                total[key] = total.get(key, 0) + value
+    n = len(usages)
+    return {"total": total, "per_record": {k: v / n for k, v in total.items()} if n else {}}

@@ -31,6 +31,7 @@ class Task:
     dataset: Path
     default_label: str
     labels: list[Label]
+    instructions: str
     prompt_template: str
 
     @property
@@ -40,7 +41,15 @@ class Task:
     def render_prompt(self, log: str) -> str:
         labels = "\n".join(f"- {l.name}: {l.description}" for l in self.labels)
         # str.format だとテンプレート中の { } （JSON の出力例など）で壊れるため単純置換
-        return self.prompt_template.replace("{labels}", labels).replace("{log}", log)
+        return (
+            self.prompt_template.replace("{instructions}", self.instructions)
+            .replace("{labels}", labels)
+            .replace("{log}", log)
+        )
+
+    def criteria(self) -> dict[str, str]:
+        """Jev / Laya の choice 質問に渡す {ラベル名: 説明}。LLM プロンプトの {labels} と同じ内容。"""
+        return {l.name: l.description for l in self.labels}
 
 
 def load_task(name: str) -> Task:
@@ -63,6 +72,7 @@ def load_task(name: str) -> Task:
         dataset=REPO_ROOT / raw["dataset"],
         default_label=raw["default_label"],
         labels=labels,
+        instructions=raw["instructions"],
         prompt_template=prompt,
     )
 

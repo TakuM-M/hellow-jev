@@ -8,6 +8,7 @@ dependencies = []
 
 [project.scripts]
 hellow-jev = "hellow_jev.run:main"
+hellow-jev-report = "hellow_jev.report:main"
 
 [project.optional-dependencies]
 dev = ["pytest"]

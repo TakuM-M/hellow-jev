@@ -2,7 +2,7 @@
 
 - 利用形態: open weight
 - 実装: `src/hellow_jev/classifiers/laya.py`
-- 設定: `configs/laya.toml` / 環境変数 `LAYA_MODEL_PATH`, `LAYA_ENDPOINT`
+- 設定: `configs/laya.toml` / 環境変数 `LAYA_ENDPOINT`（, `LAYA_API_KEY`）
 
 ## 概要（2026-09-27 調査）
 
@@ -70,3 +70,4 @@
 ## ログ
 
 - 2026-09-27: 初回調査。GitHub リポジトリ（README / BENCHMARKS.md / serve.py）を確認
+- 2026-09-27: `backend = "http"`（laya-serve 経由）で実装。model は日本語の criteria に合わせ `multilingual`。実サーバでは未検証

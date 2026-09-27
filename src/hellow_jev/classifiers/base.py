@@ -14,6 +14,7 @@ class Prediction:
     label: str | None  # None = ラベル外出力（評価では不正解＋ invalid として集計）
     raw: Any = None  # モデルの生出力（デバッグ・誤り分析用）
     usage: dict[str, Any] = field(default_factory=dict)  # トークン数などコスト情報
+    server_ms: float | None = None  # サーバ側の純推論時間（取れる場合のみ。ネットワーク除く）
 
 
 class Classifier(ABC):

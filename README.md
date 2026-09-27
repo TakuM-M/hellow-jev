@@ -1,6 +1,6 @@
 # hellow-jev
 
-OSS **Jev** の手元動作調査用リポジトリ。
+**Jev**（TypeSafe AI の判定特化 API）の手元動作調査用リポジトリ。
 EC などのログ分類タスクを題材に、**Jev / Laya / LLM** の 3 つをベンチマーク的に比較する。
 
 詳細な計画は [`docs/plan.md`](docs/plan.md) を参照。
@@ -24,6 +24,7 @@ EC などのログ分類タスクを題材に、**Jev / Laya / LLM** の 3 つ�
 │   ├── classifiers/         # baseline / jev / laya / llm の分類器
 │   ├── metrics.py           # 評価指標
 │   ├── run.py               # ベンチマーク実行 CLI
+│   ├── report.py            # 比較表（Markdown）の集計 CLI
 │   └── task.py              # タスク定義・データ読み込み
 ├── tasks/log_classification/  # タスク定義（データセット・ラベル）・共通プロンプト
 └── tests/
@@ -39,6 +40,9 @@ uv run hellow-jev --config configs/baseline.toml
 
 # 全設定を一括実行
 ./scripts/run_all.sh
+
+# 比較表を作る（config ごとの最新 run）
+uv run hellow-jev-report --out docs/report.md
 
 # テスト
 uv run --extra dev pytest

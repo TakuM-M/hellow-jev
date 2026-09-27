@@ -32,7 +32,7 @@
 
 ## 最終出力（比較表）のイメージ
 
-`results/` の各 run を集計して `docs/report.md` に表を出す（集計スクリプトを追加予定）。
+`results/` の各 run を集計して `docs/report.md` に表を出す（`uv run hellow-jev-report --out docs/report.md`）。
 
 | model | Acc | Macro-F1 | p50 ms | p95 ms | 件/秒 | ラベル外率 | 入力tok/件 | 概算コスト/1万件 | 実行環境 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -44,7 +44,7 @@
 
 レイテンシ計測のルール:
 
-- 1 件ずつ直列・ウォームアップ数件を除外し、**p50 / p95 / 平均** を出す（現状は平均のみ → 追加が必要）
+- 1 件ずつ直列・ウォームアップ数件を除外し、**p50 / p95 / 平均** を出す（`metrics.json` の `latency`。warmup は config の `warmup`）
 - クライアント側の往復時間で揃える（API はネットワーク込みと明記）
 - Laya は `X-Inference-Time-Ms` で純推論時間も併記できる
 - 実行マシン（CPU/GPU）を結果に記録する
@@ -60,9 +60,11 @@
 
 - [x] ブランチ初期化・ディレクトリ構成・共通パイプライン
 - [x] 各モデルの初回調査（`docs/notes/`）
-- [ ] Jev の API 仕様を調べて `classifiers/jev.py` を実装
+- [x] Jev の API 仕様を調べて `classifiers/jev.py` を実装（ダミーサーバでテスト済み・実 API は未実行）
 - [ ] LLM の利用形態を決定し実装（api / local）
-- [ ] Laya の推論方法を決定し実装
+- [x] Laya の推論方法を決定し実装（`laya-serve` 経由。実サーバは未実行）
 - [ ] 評価用データセットの用意（実ログ or 公開データ）とラベル付け
-- [ ] metrics に p50/p95・ラベル外率を追加、比較表の集計スクリプト
+- [x] metrics に p50/p95・ラベル外率を追加、比較表の集計スクリプト
+- [ ] Jev API キーを設定して実 API で疎通確認・料金を `[pricing]` に記入
+- [ ] laya-serve を立てて疎通確認
 - [ ] 本評価の実行・結果まとめ（`docs/report.md`）
