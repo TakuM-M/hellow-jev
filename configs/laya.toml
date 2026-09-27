@@ -1,0 +1,7 @@
+name = "laya"
+dataset = "data/samples/ec_logs_sample.jsonl"
+
+[classifier]
+type = "laya"
+backend = "undecided"  # 例: "transformers" / "vllm" / "llama.cpp" など検討中
+# model_path = ""

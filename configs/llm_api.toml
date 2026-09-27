@@ -1,0 +1,7 @@
+name = "llm_api"
+dataset = "data/samples/ec_logs_sample.jsonl"
+
+[classifier]
+type = "llm"
+backend = "api"
+# model = ""

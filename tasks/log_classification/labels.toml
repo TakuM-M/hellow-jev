@@ -1,0 +1,37 @@
+# EC ログ分類のラベル定義（暫定）。
+# keywords はルールベース baseline 用。モデル側のプロンプトには description を渡す想定。
+
+[[labels]]
+name = "payment"
+description = "決済・課金・カード認証などの失敗や異常"
+keywords = ["payment", "card", "charge", "refund", "stripe", "3ds"]
+
+[[labels]]
+name = "auth"
+description = "ログイン・セッション・トークン関連"
+keywords = ["login", "token", "session", "password", "unauthorized", "401"]
+
+[[labels]]
+name = "inventory"
+description = "在庫引当・在庫不足・SKU 同期"
+keywords = ["stock", "inventory", "sku", "out of stock", "reserve"]
+
+[[labels]]
+name = "shipping"
+description = "配送・出荷・配送業者連携"
+keywords = ["shipping", "shipment", "carrier", "tracking", "delivery"]
+
+[[labels]]
+name = "performance"
+description = "レイテンシ悪化・タイムアウト・リソース逼迫"
+keywords = ["timeout", "latency", "slow", "p99", "memory", "cpu"]
+
+[[labels]]
+name = "security"
+description = "不正アクセス・攻撃・Bot 疑い"
+keywords = ["sql injection", "brute force", "blocked ip", "waf", "suspicious", "bot"]
+
+[[labels]]
+name = "normal"
+description = "正常系の情報ログ（対応不要）"
+keywords = ["completed", "success", "ok", "healthcheck"]

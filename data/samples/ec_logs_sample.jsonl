@@ -1,0 +1,16 @@
+{"id": "s001", "text": "2026-09-01T10:02:11Z ERROR payment-svc charge failed: card_declined order=ORD-1021 amount=4980", "label": "payment"}
+{"id": "s002", "text": "2026-09-01T10:03:45Z WARN payment-svc 3DS authentication timed out for order=ORD-1022", "label": "payment"}
+{"id": "s003", "text": "2026-09-01T10:05:02Z INFO auth-svc login success user=u_8812", "label": "normal"}
+{"id": "s004", "text": "2026-09-01T10:05:40Z WARN auth-svc invalid password attempt user=u_1203 count=3", "label": "auth"}
+{"id": "s005", "text": "2026-09-01T10:06:13Z ERROR api-gw 401 Unauthorized: token expired path=/api/cart", "label": "auth"}
+{"id": "s006", "text": "2026-09-01T10:07:21Z ERROR inventory-svc reserve failed: out of stock sku=SKU-7781", "label": "inventory"}
+{"id": "s007", "text": "2026-09-01T10:08:02Z WARN inventory-svc stock sync lag 320s from warehouse=WH-2", "label": "inventory"}
+{"id": "s008", "text": "2026-09-01T10:09:55Z ERROR shipping-svc carrier API returned 500 for shipment=SHP-5521", "label": "shipping"}
+{"id": "s009", "text": "2026-09-01T10:10:30Z WARN shipping-svc tracking number not found tracking=JP123456789", "label": "shipping"}
+{"id": "s010", "text": "2026-09-01T10:11:42Z WARN api-gw upstream timeout after 30000ms path=/api/checkout", "label": "performance"}
+{"id": "s011", "text": "2026-09-01T10:12:05Z WARN search-svc p99 latency 2400ms exceeds SLO", "label": "performance"}
+{"id": "s012", "text": "2026-09-01T10:13:18Z ALERT waf blocked request: sql injection pattern in query param q", "label": "security"}
+{"id": "s013", "text": "2026-09-01T10:14:27Z WARN auth-svc brute force suspected from 203.0.113.44, 120 failures/min", "label": "security"}
+{"id": "s014", "text": "2026-09-01T10:15:00Z INFO order-svc order completed order=ORD-1030", "label": "normal"}
+{"id": "s015", "text": "2026-09-01T10:15:30Z INFO lb healthcheck ok target=web-3", "label": "normal"}
+{"id": "s016", "text": "2026-09-01T10:16:48Z ERROR checkout-svc refund request rejected by provider order=ORD-0998", "label": "payment"}
