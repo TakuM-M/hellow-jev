@@ -4,9 +4,7 @@ from hellow_jev.task import load_dataset, load_task
 
 def test_task_and_dataset_load():
     task = load_task("log_classification")
-    data = load_dataset(task.dataset)
-    assert data
-    assert all(r.label in task.label_names for r in data)
+    assert load_dataset(task.dataset, task.label_names)
 
 
 def test_prompt_renders():
@@ -25,6 +23,24 @@ def test_normalize_rejects_unknown_label():
     assert clf.classify(" `Payment`. ").label == "payment"
     assert clf.classify("normality").label is None
     assert clf.classify("I think it's payment").label is None
+
+
+def test_dataset_validation(tmp_path):
+    import pytest
+
+    names = load_task("log_classification").label_names
+    ok = '{"id": "a", "text": "x", "label": "payment"}\n'
+    cases = {
+        '{"id": "a", "text": "x", "label": "Payment"}\n': "unknown label 'Payment'",
+        ok + ok: "duplicate id 'a'",
+        ok + "{broken\n": ":2: invalid record",
+        '{"id": "a", "text": "x", "label": "payment", "extra": 1}\n': "invalid record",
+    }
+    for content, message in cases.items():
+        path = tmp_path / "d.jsonl"
+        path.write_text(content)
+        with pytest.raises(ValueError, match=message):
+            load_dataset(path, names)
 
 
 def test_unknown_classifier_option_is_rejected():
