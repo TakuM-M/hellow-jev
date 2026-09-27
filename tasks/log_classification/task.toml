@@ -3,7 +3,9 @@
 # モデルに渡すテキスト（instructions / description / prompt.md）は英語で統一する。
 
 # 評価データ（リポジトリルートからの相対パス）。実行時は --dataset で上書き可。
-dataset = "data/samples/ec_logs_sample.jsonl"
+# 合成データ（350 件・各ラベル 50 件）。`uv run hellow-jev-synth` で再生成。
+# 疎通確認だけなら --dataset data/samples/ec_logs_sample.jsonl（16 件）
+dataset = "data/samples/ec_logs_synth.jsonl"
 # 全モデル共通の指示文。LLM は prompt.md の {instructions}、Jev / Laya は choice 質問の instructions に入る
 instructions = "Classify this e-commerce system log line into exactly one of the following categories."
 

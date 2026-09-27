@@ -18,6 +18,9 @@ uv run hellow-jev --config configs/llm_api.toml
 # 比較表（config ごとの最新 run を集計）
 uv run hellow-jev-report --out docs/report.md
 
+# 合成データセットの再生成（data/samples/ec_logs_synth.jsonl）
+uv run hellow-jev-synth
+
 # Laya 推論サーバ（Jev 互換 HTTP。別環境で起動）
 pip install "laya[serve]" && LAYA_MODELS=english laya-serve
 

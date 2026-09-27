@@ -25,6 +25,7 @@ EC などのログ分類タスクを題材に、**Jev / Laya / LLM** の 3 つ�
 │   ├── metrics.py           # 評価指標
 │   ├── run.py               # ベンチマーク実行 CLI
 │   ├── report.py            # 比較表（Markdown）の集計 CLI
+│   ├── synth.py             # 合成データセット生成 CLI
 │   └── task.py              # タスク定義・データ読み込み
 ├── tasks/log_classification/  # タスク定義（データセット・ラベル）・共通プロンプト
 └── tests/
@@ -43,6 +44,9 @@ uv run hellow-jev --config configs/llm_api.toml
 
 # 比較表を作る（config ごとの最新 run）
 uv run hellow-jev-report --out docs/report.md
+
+# 合成データセットの再生成（data/samples/ec_logs_synth.jsonl）
+uv run hellow-jev-synth
 
 # テスト
 uv run --extra dev pytest

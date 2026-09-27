@@ -1,0 +1,350 @@
+{"id": "g0001", "text": "2026-09-01T09:00:18Z WARN bot-detector inventory hoarding bot: 130 carts created by 192.0.2.185 for limited item SKU-7328", "label": "security"}
+{"id": "g0002", "text": "2026-09-01T09:00:41Z ERROR shipping-svc carrier API returned 500 for shipment=SHP-9357", "label": "shipping"}
+{"id": "g0003", "text": "2026-09-01T09:00:45Z ERROR api-gw POST /api/payments returned 402 Payment Required order=ORD-47011", "label": "payment"}
+{"id": "g0004", "text": "2026-09-01T09:00:59Z ERROR shipping-svc delivery date calculation failed: no carrier serves region=remote-island", "label": "shipping"}
+{"id": "g0005", "text": "2026-09-01T09:01:59Z ERROR order-svc shipping fee lookup failed for order=ORD-73976: rate table missing", "label": "shipping"}
+{"id": "g0006", "text": "2026-09-01T09:02:59Z WARN search-svc product SKU-1025 shown as in stock but inventory reports 0", "label": "inventory"}
+{"id": "g0007", "text": "2026-09-01T09:03:08Z ERROR order-svc shipping fee lookup failed for order=ORD-33933: rate table missing", "label": "shipping"}
+{"id": "g0008", "text": "2026-09-01T09:03:18Z ERROR auth-svc JWT signature verification failed kid=key-7", "label": "auth"}
+{"id": "g0009", "text": "2026-09-01T09:03:19Z ERROR payment-svc charge failed: expired_card order=ORD-86281 amount=46866", "label": "payment"}
+{"id": "g0010", "text": "2026-09-01T09:03:48Z INFO deploy rollout checkout-svc v1.14.4 completed", "label": "normal"}
+{"id": "g0011", "text": "2026-09-01T09:04:36Z WARN payment-svc thread pool saturated active=196/200 queue=384", "label": "performance"}
+{"id": "g0012", "text": "2026-09-01T09:04:48Z ALERT waf XSS payload detected in review body product=SKU-8392 src=203.0.113.68", "label": "security"}
+{"id": "g0013", "text": "{\"ts\": \"2026-09-01T09:05:21Z\", \"level\": \"WARN\", \"service\": \"node-exporter\", \"msg\": \"disk usage 94% on /var/lib/postgresql\"}", "label": "performance"}
+{"id": "g0014", "text": "2026-09-01T09:05:35Z ERROR payment-svc settlement batch 831 failed: 13 transactions not reconciled", "label": "payment"}
+{"id": "g0015", "text": "2026-09-01T09:07:04Z ERROR checkout-svc refund request rejected by provider order=ORD-20160 code=R73", "label": "payment"}
+{"id": "g0016", "text": "{\"ts\": \"2026-09-01T09:07:14Z\", \"level\": \"INFO\", \"service\": \"order-svc\", \"msg\": \"order completed order=ORD-64122\"}", "label": "normal"}
+{"id": "g0017", "text": "{\"ts\": \"2026-09-01T09:08:16Z\", \"level\": \"ERROR\", \"service\": \"fulfillment-svc\", \"msg\": \"pick list generation failed for order=ORD-77988: warehouse unassigned\"}", "label": "shipping"}
+{"id": "g0018", "text": "2026-09-01T09:09:36Z WARN api-gw upstream timeout after 21840ms path=/api/products", "label": "performance"}
+{"id": "g0019", "text": "2026-09-01T09:10:37Z WARN inventory-svc negative stock detected sku=SKU-3120 qty=-2", "label": "inventory"}
+{"id": "g0020", "text": "{\"ts\": \"2026-09-01T09:11:06Z\", \"level\": \"WARN\", \"service\": \"inventory-svc\", \"msg\": \"oversell: sku=SKU-2651 sold=12 available=7\"}", "label": "inventory"}
+{"id": "g0021", "text": "2026-09-01T09:12:18Z WARN cart-svc request rejected: session expired session=sess_925817", "label": "auth"}
+{"id": "g0022", "text": "2026-09-01T09:13:39Z ERROR payment-svc settlement batch 536 failed: 22 transactions not reconciled", "label": "payment"}
+{"id": "g0023", "text": "2026-09-01T09:14:33Z ERROR checkout-svc refund request rejected by provider order=ORD-24398 code=R52", "label": "payment"}
+{"id": "g0024", "text": "2026-09-01T09:14:43Z ALERT account-svc user=u_47247 email changed and password reset from new country within 2min", "label": "security"}
+{"id": "g0025", "text": "2026-09-01T09:15:27Z WARN bot-detector scraping suspected: 9686 product page requests/hour from 203.0.113.55", "label": "security"}
+{"id": "g0026", "text": "2026-09-01T09:16:47Z WARN payment-svc thread pool saturated active=193/200 queue=203", "label": "performance"}
+{"id": "g0027", "text": "2026-09-01T09:17:40Z WARN payment-svc 3DS authentication failed for order=ORD-25789 reason=challenge_abandoned", "label": "payment"}
+{"id": "g0028", "text": "2026-09-01T09:18:13Z ERROR api-gw POST /api/payments returned 402 Payment Required order=ORD-86877", "label": "payment"}
+{"id": "g0029", "text": "{\"ts\": \"2026-09-01T09:19:40Z\", \"level\": \"WARN\", \"service\": \"auth-svc\", \"msg\": \"account locked after failed logins user=u_28819\"}", "label": "auth"}
+{"id": "g0030", "text": "2026-09-01T09:20:33Z INFO cron nightly sales report generated rows=46968", "label": "normal"}
+{"id": "g0031", "text": "2026-09-01T09:21:56Z INFO auth-svc login success user=u_85452", "label": "normal"}
+{"id": "g0032", "text": "2026-09-01T09:22:31Z WARN api-gw path traversal attempt path=/static/../../etc/passwd src=198.51.100.189", "label": "security"}
+{"id": "g0033", "text": "2026-09-01T09:23:52Z ERROR wms-connector stock feed import failed: 57 rows rejected, unknown sku", "label": "inventory"}
+{"id": "g0034", "text": "2026-09-01T09:25:00Z WARN bot-detector scraping suspected: 10500 product page requests/hour from 198.51.100.204", "label": "security"}
+{"id": "g0035", "text": "{\"ts\": \"2026-09-01T09:25:15Z\", \"level\": \"INFO\", \"service\": \"api-gw\", \"msg\": \"GET /api/orders 200 110ms\"}", "label": "normal"}
+{"id": "g0036", "text": "2026-09-01T09:25:55Z ALERT admin-panel access to /admin from non-allowlisted ip 198.51.100.8", "label": "security"}
+{"id": "g0037", "text": "2026-09-01T09:27:04Z WARN inventory-svc reservation for order=ORD-65387 expired before payment, releasing 4 units", "label": "inventory"}
+{"id": "g0038", "text": "{\"ts\": \"2026-09-01T09:27:42Z\", \"level\": \"WARN\", \"service\": \"cart-svc\", \"msg\": \"request rejected: session expired session=sess_402878\"}", "label": "auth"}
+{"id": "g0039", "text": "2026-09-01T09:28:44Z ALERT account-svc user=u_90918 email changed and password reset from new country within 2min", "label": "security"}
+{"id": "g0040", "text": "2026-09-01T09:29:19Z WARN inventory-svc reservation for order=ORD-85111 expired before payment, releasing 4 units", "label": "inventory"}
+{"id": "g0041", "text": "2026-09-01T09:30:37Z ERROR inventory-svc stock adjustment conflict sku=SKU-4897 version mismatch", "label": "inventory"}
+{"id": "g0042", "text": "{\"ts\": \"2026-09-01T09:31:01Z\", \"level\": \"ERROR\", \"service\": \"shipping-svc\", \"msg\": \"carrier API returned 500 for shipment=SHP-1816\"}", "label": "shipping"}
+{"id": "g0043", "text": "2026-09-01T09:31:38Z WARN order-db slow query 5200ms: SELECT * FROM orders WHERE user_id = ?", "label": "performance"}
+{"id": "g0044", "text": "{\"ts\": \"2026-09-01T09:32:18Z\", \"level\": \"INFO\", \"service\": \"auth-svc\", \"msg\": \"token refreshed user=u_55786\"}", "label": "normal"}
+{"id": "g0045", "text": "{\"ts\": \"2026-09-01T09:33:40Z\", \"level\": \"WARN\", \"service\": \"api-gw\", \"msg\": \"upstream timeout after 28860ms path=/api/account\"}", "label": "performance"}
+{"id": "g0046", "text": "2026-09-01T09:34:02Z INFO api-gw GET /api/search 200 30ms", "label": "normal"}
+{"id": "g0047", "text": "2026-09-01T09:35:01Z WARN order-db slow query 13890ms: SELECT * FROM orders WHERE user_id = ?", "label": "performance"}
+{"id": "g0048", "text": "{\"ts\": \"2026-09-01T09:35:18Z\", \"level\": \"WARN\", \"service\": \"shipping-svc\", \"msg\": \"address validation failed order=ORD-63797 postal_code=979-4897\"}", "label": "shipping"}
+{"id": "g0049", "text": "2026-09-01T09:36:12Z WARN notification-svc delivery status webhook rejected: unknown shipment SHP-2111", "label": "shipping"}
+{"id": "g0050", "text": "2026-09-01T09:37:08Z ERROR db-pool connection pool exhausted: 100/100 in use, wait timeout", "label": "performance"}
+{"id": "g0051", "text": "2026-09-01T09:38:38Z INFO auth-svc login success user=u_41397", "label": "normal"}
+{"id": "g0052", "text": "{\"ts\": \"2026-09-01T09:39:04Z\", \"level\": \"INFO\", \"service\": \"api-gw\", \"msg\": \"GET /api/products 200 80ms\"}", "label": "normal"}
+{"id": "g0053", "text": "2026-09-01T09:40:26Z WARN k8s pod checkout-svc-4719 CPU throttled 61%", "label": "performance"}
+{"id": "g0054", "text": "2026-09-01T09:40:40Z ERROR product-svc request queue full, dropping requests (queue_size=5000)", "label": "performance"}
+{"id": "g0055", "text": "2026-09-01T09:42:10Z WARN shipping-svc package returned to sender shipment=SHP-9114 reason=address_unknown", "label": "shipping"}
+{"id": "g0056", "text": "2026-09-01T09:42:23Z ERROR api-gw 401 Unauthorized: token expired path=/api/account", "label": "auth"}
+{"id": "g0057", "text": "2026-09-01T09:42:59Z WARN node-exporter disk usage 99% on /var/lib/postgresql", "label": "performance"}
+{"id": "g0058", "text": "{\"ts\": \"2026-09-01T09:43:49Z\", \"level\": \"ERROR\", \"service\": \"account-svc\", \"msg\": \"password reset link expired user=u_20214\"}", "label": "auth"}
+{"id": "g0059", "text": "2026-09-01T09:44:04Z ERROR inventory-svc reserve failed: out of stock sku=SKU-3151 requested=2", "label": "inventory"}
+{"id": "g0060", "text": "2026-09-01T09:44:58Z WARN inventory-svc oversell: sku=SKU-7058 sold=19 available=6", "label": "inventory"}
+{"id": "g0061", "text": "2026-09-01T09:46:15Z ERROR api-gw POST /api/payments returned 402 Payment Required order=ORD-69100", "label": "payment"}
+{"id": "g0062", "text": "2026-09-01T09:47:38Z ALERT account-svc user=u_90893 email changed and password reset from new country within 2min", "label": "security"}
+{"id": "g0063", "text": "2026-09-01T09:48:59Z WARN shipping-svc tracking number not found tracking=JP267658459", "label": "shipping"}
+{"id": "g0064", "text": "2026-09-01T09:49:21Z ERROR checkout-svc coupon applied twice, negative total -8 for order=ORD-27472", "label": "payment"}
+{"id": "g0065", "text": "2026-09-01T09:50:08Z ALERT admin-panel access to /admin from non-allowlisted ip 198.51.100.122", "label": "security"}
+{"id": "g0066", "text": "2026-09-01T09:50:54Z WARN api-gw path traversal attempt path=/static/../../etc/passwd src=192.0.2.143", "label": "security"}
+{"id": "g0067", "text": "2026-09-01T09:51:40Z WARN shipping-svc tracking number not found tracking=JP409923894", "label": "shipping"}
+{"id": "g0068", "text": "2026-09-01T09:52:49Z ERROR api-gw 401 Unauthorized: token expired path=/api/account", "label": "auth"}
+{"id": "g0069", "text": "2026-09-01T09:54:09Z WARN search-svc p99 latency 3090ms exceeds SLO", "label": "performance"}
+{"id": "g0070", "text": "2026-09-01T09:54:10Z ERROR checkout-svc coupon applied twice, negative total -49 for order=ORD-88630", "label": "payment"}
+{"id": "g0071", "text": "2026-09-01T09:55:14Z ERROR cart-svc OutOfMemoryError: Java heap space (heap=2g)", "label": "performance"}
+{"id": "g0072", "text": "2026-09-01T09:55:29Z WARN payment-svc chargeback received order=ORD-48338 reason_code=10.4", "label": "payment"}
+{"id": "g0073", "text": "2026-09-01T09:56:57Z ERROR catalog-svc SKU mapping not found for vendor code V78232", "label": "inventory"}
+{"id": "g0074", "text": "{\"ts\": \"2026-09-01T09:57:48Z\", \"level\": \"INFO\", \"service\": \"auth-svc\", \"msg\": \"login success user=u_30865\"}", "label": "normal"}
+{"id": "g0075", "text": "2026-09-01T09:59:17Z WARN payment-svc thread pool saturated active=190/200 queue=266", "label": "performance"}
+{"id": "g0076", "text": "2026-09-01T10:00:38Z ALERT auth-svc credential stuffing: 1476 distinct accounts tried from 198.51.100.65", "label": "security"}
+{"id": "g0077", "text": "{\"ts\": \"2026-09-01T10:00:57Z\", \"level\": \"WARN\", \"service\": \"cache\", \"msg\": \"redis latency spike 440ms, hit ratio 60%\"}", "label": "performance"}
+{"id": "g0078", "text": "2026-09-01T10:01:07Z WARN search-svc product SKU-5145 shown as in stock but inventory reports 0", "label": "inventory"}
+{"id": "g0079", "text": "{\"ts\": \"2026-09-01T10:02:25Z\", \"level\": \"ERROR\", \"service\": \"shipping-svc\", \"msg\": \"carrier API returned 500 for shipment=SHP-5918\"}", "label": "shipping"}
+{"id": "g0080", "text": "2026-09-01T10:02:47Z INFO payment-svc charge succeeded order=ORD-24297 amount=30814", "label": "normal"}
+{"id": "g0081", "text": "{\"ts\": \"2026-09-01T10:03:55Z\", \"level\": \"WARN\", \"service\": \"search-svc\", \"msg\": \"p99 latency 2030ms exceeds SLO\"}", "label": "performance"}
+{"id": "g0082", "text": "2026-09-01T10:05:05Z ERROR checkout-svc coupon applied twice, negative total -713 for order=ORD-63048", "label": "payment"}
+{"id": "g0083", "text": "2026-09-01T10:05:14Z WARN inventory-svc negative stock detected sku=SKU-6731 qty=-5", "label": "inventory"}
+{"id": "g0084", "text": "2026-09-01T10:05:16Z ERROR checkout-svc coupon applied twice, negative total -279 for order=ORD-38213", "label": "payment"}
+{"id": "g0085", "text": "2026-09-01T10:06:14Z WARN shipping-svc address validation failed order=ORD-53299 postal_code=623-6760", "label": "shipping"}
+{"id": "g0086", "text": "2026-09-01T10:07:26Z WARN k8s pod checkout-svc-1318 CPU throttled 81%", "label": "performance"}
+{"id": "g0087", "text": "2026-09-01T10:08:01Z ERROR inventory-svc stock adjustment conflict sku=SKU-3593 version mismatch", "label": "inventory"}
+{"id": "g0088", "text": "2026-09-01T10:09:05Z INFO auth-svc token refreshed user=u_60869", "label": "normal"}
+{"id": "g0089", "text": "2026-09-01T10:10:33Z WARN bot-detector inventory hoarding bot: 375 carts created by 192.0.2.142 for limited item SKU-1758", "label": "security"}
+{"id": "g0090", "text": "2026-09-01T10:11:05Z WARN order-db slow query 3930ms: SELECT * FROM orders WHERE user_id = ?", "label": "performance"}
+{"id": "g0091", "text": "2026-09-01T10:11:33Z ERROR payment-svc charge failed: insufficient_funds order=ORD-93464 amount=1300", "label": "payment"}
+{"id": "g0092", "text": "{\"ts\": \"2026-09-01T10:12:42Z\", \"level\": \"WARN\", \"service\": \"inventory-svc\", \"msg\": \"negative stock detected sku=SKU-4981 qty=-20\"}", "label": "inventory"}
+{"id": "g0093", "text": "2026-09-01T10:13:23Z INFO deploy rollout checkout-svc v1.51.7 completed", "label": "normal"}
+{"id": "g0094", "text": "2026-09-01T10:14:13Z WARN inventory-svc reservation for order=ORD-72500 expired before payment, releasing 1 units", "label": "inventory"}
+{"id": "g0095", "text": "2026-09-01T10:15:24Z ERROR wms-connector stock feed import failed: 10 rows rejected, unknown sku", "label": "inventory"}
+{"id": "g0096", "text": "2026-09-01T10:16:05Z WARN payment-svc 3DS authentication failed for order=ORD-29792 reason=challenge_abandoned", "label": "payment"}
+{"id": "g0097", "text": "2026-09-01T10:16:59Z ERROR payment-svc settlement batch 563 failed: 7 transactions not reconciled", "label": "payment"}
+{"id": "g0098", "text": "{\"ts\": \"2026-09-01T10:17:42Z\", \"level\": \"ERROR\", \"service\": \"payment-svc\", \"msg\": \"charge failed: do_not_honor order=ORD-92887 amount=2692\"}", "label": "payment"}
+{"id": "g0099", "text": "2026-09-01T10:18:09Z WARN web-frontend session cookie missing, redirecting to /login user=u_60816", "label": "auth"}
+{"id": "g0100", "text": "2026-09-01T10:19:36Z INFO order-svc order completed order=ORD-75059", "label": "normal"}
+{"id": "g0101", "text": "2026-09-01T10:20:23Z ALERT waf blocked request: sql injection pattern in query param q", "label": "security"}
+{"id": "g0102", "text": "2026-09-01T10:20:51Z ERROR product-svc request queue full, dropping requests (queue_size=5000)", "label": "performance"}
+{"id": "g0103", "text": "2026-09-01T10:21:51Z ERROR payment-svc settlement batch 459 failed: 36 transactions not reconciled", "label": "payment"}
+{"id": "g0104", "text": "2026-09-01T10:21:54Z WARN shipping-svc package returned to sender shipment=SHP-1494 reason=address_unknown", "label": "shipping"}
+{"id": "g0105", "text": "{\"ts\": \"2026-09-01T10:23:03Z\", \"level\": \"INFO\", \"service\": \"deploy\", \"msg\": \"rollout checkout-svc v1.50.4 completed\"}", "label": "normal"}
+{"id": "g0106", "text": "2026-09-01T10:23:07Z INFO auth-svc token refreshed user=u_44574", "label": "normal"}
+{"id": "g0107", "text": "2026-09-01T10:23:41Z WARN auth-svc invalid password attempt user=u_90158 count=2", "label": "auth"}
+{"id": "g0108", "text": "2026-09-01T10:24:48Z WARN api-gw path traversal attempt path=/static/../../etc/passwd src=198.51.100.4", "label": "security"}
+{"id": "g0109", "text": "2026-09-01T10:26:09Z WARN payment-svc thread pool saturated active=200/200 queue=511", "label": "performance"}
+{"id": "g0110", "text": "{\"ts\": \"2026-09-01T10:26:22Z\", \"level\": \"INFO\", \"service\": \"lb\", \"msg\": \"healthcheck ok target=web-8\"}", "label": "normal"}
+{"id": "g0111", "text": "2026-09-01T10:27:49Z ERROR wms-connector stock feed import failed: 140 rows rejected, unknown sku", "label": "inventory"}
+{"id": "g0112", "text": "{\"ts\": \"2026-09-01T10:28:12Z\", \"level\": \"ERROR\", \"service\": \"auth-svc\", \"msg\": \"MFA code verification failed user=u_71531 method=totp\"}", "label": "auth"}
+{"id": "g0113", "text": "2026-09-01T10:28:32Z ALERT waf XSS payload detected in review body product=SKU-6563 src=203.0.113.198", "label": "security"}
+{"id": "g0114", "text": "2026-09-01T10:29:25Z ERROR shipping-svc delivery date calculation failed: no carrier serves region=okinawa", "label": "shipping"}
+{"id": "g0115", "text": "{\"ts\": \"2026-09-01T10:30:48Z\", \"level\": \"WARN\", \"service\": \"auth-svc\", \"msg\": \"brute force suspected from 192.0.2.179, 475 failures/min\"}", "label": "security"}
+{"id": "g0116", "text": "2026-09-01T10:31:41Z INFO cron nightly sales report generated rows=24011", "label": "normal"}
+{"id": "g0117", "text": "2026-09-01T10:31:58Z WARN web-frontend session cookie missing, redirecting to /login user=u_71712", "label": "auth"}
+{"id": "g0118", "text": "2026-09-01T10:32:11Z ERROR inventory-svc reserve failed: out of stock sku=SKU-6084 requested=2", "label": "inventory"}
+{"id": "g0119", "text": "2026-09-01T10:33:18Z ERROR shipping-svc carrier API returned 502 for shipment=SHP-6033", "label": "shipping"}
+{"id": "g0120", "text": "2026-09-01T10:33:45Z WARN payment-svc chargeback received order=ORD-73004 reason_code=13.1", "label": "payment"}
+{"id": "g0121", "text": "2026-09-01T10:34:14Z ERROR checkout-svc cannot place order=ORD-41661: item SKU-2829 no longer available", "label": "inventory"}
+{"id": "g0122", "text": "{\"ts\": \"2026-09-01T10:34:53Z\", \"level\": \"WARN\", \"service\": \"inventory-svc\", \"msg\": \"stock sync lag 906s from warehouse=WH-2\"}", "label": "inventory"}
+{"id": "g0123", "text": "2026-09-01T10:35:12Z ERROR api-gw POST /api/payments returned 402 Payment Required order=ORD-70649", "label": "payment"}
+{"id": "g0124", "text": "2026-09-01T10:35:32Z ERROR subscription-svc recurring charge failed for user=u_6867 plan=prime retry=3/3", "label": "payment"}
+{"id": "g0125", "text": "2026-09-01T10:36:54Z WARN cart-svc request rejected: session expired session=sess_295885", "label": "auth"}
+{"id": "g0126", "text": "2026-09-01T10:37:42Z WARN shipping-svc tracking number not found tracking=JP157068313", "label": "shipping"}
+{"id": "g0127", "text": "2026-09-01T10:39:11Z ALERT admin-panel access to /admin from non-allowlisted ip 203.0.113.127", "label": "security"}
+{"id": "g0128", "text": "2026-09-01T10:40:40Z INFO lb healthcheck ok target=web-8", "label": "normal"}
+{"id": "g0129", "text": "2026-09-01T10:40:48Z INFO inventory-svc restock completed sku=SKU-2884 qty=56", "label": "normal"}
+{"id": "g0130", "text": "2026-09-01T10:42:04Z WARN auth-svc account locked after failed logins user=u_61456", "label": "auth"}
+{"id": "g0131", "text": "2026-09-01T10:42:57Z ERROR payment-svc duplicate capture detected for order=ORD-50761 txn=TX174229", "label": "payment"}
+{"id": "g0132", "text": "2026-09-01T10:44:10Z WARN auth-svc account locked after failed logins user=u_5205", "label": "auth"}
+{"id": "g0133", "text": "{\"ts\": \"2026-09-01T10:45:07Z\", \"level\": \"INFO\", \"service\": \"cron\", \"msg\": \"nightly sales report generated rows=61233\"}", "label": "normal"}
+{"id": "g0134", "text": "2026-09-01T10:45:57Z INFO shipping-svc shipment SHP-8103 delivered", "label": "normal"}
+{"id": "g0135", "text": "2026-09-01T10:47:24Z WARN node-exporter disk usage 99% on /var/lib/postgresql", "label": "performance"}
+{"id": "g0136", "text": "2026-09-01T10:47:37Z WARN web-frontend session cookie missing, redirecting to /login user=u_83765", "label": "auth"}
+{"id": "g0137", "text": "2026-09-01T10:48:22Z WARN inventory-svc reservation for order=ORD-37707 expired before payment, releasing 2 units", "label": "inventory"}
+{"id": "g0138", "text": "{\"ts\": \"2026-09-01T10:48:36Z\", \"level\": \"ERROR\", \"service\": \"inventory-svc\", \"msg\": \"stock adjustment conflict sku=SKU-1094 version mismatch\"}", "label": "inventory"}
+{"id": "g0139", "text": "2026-09-01T10:48:48Z WARN bot-detector scraping suspected: 19447 product page requests/hour from 192.0.2.26", "label": "security"}
+{"id": "g0140", "text": "2026-09-01T10:48:55Z ERROR checkout-svc refund request rejected by provider order=ORD-78253 code=R18", "label": "payment"}
+{"id": "g0141", "text": "2026-09-01T10:50:03Z WARN search-svc p99 latency 7780ms exceeds SLO", "label": "performance"}
+{"id": "g0142", "text": "2026-09-01T10:50:12Z ERROR auth-svc OAuth callback failed provider=line: invalid_grant", "label": "auth"}
+{"id": "g0143", "text": "2026-09-01T10:50:16Z ERROR inventory-svc reserve failed: out of stock sku=SKU-9210 requested=1", "label": "inventory"}
+{"id": "g0144", "text": "{\"ts\": \"2026-09-01T10:51:21Z\", \"level\": \"ERROR\", \"service\": \"catalog-svc\", \"msg\": \"SKU mapping not found for vendor code V42663\"}", "label": "inventory"}
+{"id": "g0145", "text": "2026-09-01T10:52:22Z WARN search-svc p99 latency 8050ms exceeds SLO", "label": "performance"}
+{"id": "g0146", "text": "2026-09-01T10:52:25Z ERROR shipping-svc delivery date calculation failed: no carrier serves region=hokkaido", "label": "shipping"}
+{"id": "g0147", "text": "{\"ts\": \"2026-09-01T10:53:50Z\", \"level\": \"ERROR\", \"service\": \"order-svc\", \"msg\": \"shipping fee lookup failed for order=ORD-57398: rate table missing\"}", "label": "shipping"}
+{"id": "g0148", "text": "{\"ts\": \"2026-09-01T10:54:00Z\", \"level\": \"ERROR\", \"service\": \"subscription-svc\", \"msg\": \"recurring charge failed for user=u_56562 plan=prime retry=1/3\"}", "label": "payment"}
+{"id": "g0149", "text": "2026-09-01T10:54:33Z ERROR subscription-svc recurring charge failed for user=u_68321 plan=prime retry=1/3", "label": "payment"}
+{"id": "g0150", "text": "2026-09-01T10:55:47Z ERROR auth-svc MFA code verification failed user=u_74859 method=sms", "label": "auth"}
+{"id": "g0151", "text": "2026-09-01T10:56:02Z WARN cache redis latency spike 1090ms, hit ratio 11%", "label": "performance"}
+{"id": "g0152", "text": "2026-09-01T10:57:19Z WARN shipping-svc package returned to sender shipment=SHP-3871 reason=address_unknown", "label": "shipping"}
+{"id": "g0153", "text": "2026-09-01T10:58:11Z ALERT waf blocked request: sql injection pattern in query param id", "label": "security"}
+{"id": "g0154", "text": "{\"ts\": \"2026-09-01T10:58:13Z\", \"level\": \"INFO\", \"service\": \"api-gw\", \"msg\": \"GET /api/cart 200 30ms\"}", "label": "normal"}
+{"id": "g0155", "text": "2026-09-01T10:59:35Z INFO shipping-svc shipment SHP-2986 delivered", "label": "normal"}
+{"id": "g0156", "text": "{\"ts\": \"2026-09-01T11:00:13Z\", \"level\": \"WARN\", \"service\": \"checkout-svc\", \"msg\": \"card testing suspected: 79 small authorizations from 203.0.113.183 in 5min\"}", "label": "security"}
+{"id": "g0157", "text": "2026-09-01T11:01:18Z INFO api-gw GET /api/search 200 160ms", "label": "normal"}
+{"id": "g0158", "text": "{\"ts\": \"2026-09-01T11:02:24Z\", \"level\": \"INFO\", \"service\": \"lb\", \"msg\": \"healthcheck ok target=web-9\"}", "label": "normal"}
+{"id": "g0159", "text": "2026-09-01T11:03:23Z ERROR api-gw 401 Unauthorized: token expired path=/api/account", "label": "auth"}
+{"id": "g0160", "text": "{\"ts\": \"2026-09-01T11:04:53Z\", \"level\": \"ERROR\", \"service\": \"checkout-svc\", \"msg\": \"coupon applied twice, negative total -758 for order=ORD-75505\"}", "label": "payment"}
+{"id": "g0161", "text": "2026-09-01T11:06:17Z ALERT waf XSS payload detected in review body product=SKU-8309 src=192.0.2.202", "label": "security"}
+{"id": "g0162", "text": "2026-09-01T11:07:29Z WARN api-gw path traversal attempt path=/static/../../etc/passwd src=203.0.113.200", "label": "security"}
+{"id": "g0163", "text": "2026-09-01T11:07:31Z ERROR payment-svc duplicate capture detected for order=ORD-90670 txn=TX577010", "label": "payment"}
+{"id": "g0164", "text": "2026-09-01T11:08:52Z WARN auth-svc brute force suspected from 203.0.113.52, 193 failures/min", "label": "security"}
+{"id": "g0165", "text": "2026-09-01T11:09:59Z WARN checkout-svc card testing suspected: 139 small authorizations from 198.51.100.59 in 5min", "label": "security"}
+{"id": "g0166", "text": "2026-09-01T11:10:33Z INFO inventory-svc restock completed sku=SKU-7850 qty=224", "label": "normal"}
+{"id": "g0167", "text": "2026-09-01T11:11:09Z WARN auth-svc invalid password attempt user=u_29267 count=4", "label": "auth"}
+{"id": "g0168", "text": "2026-09-01T11:11:56Z WARN api-gw upstream timeout after 51380ms path=/api/search", "label": "performance"}
+{"id": "g0169", "text": "2026-09-01T11:12:17Z WARN fulfillment-svc order=ORD-29710 not shipped within SLA (82h since payment)", "label": "shipping"}
+{"id": "g0170", "text": "2026-09-01T11:12:37Z WARN inventory-svc oversell: sku=SKU-8304 sold=20 available=9", "label": "inventory"}
+{"id": "g0171", "text": "2026-09-01T11:13:50Z ERROR account-svc password reset link expired user=u_95945", "label": "auth"}
+{"id": "g0172", "text": "2026-09-01T11:14:22Z WARN inventory-svc oversell: sku=SKU-4406 sold=18 available=8", "label": "inventory"}
+{"id": "g0173", "text": "2026-09-01T11:14:47Z WARN payment-svc chargeback received order=ORD-90234 reason_code=4837", "label": "payment"}
+{"id": "g0174", "text": "2026-09-01T11:16:01Z WARN node-exporter disk usage 93% on /var/lib/postgresql", "label": "performance"}
+{"id": "g0175", "text": "2026-09-01T11:16:51Z ERROR fulfillment-svc pick list generation failed for order=ORD-85307: warehouse unassigned", "label": "shipping"}
+{"id": "g0176", "text": "2026-09-01T11:18:00Z WARN auth-svc refresh token revoked user=u_93545 client=android", "label": "auth"}
+{"id": "g0177", "text": "2026-09-01T11:18:45Z INFO inventory-svc restock completed sku=SKU-1425 qty=378", "label": "normal"}
+{"id": "g0178", "text": "{\"ts\": \"2026-09-01T11:18:55Z\", \"level\": \"ERROR\", \"service\": \"cart-svc\", \"msg\": \"OutOfMemoryError: Java heap space (heap=4g)\"}", "label": "performance"}
+{"id": "g0179", "text": "2026-09-01T11:19:04Z WARN cache redis latency spike 800ms, hit ratio 27%", "label": "performance"}
+{"id": "g0180", "text": "{\"ts\": \"2026-09-01T11:20:02Z\", \"level\": \"WARN\", \"service\": \"bot-detector\", \"msg\": \"scraping suspected: 10940 product page requests/hour from 192.0.2.121\"}", "label": "security"}
+{"id": "g0181", "text": "2026-09-01T11:20:23Z ERROR order-svc shipping fee lookup failed for order=ORD-62828: rate table missing", "label": "shipping"}
+{"id": "g0182", "text": "2026-09-01T11:21:48Z WARN api-gw path traversal attempt path=/static/../../etc/passwd src=203.0.113.21", "label": "security"}
+{"id": "g0183", "text": "2026-09-01T11:22:20Z WARN k8s pod checkout-svc-7236 CPU throttled 72%", "label": "performance"}
+{"id": "g0184", "text": "2026-09-01T11:23:41Z WARN auth-svc invalid password attempt user=u_51064 count=4", "label": "auth"}
+{"id": "g0185", "text": "2026-09-01T11:24:41Z ERROR wms-connector stock feed import failed: 17 rows rejected, unknown sku", "label": "inventory"}
+{"id": "g0186", "text": "{\"ts\": \"2026-09-01T11:24:54Z\", \"level\": \"ERROR\", \"service\": \"shipping-svc\", \"msg\": \"label creation failed carrier=sagawa: invalid package dimensions\"}", "label": "shipping"}
+{"id": "g0187", "text": "{\"ts\": \"2026-09-01T11:25:40Z\", \"level\": \"ERROR\", \"service\": \"db-pool\", \"msg\": \"connection pool exhausted: 50/200 in use, wait timeout\"}", "label": "performance"}
+{"id": "g0188", "text": "2026-09-01T11:27:05Z ERROR fulfillment-svc pick list generation failed for order=ORD-54323: warehouse unassigned", "label": "shipping"}
+{"id": "g0189", "text": "2026-09-01T11:28:33Z INFO lb healthcheck ok target=web-6", "label": "normal"}
+{"id": "g0190", "text": "2026-09-01T11:29:31Z ERROR order-svc shipping fee lookup failed for order=ORD-91396: rate table missing", "label": "shipping"}
+{"id": "g0191", "text": "2026-09-01T11:29:48Z WARN api-gw upstream timeout after 43070ms path=/api/account", "label": "performance"}
+{"id": "g0192", "text": "2026-09-01T11:30:39Z ERROR shipping-svc carrier API returned 502 for shipment=SHP-4073", "label": "shipping"}
+{"id": "g0193", "text": "2026-09-01T11:30:58Z INFO cron nightly sales report generated rows=60686", "label": "normal"}
+{"id": "g0194", "text": "2026-09-01T11:31:40Z ALERT auth-svc credential stuffing: 1262 distinct accounts tried from 198.51.100.59", "label": "security"}
+{"id": "g0195", "text": "{\"ts\": \"2026-09-01T11:32:25Z\", \"level\": \"ERROR\", \"service\": \"product-svc\", \"msg\": \"request queue full, dropping requests (queue_size=1000)\"}", "label": "performance"}
+{"id": "g0196", "text": "2026-09-01T11:33:13Z INFO payment-svc charge succeeded order=ORD-95554 amount=28960", "label": "normal"}
+{"id": "g0197", "text": "{\"ts\": \"2026-09-01T11:33:45Z\", \"level\": \"ERROR\", \"service\": \"account-svc\", \"msg\": \"password reset link expired user=u_81042\"}", "label": "auth"}
+{"id": "g0198", "text": "2026-09-01T11:33:54Z WARN notification-svc delivery status webhook rejected: unknown shipment SHP-3869", "label": "shipping"}
+{"id": "g0199", "text": "2026-09-01T11:34:53Z ERROR subscription-svc recurring charge failed for user=u_25253 plan=family retry=2/3", "label": "payment"}
+{"id": "g0200", "text": "2026-09-01T11:35:18Z ERROR product-svc request queue full, dropping requests (queue_size=5000)", "label": "performance"}
+{"id": "g0201", "text": "2026-09-01T11:36:31Z WARN inventory-svc reservation for order=ORD-52167 expired before payment, releasing 1 units", "label": "inventory"}
+{"id": "g0202", "text": "2026-09-01T11:36:36Z ERROR auth-svc OAuth callback failed provider=line: invalid_grant", "label": "auth"}
+{"id": "g0203", "text": "{\"ts\": \"2026-09-01T11:36:37Z\", \"level\": \"ALERT\", \"service\": \"auth-svc\", \"msg\": \"credential stuffing: 1635 distinct accounts tried from 192.0.2.164\"}", "label": "security"}
+{"id": "g0204", "text": "2026-09-01T11:37:17Z ALERT account-svc user=u_21432 email changed and password reset from new country within 2min", "label": "security"}
+{"id": "g0205", "text": "2026-09-01T11:37:25Z ERROR auth-svc MFA code verification failed user=u_34862 method=totp", "label": "auth"}
+{"id": "g0206", "text": "2026-09-01T11:38:20Z INFO order-svc order completed order=ORD-48438", "label": "normal"}
+{"id": "g0207", "text": "{\"ts\": \"2026-09-01T11:38:58Z\", \"level\": \"WARN\", \"service\": \"bot-detector\", \"msg\": \"scraping suspected: 6897 product page requests/hour from 203.0.113.221\"}", "label": "security"}
+{"id": "g0208", "text": "2026-09-01T11:39:14Z WARN shipping-svc address validation failed order=ORD-79670 postal_code=286-2029", "label": "shipping"}
+{"id": "g0209", "text": "{\"ts\": \"2026-09-01T11:40:41Z\", \"level\": \"ERROR\", \"service\": \"payment-svc\", \"msg\": \"duplicate capture detected for order=ORD-38210 txn=TX134376\"}", "label": "payment"}
+{"id": "g0210", "text": "{\"ts\": \"2026-09-01T11:41:00Z\", \"level\": \"INFO\", \"service\": \"shipping-svc\", \"msg\": \"shipment SHP-7920 delivered\"}", "label": "normal"}
+{"id": "g0211", "text": "2026-09-01T11:41:38Z WARN cache redis latency spike 800ms, hit ratio 53%", "label": "performance"}
+{"id": "g0212", "text": "2026-09-01T11:41:43Z WARN shipping-svc tracking number not found tracking=JP991311164", "label": "shipping"}
+{"id": "g0213", "text": "2026-09-01T11:42:36Z ERROR checkout-svc cannot place order=ORD-97978: item SKU-3166 no longer available", "label": "inventory"}
+{"id": "g0214", "text": "2026-09-01T11:43:25Z ERROR api-gw 401 Unauthorized: token expired path=/api/checkout", "label": "auth"}
+{"id": "g0215", "text": "{\"ts\": \"2026-09-01T11:44:54Z\", \"level\": \"WARN\", \"service\": \"search-svc\", \"msg\": \"p99 latency 2930ms exceeds SLO\"}", "label": "performance"}
+{"id": "g0216", "text": "2026-09-01T11:46:03Z WARN checkout-svc card testing suspected: 188 small authorizations from 198.51.100.57 in 5min", "label": "security"}
+{"id": "g0217", "text": "2026-09-01T11:47:16Z WARN shipping-svc address validation failed order=ORD-20675 postal_code=297-4771", "label": "shipping"}
+{"id": "g0218", "text": "2026-09-01T11:47:49Z ERROR account-svc password reset link expired user=u_63784", "label": "auth"}
+{"id": "g0219", "text": "2026-09-01T11:49:14Z ERROR shipping-svc label creation failed carrier=japanpost: invalid package dimensions", "label": "shipping"}
+{"id": "g0220", "text": "2026-09-01T11:50:09Z INFO payment-svc charge succeeded order=ORD-70834 amount=26768", "label": "normal"}
+{"id": "g0221", "text": "2026-09-01T11:50:55Z WARN payment-svc chargeback received order=ORD-25048 reason_code=13.1", "label": "payment"}
+{"id": "g0222", "text": "2026-09-01T11:52:20Z WARN payment-svc 3DS authentication failed for order=ORD-13746 reason=challenge_abandoned", "label": "payment"}
+{"id": "g0223", "text": "2026-09-01T11:52:40Z ERROR shipping-svc delivery date calculation failed: no carrier serves region=okinawa", "label": "shipping"}
+{"id": "g0224", "text": "{\"ts\": \"2026-09-01T11:53:26Z\", \"level\": \"ERROR\", \"service\": \"account-svc\", \"msg\": \"password reset link expired user=u_53540\"}", "label": "auth"}
+{"id": "g0225", "text": "2026-09-01T11:54:21Z WARN search-svc product SKU-7955 shown as in stock but inventory reports 0", "label": "inventory"}
+{"id": "g0226", "text": "2026-09-01T11:55:04Z WARN auth-svc brute force suspected from 203.0.113.235, 487 failures/min", "label": "security"}
+{"id": "g0227", "text": "2026-09-01T11:56:32Z WARN auth-svc brute force suspected from 192.0.2.235, 287 failures/min", "label": "security"}
+{"id": "g0228", "text": "2026-09-01T11:57:34Z ERROR payment-svc duplicate capture detected for order=ORD-24605 txn=TX124383", "label": "payment"}
+{"id": "g0229", "text": "2026-09-01T11:58:21Z ERROR shipping-svc label creation failed carrier=japanpost: invalid package dimensions", "label": "shipping"}
+{"id": "g0230", "text": "2026-09-01T11:58:24Z ERROR inventory-svc reserve failed: out of stock sku=SKU-9357 requested=3", "label": "inventory"}
+{"id": "g0231", "text": "2026-09-01T11:59:05Z ERROR auth-svc MFA code verification failed user=u_54276 method=email", "label": "auth"}
+{"id": "g0232", "text": "2026-09-01T12:00:05Z ERROR payment-svc charge failed: expired_card order=ORD-89403 amount=21243", "label": "payment"}
+{"id": "g0233", "text": "{\"ts\": \"2026-09-01T12:00:57Z\", \"level\": \"WARN\", \"service\": \"search-svc\", \"msg\": \"product SKU-8627 shown as in stock but inventory reports 0\"}", "label": "inventory"}
+{"id": "g0234", "text": "2026-09-01T12:01:41Z WARN bot-detector inventory hoarding bot: 203 carts created by 203.0.113.60 for limited item SKU-2764", "label": "security"}
+{"id": "g0235", "text": "2026-09-01T12:02:55Z ERROR payment-svc settlement batch 138 failed: 10 transactions not reconciled", "label": "payment"}
+{"id": "g0236", "text": "2026-09-01T12:04:11Z ERROR wms-connector stock feed import failed: 65 rows rejected, unknown sku", "label": "inventory"}
+{"id": "g0237", "text": "2026-09-01T12:04:26Z INFO cron nightly sales report generated rows=17647", "label": "normal"}
+{"id": "g0238", "text": "2026-09-01T12:05:40Z WARN inventory-svc stock sync lag 1189s from warehouse=WH-5", "label": "inventory"}
+{"id": "g0239", "text": "{\"ts\": \"2026-09-01T12:06:36Z\", \"level\": \"WARN\", \"service\": \"fulfillment-svc\", \"msg\": \"order=ORD-47432 not shipped within SLA (52h since payment)\"}", "label": "shipping"}
+{"id": "g0240", "text": "2026-09-01T12:06:39Z WARN shipping-svc tracking number not found tracking=JP376982946", "label": "shipping"}
+{"id": "g0241", "text": "2026-09-01T12:07:17Z WARN k8s pod checkout-svc-4095 CPU throttled 97%", "label": "performance"}
+{"id": "g0242", "text": "2026-09-01T12:07:18Z WARN web-frontend session cookie missing, redirecting to /login user=u_84354", "label": "auth"}
+{"id": "g0243", "text": "2026-09-01T12:07:38Z INFO shipping-svc shipment SHP-5735 delivered", "label": "normal"}
+{"id": "g0244", "text": "2026-09-01T12:08:27Z ERROR auth-svc JWT signature verification failed kid=key-8", "label": "auth"}
+{"id": "g0245", "text": "2026-09-01T12:08:30Z WARN cache redis latency spike 1670ms, hit ratio 52%", "label": "performance"}
+{"id": "g0246", "text": "{\"ts\": \"2026-09-01T12:08:40Z\", \"level\": \"INFO\", \"service\": \"payment-svc\", \"msg\": \"charge succeeded order=ORD-11775 amount=20829\"}", "label": "normal"}
+{"id": "g0247", "text": "2026-09-01T12:09:58Z WARN inventory-svc stock sync lag 1456s from warehouse=WH-1", "label": "inventory"}
+{"id": "g0248", "text": "2026-09-01T12:11:17Z ERROR fulfillment-svc pick list generation failed for order=ORD-89586: warehouse unassigned", "label": "shipping"}
+{"id": "g0249", "text": "2026-09-01T12:12:15Z WARN notification-svc delivery status webhook rejected: unknown shipment SHP-5799", "label": "shipping"}
+{"id": "g0250", "text": "2026-09-01T12:12:42Z INFO inventory-svc restock completed sku=SKU-6904 qty=173", "label": "normal"}
+{"id": "g0251", "text": "{\"ts\": \"2026-09-01T12:13:59Z\", \"level\": \"ERROR\", \"service\": \"auth-svc\", \"msg\": \"MFA code verification failed user=u_57205 method=totp\"}", "label": "auth"}
+{"id": "g0252", "text": "2026-09-01T12:14:48Z ERROR catalog-svc SKU mapping not found for vendor code V17653", "label": "inventory"}
+{"id": "g0253", "text": "2026-09-01T12:15:40Z WARN order-db slow query 11150ms: SELECT * FROM orders WHERE user_id = ?", "label": "performance"}
+{"id": "g0254", "text": "{\"ts\": \"2026-09-01T12:17:09Z\", \"level\": \"ERROR\", \"service\": \"auth-svc\", \"msg\": \"JWT signature verification failed kid=key-2\"}", "label": "auth"}
+{"id": "g0255", "text": "2026-09-01T12:17:22Z ERROR api-gw 401 Unauthorized: token expired path=/api/cart", "label": "auth"}
+{"id": "g0256", "text": "2026-09-01T12:17:44Z ERROR cart-svc OutOfMemoryError: Java heap space (heap=4g)", "label": "performance"}
+{"id": "g0257", "text": "2026-09-01T12:19:13Z WARN billing-svc invoice amount mismatch order=ORD-27224 expected=2064 captured=1864", "label": "payment"}
+{"id": "g0258", "text": "2026-09-01T12:20:13Z WARN payment-svc thread pool saturated active=199/200 queue=123", "label": "performance"}
+{"id": "g0259", "text": "2026-09-01T12:20:46Z WARN billing-svc invoice amount mismatch order=ORD-36812 expected=6086 captured=7322", "label": "payment"}
+{"id": "g0260", "text": "{\"ts\": \"2026-09-01T12:22:03Z\", \"level\": \"ERROR\", \"service\": \"db-pool\", \"msg\": \"connection pool exhausted: 50/50 in use, wait timeout\"}", "label": "performance"}
+{"id": "g0261", "text": "{\"ts\": \"2026-09-01T12:22:55Z\", \"level\": \"WARN\", \"service\": \"inventory-svc\", \"msg\": \"negative stock detected sku=SKU-5630 qty=-18\"}", "label": "inventory"}
+{"id": "g0262", "text": "2026-09-01T12:23:25Z ERROR catalog-svc SKU mapping not found for vendor code V56840", "label": "inventory"}
+{"id": "g0263", "text": "2026-09-01T12:24:47Z WARN checkout-svc card testing suspected: 115 small authorizations from 198.51.100.77 in 5min", "label": "security"}
+{"id": "g0264", "text": "2026-09-01T12:24:50Z WARN payment-svc 3DS authentication failed for order=ORD-76125 reason=challenge_abandoned", "label": "payment"}
+{"id": "g0265", "text": "2026-09-01T12:25:15Z WARN api-gw upstream timeout after 55580ms path=/api/checkout", "label": "performance"}
+{"id": "g0266", "text": "2026-09-01T12:26:20Z ERROR db-pool connection pool exhausted: 200/100 in use, wait timeout", "label": "performance"}
+{"id": "g0267", "text": "2026-09-01T12:27:33Z WARN shipping-svc address validation failed order=ORD-48135 postal_code=117-5162", "label": "shipping"}
+{"id": "g0268", "text": "2026-09-01T12:28:38Z INFO inventory-svc restock completed sku=SKU-9657 qty=229", "label": "normal"}
+{"id": "g0269", "text": "2026-09-01T12:29:32Z INFO deploy rollout checkout-svc v1.23.9 completed", "label": "normal"}
+{"id": "g0270", "text": "2026-09-01T12:30:33Z ALERT waf XSS payload detected in review body product=SKU-4942 src=203.0.113.168", "label": "security"}
+{"id": "g0271", "text": "{\"ts\": \"2026-09-01T12:31:28Z\", \"level\": \"WARN\", \"service\": \"billing-svc\", \"msg\": \"invoice amount mismatch order=ORD-61051 expected=3645 captured=7250\"}", "label": "payment"}
+{"id": "g0272", "text": "{\"ts\": \"2026-09-01T12:32:23Z\", \"level\": \"ALERT\", \"service\": \"auth-svc\", \"msg\": \"credential stuffing: 390 distinct accounts tried from 192.0.2.132\"}", "label": "security"}
+{"id": "g0273", "text": "2026-09-01T12:33:35Z WARN billing-svc invoice amount mismatch order=ORD-57363 expected=6583 captured=1875", "label": "payment"}
+{"id": "g0274", "text": "2026-09-01T12:34:28Z INFO payment-svc charge succeeded order=ORD-11504 amount=34025", "label": "normal"}
+{"id": "g0275", "text": "2026-09-01T12:35:03Z ALERT waf blocked request: sql injection pattern in query param q", "label": "security"}
+{"id": "g0276", "text": "{\"ts\": \"2026-09-01T12:35:25Z\", \"level\": \"WARN\", \"service\": \"auth-svc\", \"msg\": \"invalid password attempt user=u_67200 count=4\"}", "label": "auth"}
+{"id": "g0277", "text": "2026-09-01T12:36:16Z ERROR checkout-svc refund request rejected by provider order=ORD-19390 code=R34", "label": "payment"}
+{"id": "g0278", "text": "2026-09-01T12:37:29Z WARN k8s pod checkout-svc-6036 CPU throttled 72%", "label": "performance"}
+{"id": "g0279", "text": "{\"ts\": \"2026-09-01T12:38:52Z\", \"level\": \"INFO\", \"service\": \"shipping-svc\", \"msg\": \"shipment SHP-2564 delivered\"}", "label": "normal"}
+{"id": "g0280", "text": "2026-09-01T12:39:41Z ERROR inventory-svc stock adjustment conflict sku=SKU-5899 version mismatch", "label": "inventory"}
+{"id": "g0281", "text": "{\"ts\": \"2026-09-01T12:40:09Z\", \"level\": \"ALERT\", \"service\": \"account-svc\", \"msg\": \"user=u_90249 email changed and password reset from new country within 2min\"}", "label": "security"}
+{"id": "g0282", "text": "2026-09-01T12:41:20Z WARN auth-svc brute force suspected from 198.51.100.153, 69 failures/min", "label": "security"}
+{"id": "g0283", "text": "2026-09-01T12:41:24Z ERROR checkout-svc cannot place order=ORD-22812: item SKU-5504 no longer available", "label": "inventory"}
+{"id": "g0284", "text": "2026-09-01T12:42:12Z WARN payment-svc chargeback received order=ORD-79119 reason_code=4837", "label": "payment"}
+{"id": "g0285", "text": "2026-09-01T12:43:14Z WARN auth-svc refresh token revoked user=u_55879 client=android", "label": "auth"}
+{"id": "g0286", "text": "2026-09-01T12:43:41Z ERROR checkout-svc refund request rejected by provider order=ORD-74654 code=R27", "label": "payment"}
+{"id": "g0287", "text": "2026-09-01T12:44:19Z WARN auth-svc account locked after failed logins user=u_80446", "label": "auth"}
+{"id": "g0288", "text": "{\"ts\": \"2026-09-01T12:45:35Z\", \"level\": \"ALERT\", \"service\": \"waf\", \"msg\": \"blocked request: sql injection pattern in query param id\"}", "label": "security"}
+{"id": "g0289", "text": "{\"ts\": \"2026-09-01T12:46:58Z\", \"level\": \"WARN\", \"service\": \"notification-svc\", \"msg\": \"delivery status webhook rejected: unknown shipment SHP-8611\"}", "label": "shipping"}
+{"id": "g0290", "text": "2026-09-01T12:47:41Z WARN auth-svc refresh token revoked user=u_67526 client=ios", "label": "auth"}
+{"id": "g0291", "text": "2026-09-01T12:48:01Z ERROR auth-svc OAuth callback failed provider=line: invalid_grant", "label": "auth"}
+{"id": "g0292", "text": "2026-09-01T12:49:22Z ALERT waf XSS payload detected in review body product=SKU-8315 src=192.0.2.221", "label": "security"}
+{"id": "g0293", "text": "2026-09-01T12:49:50Z INFO order-svc order completed order=ORD-67440", "label": "normal"}
+{"id": "g0294", "text": "{\"ts\": \"2026-09-01T12:50:29Z\", \"level\": \"WARN\", \"service\": \"web-frontend\", \"msg\": \"session cookie missing, redirecting to /login user=u_31570\"}", "label": "auth"}
+{"id": "g0295", "text": "2026-09-01T12:51:42Z ERROR checkout-svc cannot place order=ORD-24284: item SKU-8090 no longer available", "label": "inventory"}
+{"id": "g0296", "text": "2026-09-01T12:53:11Z INFO auth-svc login success user=u_13295", "label": "normal"}
+{"id": "g0297", "text": "2026-09-01T12:53:36Z WARN node-exporter disk usage 91% on /var/lib/postgresql", "label": "performance"}
+{"id": "g0298", "text": "2026-09-01T12:54:20Z WARN billing-svc invoice amount mismatch order=ORD-84608 expected=5352 captured=8487", "label": "payment"}
+{"id": "g0299", "text": "2026-09-01T12:55:29Z INFO auth-svc token refreshed user=u_41794", "label": "normal"}
+{"id": "g0300", "text": "2026-09-01T12:55:50Z WARN inventory-svc stock sync lag 664s from warehouse=WH-8", "label": "inventory"}
+{"id": "g0301", "text": "2026-09-01T12:56:19Z WARN fulfillment-svc order=ORD-74820 not shipped within SLA (87h since payment)", "label": "shipping"}
+{"id": "g0302", "text": "2026-09-01T12:57:24Z ERROR cart-svc OutOfMemoryError: Java heap space (heap=8g)", "label": "performance"}
+{"id": "g0303", "text": "{\"ts\": \"2026-09-01T12:57:47Z\", \"level\": \"ERROR\", \"service\": \"shipping-svc\", \"msg\": \"delivery date calculation failed: no carrier serves region=remote-island\"}", "label": "shipping"}
+{"id": "g0304", "text": "2026-09-01T12:58:33Z INFO auth-svc token refreshed user=u_36027", "label": "normal"}
+{"id": "g0305", "text": "2026-09-01T12:59:07Z WARN auth-svc refresh token revoked user=u_9339 client=android", "label": "auth"}
+{"id": "g0306", "text": "2026-09-01T12:59:55Z WARN search-svc product SKU-2326 shown as in stock but inventory reports 0", "label": "inventory"}
+{"id": "g0307", "text": "2026-09-01T13:00:27Z INFO auth-svc login success user=u_66040", "label": "normal"}
+{"id": "g0308", "text": "2026-09-01T13:01:29Z INFO order-svc order completed order=ORD-49302", "label": "normal"}
+{"id": "g0309", "text": "2026-09-01T13:02:05Z WARN shipping-svc package returned to sender shipment=SHP-6298 reason=address_unknown", "label": "shipping"}
+{"id": "g0310", "text": "2026-09-01T13:03:09Z WARN bot-detector inventory hoarding bot: 270 carts created by 192.0.2.253 for limited item SKU-6329", "label": "security"}
+{"id": "g0311", "text": "{\"ts\": \"2026-09-01T13:04:19Z\", \"level\": \"WARN\", \"service\": \"auth-svc\", \"msg\": \"refresh token revoked user=u_72813 client=web\"}", "label": "auth"}
+{"id": "g0312", "text": "2026-09-01T13:05:16Z ERROR inventory-svc reserve failed: out of stock sku=SKU-9509 requested=3", "label": "inventory"}
+{"id": "g0313", "text": "2026-09-01T13:06:36Z ERROR subscription-svc recurring charge failed for user=u_10538 plan=plus retry=1/3", "label": "payment"}
+{"id": "g0314", "text": "2026-09-01T13:06:39Z ERROR catalog-svc SKU mapping not found for vendor code V62844", "label": "inventory"}
+{"id": "g0315", "text": "2026-09-01T13:06:44Z ALERT admin-panel access to /admin from non-allowlisted ip 198.51.100.211", "label": "security"}
+{"id": "g0316", "text": "2026-09-01T13:07:01Z WARN inventory-svc oversell: sku=SKU-1491 sold=18 available=1", "label": "inventory"}
+{"id": "g0317", "text": "2026-09-01T13:07:56Z WARN payment-svc 3DS authentication failed for order=ORD-95172 reason=authentication_rejected", "label": "payment"}
+{"id": "g0318", "text": "2026-09-01T13:08:22Z WARN order-db slow query 13300ms: SELECT * FROM orders WHERE user_id = ?", "label": "performance"}
+{"id": "g0319", "text": "2026-09-01T13:08:23Z ERROR auth-svc OAuth callback failed provider=google: invalid_grant", "label": "auth"}
+{"id": "g0320", "text": "2026-09-01T13:09:29Z WARN auth-svc invalid password attempt user=u_48836 count=4", "label": "auth"}
+{"id": "g0321", "text": "2026-09-01T13:10:04Z ERROR auth-svc OAuth callback failed provider=line: invalid_grant", "label": "auth"}
+{"id": "g0322", "text": "2026-09-01T13:11:26Z INFO lb healthcheck ok target=web-2", "label": "normal"}
+{"id": "g0323", "text": "2026-09-01T13:12:29Z WARN inventory-svc negative stock detected sku=SKU-8328 qty=-20", "label": "inventory"}
+{"id": "g0324", "text": "2026-09-01T13:12:34Z ERROR cart-svc OutOfMemoryError: Java heap space (heap=8g)", "label": "performance"}
+{"id": "g0325", "text": "2026-09-01T13:12:44Z ALERT admin-panel access to /admin from non-allowlisted ip 203.0.113.56", "label": "security"}
+{"id": "g0326", "text": "2026-09-01T13:13:10Z WARN fulfillment-svc order=ORD-42381 not shipped within SLA (74h since payment)", "label": "shipping"}
+{"id": "g0327", "text": "2026-09-01T13:13:24Z WARN notification-svc delivery status webhook rejected: unknown shipment SHP-8364", "label": "shipping"}
+{"id": "g0328", "text": "2026-09-01T13:13:38Z ERROR payment-svc duplicate capture detected for order=ORD-66060 txn=TX217998", "label": "payment"}
+{"id": "g0329", "text": "{\"ts\": \"2026-09-01T13:14:35Z\", \"level\": \"ERROR\", \"service\": \"api-gw\", \"msg\": \"POST /api/payments returned 402 Payment Required order=ORD-63015\"}", "label": "payment"}
+{"id": "g0330", "text": "{\"ts\": \"2026-09-01T13:15:15Z\", \"level\": \"INFO\", \"service\": \"deploy\", \"msg\": \"rollout checkout-svc v1.59.5 completed\"}", "label": "normal"}
+{"id": "g0331", "text": "2026-09-01T13:16:15Z WARN inventory-svc stock sync lag 1692s from warehouse=WH-5", "label": "inventory"}
+{"id": "g0332", "text": "2026-09-01T13:17:31Z WARN cart-svc request rejected: session expired session=sess_395372", "label": "auth"}
+{"id": "g0333", "text": "2026-09-01T13:17:59Z ERROR shipping-svc label creation failed carrier=sagawa: invalid package dimensions", "label": "shipping"}
+{"id": "g0334", "text": "{\"ts\": \"2026-09-01T13:19:22Z\", \"level\": \"WARN\", \"service\": \"cart-svc\", \"msg\": \"request rejected: session expired session=sess_109316\"}", "label": "auth"}
+{"id": "g0335", "text": "2026-09-01T13:20:28Z WARN shipping-svc package returned to sender shipment=SHP-7385 reason=address_unknown", "label": "shipping"}
+{"id": "g0336", "text": "2026-09-01T13:21:18Z ERROR auth-svc JWT signature verification failed kid=key-7", "label": "auth"}
+{"id": "g0337", "text": "{\"ts\": \"2026-09-01T13:22:03Z\", \"level\": \"ERROR\", \"service\": \"shipping-svc\", \"msg\": \"label creation failed carrier=yamato: invalid package dimensions\"}", "label": "shipping"}
+{"id": "g0338", "text": "2026-09-01T13:22:12Z ERROR auth-svc JWT signature verification failed kid=key-9", "label": "auth"}
+{"id": "g0339", "text": "2026-09-01T13:22:24Z ERROR db-pool connection pool exhausted: 100/200 in use, wait timeout", "label": "performance"}
+{"id": "g0340", "text": "2026-09-01T13:23:19Z ERROR checkout-svc cannot place order=ORD-65933: item SKU-7597 no longer available", "label": "inventory"}
+{"id": "g0341", "text": "2026-09-01T13:24:35Z WARN bot-detector inventory hoarding bot: 379 carts created by 203.0.113.16 for limited item SKU-2900", "label": "security"}
+{"id": "g0342", "text": "2026-09-01T13:24:55Z ALERT auth-svc credential stuffing: 190 distinct accounts tried from 192.0.2.92", "label": "security"}
+{"id": "g0343", "text": "2026-09-01T13:25:31Z ERROR inventory-svc stock adjustment conflict sku=SKU-3629 version mismatch", "label": "inventory"}
+{"id": "g0344", "text": "2026-09-01T13:25:33Z WARN auth-svc account locked after failed logins user=u_22053", "label": "auth"}
+{"id": "g0345", "text": "2026-09-01T13:25:47Z WARN fulfillment-svc order=ORD-94543 not shipped within SLA (59h since payment)", "label": "shipping"}
+{"id": "g0346", "text": "2026-09-01T13:26:25Z ERROR payment-svc charge failed: insufficient_funds order=ORD-73768 amount=21024", "label": "payment"}
+{"id": "g0347", "text": "2026-09-01T13:27:15Z ALERT waf blocked request: sql injection pattern in query param sort", "label": "security"}
+{"id": "g0348", "text": "2026-09-01T13:28:01Z ERROR product-svc request queue full, dropping requests (queue_size=5000)", "label": "performance"}
+{"id": "g0349", "text": "2026-09-01T13:28:37Z ERROR fulfillment-svc pick list generation failed for order=ORD-75754: warehouse unassigned", "label": "shipping"}
+{"id": "g0350", "text": "2026-09-01T13:29:04Z WARN checkout-svc card testing suspected: 45 small authorizations from 203.0.113.71 in 5min", "label": "security"}
