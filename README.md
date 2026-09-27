@@ -24,10 +24,13 @@ EC などのログ分類を題材に、**Jev / Laya / LLM** の 3 つをベン�
 │   ├── classifiers/         # Jev / Laya / LLM の分類器と共通 HTTP クライアント
 │   ├── envfile.py           # .env の読み込み
 │   ├── metrics.py           # 評価指標
+│   ├── prepare.py           # 評価データを取得・抽出する CLI
 │   ├── run.py               # ベンチマーク実行 CLI
 │   ├── report.py            # 比較表（Markdown）を作る CLI
 │   └── task.py              # タスク定義・データの読み込み
-├── tasks/log_classification/  # タスク定義（データセット・ラベル）と共通プロンプト
+├── tasks/
+│   ├── log_classification/  # 本題のタスク定義（データセット・ラベル）と共通プロンプト
+│   └── jevbench_*/          # 公開ベンチ jevbench の再現用タスク（説明は tasks/JEVBENCH.md）
 └── tests/
 ```
 
@@ -42,7 +45,7 @@ uv run hellow-jev --config configs/llm_api.toml
 # 全 config をまとめて実行
 ./scripts/run_all.sh
 
-# 比較表を作る（config ごとに最新の run を集計）
+# 比較表を作る（タスクごとに表を分け、(タスク, config) ごとに最新の run を集計）
 uv run hellow-jev-report --out docs/report.md
 
 # テスト
@@ -50,6 +53,19 @@ uv run --extra dev pytest
 ```
 
 Laya は推論サーバ `laya-serve` を別環境で立ててから実行する（手順は [`docs/notes/laya.md`](docs/notes/laya.md)）。
+
+### jevbench の再現（パイプラインの検証）
+
+公開ベンチ [jevbench](https://github.com/dhruvmehra/jevbench) と同じ 500 件・同じラベル説明で Jev / Laya を回し、
+公表値と比べて、このリポジトリのクライアントと計測が正しいかを確かめる（詳細は [`tasks/JEVBENCH.md`](tasks/JEVBENCH.md)）。
+
+```bash
+uv run hellow-jev-prepare jevbench                           # SST-2 / AG News / Banking77 を 500 件ずつ作る
+./scripts/run_jevbench.sh configs/jev.toml configs/laya.toml # 4 タスク × 指定 config（省略時は configs/*.toml）
+uv run hellow-jev-report --out docs/report.md                # jevbench の公表値も参考値として並ぶ
+```
+
+1 タスクだけ回すときは `uv run hellow-jev --config configs/jev.toml --task jevbench_banking77`。
 
 結果は `results/<timestamp>_<name>/` に次のファイルとして保存される。
 

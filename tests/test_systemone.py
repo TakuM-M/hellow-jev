@@ -2,10 +2,12 @@
 
 import json
 import threading
+from dataclasses import replace
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import pytest
 
+from hellow_jev import task as task_module
 from hellow_jev.classifiers import build_classifier
 from hellow_jev.task import load_task
 
@@ -76,6 +78,40 @@ def test_laya_request_and_parse(server):
     # LLM プロンプトと同じ指示文・ラベル定義が渡っていること（公平性）
     assert q["instructions"] == task.instructions
     assert q["criteria"] == {l.name: l.description for l in task.labels}
+
+
+@pytest.mark.parametrize(
+    ("state_format", "expected"),
+    [("object", {"log": "some text"}), ("string", "some text")],
+)
+def test_state_format(server, monkeypatch, state_format, expected):
+    monkeypatch.setenv("JEV_API_KEY", "k")
+    task = replace(load_task("log_classification"), state_format=state_format)
+    for config in ({"type": "jev", "base_url": server, "model": "jev-x"},
+                   {"type": "laya", "endpoint": server, "model": "english"}):
+        build_classifier(config, task).classify("some text")
+    # Jev / Laya は共通クライアントなので、どちらにも同じ state が渡る
+    assert [r["body"]["state"] for r in _Handler.requests] == [expected, expected]
+
+
+def test_unknown_state_format_is_rejected(tmp_path, monkeypatch):
+    # load_task を通さずに作った Task でも、黙って既定の形で送らない
+    bad = replace(load_task("log_classification"), state_format="str")
+    clf = build_classifier({"type": "laya", "endpoint": "http://127.0.0.1:1", "model": "english"}, bad)
+    with pytest.raises(ValueError, match="unknown state_format"):
+        clf.build_request("x")
+
+    # task.toml の typo は読み込み時に止める
+    task_dir = tmp_path / "t"
+    task_dir.mkdir()
+    (task_dir / "task.toml").write_text(
+        'dataset = "d.jsonl"\ninstructions = "i"\nstate_format = "str"\n'
+        '[[labels]]\nname = "a"\ndescription = "A"\n'
+    )
+    (task_dir / "prompt.md").write_text("notes\n---\n{log}\n")
+    monkeypatch.setattr(task_module, "TASKS_DIR", tmp_path)
+    with pytest.raises(ValueError, match=r"state_format must be one of 'object', 'string' \(got 'str'\)"):
+        load_task("t")
 
 
 def test_jev_sends_bearer_key(server, monkeypatch):

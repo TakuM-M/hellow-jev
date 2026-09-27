@@ -15,7 +15,14 @@ uv run hellow-jev --config configs/llm_api.toml
 # 全 config 一括実行
 ./scripts/run_all.sh
 
-# 比較表（config ごとの最新 run を集計）
+# 同じ config を別タスクで実行（--task で config の task を上書き）
+uv run hellow-jev --config configs/jev.toml --task jevbench_banking77
+
+# jevbench の再現（評価データを作ってから、4 タスク × 指定 config を一括実行）
+uv run hellow-jev-prepare jevbench
+./scripts/run_jevbench.sh configs/jev.toml configs/laya.toml
+
+# 比較表（タスクごとに表を分け、(タスク, config) ごとの最新 run を集計）
 uv run hellow-jev-report --out docs/report.md
 
 # Laya 推論サーバ（Jev 互換 HTTP。別環境で起動）
@@ -32,7 +39,10 @@ uv run --extra dev pytest
 - 分類器は `src/hellow_jev/classifiers/` に置き、`base.Classifier` を継承して `classify()` を実装する
 - 新しい分類器は `classifiers/__init__.py` の `REGISTRY` に登録し、`configs/` に toml を追加する
 - `configs/*.toml` はタスク名と分類器設定だけを持つ。データセット・ラベルはタスク側で一元管理する
-- タスク定義（dataset / instructions / labels）は `tasks/log_classification/task.toml`、プロンプトは同ディレクトリの `prompt.md`
+- タスク定義（dataset / instructions / labels / state_format）は `tasks/<task>/task.toml`、LLM のプロンプトは同ディレクトリの `prompt.md`。本題は `log_classification`。`jevbench_*` は公開ベンチ jevbench を再現してパイプラインを検証するためのタスク（`tasks/JEVBENCH.md`）
+- `state_format` は Jev / Laya に渡す state の形（`"object"` = `{"log": テキスト}`（既定）、`"string"` = テキストそのもの）
+- `tasks/<task>/reference.toml` は比較表に並べる公開ベンチの参考値。モデルへの入力ではないので task.toml とは分ける（task.toml のハッシュで入力の変更を検知しているため）
+- 評価データの取得と抽出は `prepare.py`（`hellow-jev-prepare`）。出力は `data/processed/`
 - ラベル外の出力は既定ラベルに寄せず `Prediction.label = None` とし、`invalid_rate` として集計する
 - HTTP は `classifiers/_http.py` の `HTTPClient` に集約（全分類器で同じリトライ条件。接続は keep-alive で使い回し、張り直した件数は `metrics.json` の `new_connections`）。リトライしても失敗した件は run を止めずに `error` として記録し、`error_rate` で集計する（連続 `max_consecutive_errors` 件で打ち切り）
 - 実行結果は `results/<timestamp>_<name>/` に保存される（git 管理外）。`predictions.jsonl` は 1 件ずつ追記され、`metrics.json` は完走時のみ書かれる。`meta.json` に入力ハッシュ・git commit・実行マシン情報が残る

@@ -12,7 +12,7 @@ api_format = "openai"      # OpenAI 互換 /chat/completions（Ollama / vLLM / l
 # endpoint = "http://localhost:11434/v1"   # 未指定なら環境変数 LLM_LOCAL_ENDPOINT → Ollama 既定
 model = "qwen3:4b"         # Ollama のタグ。vLLM なら "Qwen/Qwen3-4B" など
 temperature = 0.0
-max_tokens = 16
+max_tokens = 32            # ラベル名 1 語だけ返させる。Banking77 の長いラベル名（例: balance_not_updated_after_cheque_or_cash_deposit）が途中で切れない長さ
 # リクエスト body に追加するサーバ固有パラメータ。
 # Qwen3 は思考モードだと出力が <think> で埋まり max_tokens を使い切る（→ ラベル外になる）ので、
 # サーバ側で思考を切る。指定方法はサーバごとに違うため、実サーバで確認してから有効にする（未検証）

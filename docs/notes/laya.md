@@ -83,3 +83,4 @@
 - 2026-09-27: `backend = "http"`（laya-serve 経由）で実装。model は日本語の criteria に合わせ `multilingual`。実サーバでは未検証
 - 2026-09-27: ラベル説明を英語に統一したため model を `english` に変更（英語 AG News で english 0.950 > multilingual 0.930）
 - 2026-09-27: serve.py / router.py を読んで model 指定の挙動を確認（上記「laya-serve のモデル指定」）。起動手順を `LAYA_MODELS=english` に修正。`X-Inference-Time-Ms` は PyPI 0.3.20 に無いことが判明
+- 2026-09-27: laya 0.3.20 のソースで確認。`laya.load("convaiinnovations/laya")` の既定は English（リポジトリ直下）で、laya-serve の `model = "english"` と同じチェックポイント。dict の state は `serialize_state` で JSON 文字列にしてから読むので、state の形（`state_format`）でモデルへの入力が変わる。laya-serve は FastAPI + uvicorn

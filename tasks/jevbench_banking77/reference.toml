@@ -1,0 +1,78 @@
+# jevbench の公表値（Banking77, n=500）。
+# 比較表（hellow-jev-report）が参照値として読む。task.toml と分けているのは、参照値を直しても
+# task_toml_sha256（モデル入力の変更検知に使う）が変わらないようにするため。
+# 出典: jevbench（MIT）c983cc4 の docs/results/2026-09-22-n500-summary.md。% は 0〜1 の小数に直した。
+# ECE とスループットは載せない（スループットは jevbench が並列実行で測っており、逐次実行の本リポジトリと比べられない）。
+# 本リポジトリの値と比べるときの注意（詳細は tasks/JEVBENCH.md）:
+# - Acc: jevbench はエラー件を分母から除外する。本リポジトリは不正解に数える
+#   （脚注は "Acc/F1 exclude errored examples" だが、コード上 Macro-F1 はエラー件を見逃し（FN）として数え、本リポジトリと同じ）
+# - p50 / p95 はどちらも逐次実行。jevbench の Jev・LLM は OpenRouter 経由、ローカルモデルは Apple silicon の Mac で計測
+# - 直接の再現対象は jev と laya の行。LLM・BERT の行は本リポジトリに対応する config がない参考値
+source = "jevbench"
+url = "https://github.com/dhruvmehra/jevbench/blob/c983cc4/docs/results/2026-09-22-n500-summary.md"
+note = "jevbench 公表値（n=500, seed=0）。Acc はエラー件を除外（本リポジトリは不正解扱い）。Jev・LLM のレイテンシは OpenRouter 経由。スループットは並列計測のため省略"
+
+# 本リポジトリの configs/jev.toml に対応。model_id は OpenRouter 上の ID（configs/jev.toml は TypeSafe 直の jev-1.13.0）
+[[rows]]
+model = "jev"
+model_id = "typesafe/jev-1.13"
+accuracy = 0.764
+macro_f1 = 0.753
+error_rate = 0.0
+p50_ms = 389.0
+p95_ms = 676.0
+cost_per_1k_usd = 0.0831
+
+# 本リポジトリの configs/laya.toml に対応。jevbench は laya 0.3.5 を in-process で使い convaiinnovations/laya を読む
+# （laya.load の既定 = english チェックポイント。laya-serve の model = "english" と同じチェックポイント）
+# 77 択は Laya の推奨（選択肢 20 個程度まで）を大きく超える
+[[rows]]
+model = "laya"
+model_id = "convaiinnovations/laya"
+accuracy = 0.382
+macro_f1 = 0.321
+error_rate = 0.0
+p50_ms = 130.0
+p95_ms = 137.0
+
+# 参考値（OpenRouter 経由・JSON スキーマ出力。本リポジトリの LLM config とはモデルも出力方式も違う）
+[[rows]]
+model = "llm-frontier"
+model_id = "anthropic/claude-sonnet-5"
+accuracy = 0.774
+macro_f1 = 0.767
+error_rate = 0.0
+p50_ms = 1995.0
+p95_ms = 2634.0
+cost_per_1k_usd = 6.4329
+
+# 参考値（OpenRouter 経由・JSON スキーマ出力。本リポジトリの LLM config とはモデルも出力方式も違う）
+[[rows]]
+model = "llm-cheap"
+model_id = "openai/gpt-5-mini"
+accuracy = 0.736
+macro_f1 = 0.733
+error_rate = 0.0
+p50_ms = 1312.0
+p95_ms = 1989.0
+cost_per_1k_usd = 0.3758
+
+# 参考値（学習データ最大 1 万件でファインチューニングした DistilBERT。本リポジトリに対応するものはない）
+[[rows]]
+model = "bert-ft"
+model_id = "distilbert-base-uncased"
+accuracy = 0.88
+macro_f1 = 0.864
+error_rate = 0.0
+p50_ms = 8.0
+p95_ms = 13.0
+
+# 参考値（zero-shot NLI。本リポジトリに対応するものはない）
+[[rows]]
+model = "bert-zs"
+model_id = "facebook/bart-large-mnli"
+accuracy = 0.428
+macro_f1 = 0.397
+error_rate = 0.0
+p50_ms = 2571.0
+p95_ms = 3029.0
