@@ -20,8 +20,11 @@ class Prediction:
 
 class Classifier(ABC):
     def __init__(self, task: Task, **options: Any) -> None:
+        # サブクラスが受け取らなかったキーはここに残る。temprature のような typo を
+        # 黙って無視すると既定値のまま走り、公平性のための設定が効かないので拒否する
+        if options:
+            raise ValueError(f"unknown classifier options: {', '.join(sorted(options))}")
         self.task = task
-        self.options = options
 
     @abstractmethod
     def classify(self, text: str) -> Prediction: ...

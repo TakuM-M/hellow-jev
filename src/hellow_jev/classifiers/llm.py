@@ -48,6 +48,11 @@ class LLMClassifier(Classifier):
         super().__init__(task, **options)
         if not model:
             raise ValueError("LLM の model を config で指定してください（再現性のため固定する）")
+        # backend ごとに使うキーが違う。もう一方を書いても無視されて別の接続先に行くので拒否する
+        if backend == "api" and endpoint:
+            raise ValueError("backend='api' の接続先は base_url で指定してください（endpoint ではなく）")
+        if backend == "local" and base_url:
+            raise ValueError("backend='local' の接続先は endpoint で指定してください（base_url ではなく）")
         if backend == "api":
             self.api_format = api_format or "anthropic"
             self.api_key = os.environ.get("LLM_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")

@@ -25,3 +25,28 @@ def test_normalize_rejects_unknown_label():
     assert clf.classify(" `Payment`. ").label == "payment"
     assert clf.classify("normality").label is None
     assert clf.classify("I think it's payment").label is None
+
+
+def test_unknown_classifier_option_is_rejected():
+    import pytest
+
+    from hellow_jev.classifiers import build_classifier
+
+    task = load_task("log_classification")
+    with pytest.raises(ValueError, match="temprature"):
+        build_classifier({"type": "llm", "backend": "local", "model": "m", "temprature": 1.0}, task)
+    with pytest.raises(ValueError, match="timeout_sec"):
+        build_classifier({"type": "laya", "timeout_sec": 1}, task)
+
+
+def test_wrong_endpoint_key_is_rejected():
+    import pytest
+
+    from hellow_jev.classifiers import build_classifier
+
+    task = load_task("log_classification")
+    with pytest.raises(ValueError, match="endpoint"):
+        build_classifier({"type": "laya", "base_url": "http://x"}, task)
+    with pytest.raises(ValueError, match="endpoint"):
+        build_classifier({"type": "llm", "backend": "local", "model": "m",
+                          "base_url": "http://x"}, task)
