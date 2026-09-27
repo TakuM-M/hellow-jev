@@ -72,6 +72,27 @@ def load_task(name: str) -> Task:
     )
 
 
-def load_dataset(path: Path) -> list[Record]:
+def load_dataset(path: Path, label_names: list[str] | None = None) -> list[Record]:
+    """JSONL を読む。label_names を渡すと正解ラベルがタスク定義内にあるかも検証する。
+
+    定義外のラベル（"Payment" などの表記ゆれ）は全モデルで必ず不正解になり、
+    per_class にも現れないため Acc と Macro-F1 が食い違う。黙って評価せず行番号付きで止める。
+    """
+    records: list[Record] = []
+    seen: set[str] = set()
     with open(path, encoding="utf-8") as f:
-        return [Record(**json.loads(line)) for line in f if line.strip()]
+        for lineno, line in enumerate(f, 1):
+            if not line.strip():
+                continue
+            where = f"{path}:{lineno}"
+            try:
+                record = Record(**json.loads(line))
+            except (json.JSONDecodeError, TypeError) as e:
+                raise ValueError(f"{where}: invalid record ({e})") from e
+            if label_names is not None and record.label not in label_names:
+                raise ValueError(f"{where}: unknown label {record.label!r}")
+            if record.id in seen:
+                raise ValueError(f"{where}: duplicate id {record.id!r}")
+            seen.add(record.id)
+            records.append(record)
+    return records
