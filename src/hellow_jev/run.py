@@ -50,7 +50,7 @@ def main() -> None:
 
     task = load_task(config.get("task", "log_classification"))
     dataset_path = args.dataset or task.dataset
-    dataset = load_dataset(dataset_path)
+    dataset = load_dataset(dataset_path, task.label_names)
     classifier = build_classifier(config["classifier"], task)
 
     # 接続確立・モデルロード・JIT 等の初回コストをレイテンシから除くため空打ちする。
