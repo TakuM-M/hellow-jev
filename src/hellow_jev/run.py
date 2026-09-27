@@ -18,6 +18,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from hellow_jev.classifiers import Prediction, build_classifier
+from hellow_jev.envfile import load_env_file
 from hellow_jev.metrics import evaluate, latency_stats, usage_stats
 from hellow_jev.task import REPO_ROOT, TASKS_DIR, load_dataset, load_task
 
@@ -50,6 +51,7 @@ def main() -> None:
         "--warmup", type=int, help="計測前に捨てる呼び出し回数（config の warmup を上書き）"
     )
     args = parser.parse_args()
+    load_env_file(REPO_ROOT / ".env")  # API キー等。既存の環境変数が優先
 
     with open(args.config, "rb") as f:
         config = tomllib.load(f)
