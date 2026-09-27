@@ -6,6 +6,9 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
 
+[project.scripts]
+hellow-jev = "hellow_jev.run:main"
+
 [project.optional-dependencies]
 dev = ["pytest"]
 

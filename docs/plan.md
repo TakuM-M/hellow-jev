@@ -24,9 +24,9 @@
 ## 実験条件を揃えるためのルール
 
 - プロンプトは `tasks/log_classification/prompt.md` を共通で使う
-- 同一データセット・同一ラベル定義で評価する
+- 同一データセット・同一ラベル定義で評価する（`tasks/<task>/task.toml` で一元管理し、モデル別 config には書かない）
 - temperature 等のサンプリング設定は config に明記する
-- 実行結果は `results/<timestamp>_<name>/` に config / metrics / predictions を保存
+- 実行結果は `results/<timestamp>_<name>/` に config / meta / metrics / predictions を保存
 
 ## マイルストーン
 

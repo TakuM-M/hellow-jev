@@ -10,7 +10,7 @@ OSS **Jev** の手元動作調査リポジトリ。EC などのログ分類タ�
 
 ```bash
 # ベンチマーク実行（baseline はモデル不要）
-PYTHONPATH=src python3 -m hellow_jev.run --config configs/baseline.toml
+uv run hellow-jev --config configs/baseline.toml
 
 # 全 config 一括実行
 ./scripts/run_all.sh
@@ -23,8 +23,10 @@ uv run --extra dev pytest
 
 - 分類器は `src/hellow_jev/classifiers/` に置き、`base.Classifier` を継承して `classify()` を実装する
 - 新しい分類器は `classifiers/__init__.py` の `REGISTRY` に登録し、`configs/` に toml を追加する
-- ラベル定義は `tasks/log_classification/labels.toml`、プロンプトは同ディレクトリの `prompt.md`
-- 実行結果は `results/<timestamp>_<name>/` に保存される（git 管理外）
+- `configs/*.toml` はタスク名と分類器設定だけを持つ。データセット・ラベルはタスク側で一元管理する
+- タスク定義（dataset / default_label / labels）は `tasks/log_classification/task.toml`、プロンプトは同ディレクトリの `prompt.md`
+- ラベル外の出力は既定ラベルに寄せず `Prediction.label = None` とし、`invalid_rate` として集計する
+- 実行結果は `results/<timestamp>_<name>/` に保存される（git 管理外）。`meta.json` に入力ハッシュと git commit が残る
 
 ## ルール
 

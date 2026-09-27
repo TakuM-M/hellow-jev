@@ -1,5 +1,11 @@
-# EC ログ分類のラベル定義（暫定）。
-# keywords はルールベース baseline 用。モデル側のプロンプトには description を渡す想定。
+# EC ログ分類のタスク定義（暫定）。
+# 比較の公平性のため、データセット・ラベルはモデル別 config ではなくここで一元管理する。
+# keywords はルールベース baseline 用。モデル側のプロンプトには description を渡す。
+
+# 評価データ（リポジトリルートからの相対パス）。実行時は --dataset で上書き可。
+dataset = "data/samples/ec_logs_sample.jsonl"
+# baseline がどのキーワードにも当たらなかったときのラベル
+default_label = "normal"
 
 [[labels]]
 name = "payment"
