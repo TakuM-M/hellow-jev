@@ -16,4 +16,5 @@ max_tokens = 16
 # リクエスト body に追加するサーバ固有パラメータ。
 # Qwen3 は思考モードだと出力が <think> で埋まり max_tokens を使い切る（→ ラベル外になる）ので、
 # サーバ側で思考を切る。指定方法はサーバごとに違うため、実サーバで確認してから有効にする（未検証）
+# extra_body = { reasoning_effort = "none" }   # Ollama（/v1 で "none" → think=false。新しめの版のみ。docs/notes/llm.md）
 # extra_body = { chat_template_kwargs = { enable_thinking = false } }   # vLLM

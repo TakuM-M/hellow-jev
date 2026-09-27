@@ -49,7 +49,10 @@
 ## 未確認
 
 - Haiku 4.5 の料金（config の `[pricing]` は $1 / $5 per MTok で仮置き。公式で要確認）
-- Qwen3 の思考モードの切り方（vLLM は `chat_template_kwargs.enable_thinking=false`。Ollama の OpenAI 互換 API での指定方法は未確認）
+- Qwen3 の思考モードの切り方（実サーバでは未検証）
+  - vLLM: `chat_template_kwargs.enable_thinking=false`
+  - Ollama: `/v1/chat/completions` に `reasoning_effort: "none"` → `think=false` に変換される（GitHub の ollama/docs/api/openai-compatibility.mdx で確認、2026-09-27）。古い版では /v1 で think 指定が無視されるという報告があるので、効かなければ Ollama を更新する
+  - プロンプトに `/no_think` を書く方法もあるが、Qwen3 だけプロンプトが変わり公平性ルールに反するので使わない
   - 切れていないと `<think>` で max_tokens を使い切って invalid になる → `invalid_rate` で気づける
 
 ## 関連（参考）
@@ -61,3 +64,4 @@
 
 - 2026-09-27: Jev / Laya の調査を踏まえて、位置づけと候補を整理
 - 2026-09-27: API（Anthropic）/ ローカル（OpenAI 互換）の両方を実装。ダミーサーバでのみテスト済み
+- 2026-09-27: Ollama の OpenAI 互換 API で思考を切る方法（`reasoning_effort: "none"`）を公式 docs で確認。config にコメントで追記
