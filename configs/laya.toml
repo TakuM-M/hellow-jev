@@ -9,5 +9,5 @@ warmup = 2
 type = "laya"
 backend = "http"   # laya-serve（Jev 互換 HTTP）経由
 # endpoint = "http://localhost:8000"   # 未指定なら環境変数 LAYA_ENDPOINT → この既定値
-# ラベル説明（criteria）が日本語なので多言語版を使う。english / typed-decisions も指定可
-model = "multilingual"
+# ログ・ラベル説明とも英語なので英語版を使う。multilingual / typed-decisions も指定可
+model = "english"

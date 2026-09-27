@@ -71,3 +71,4 @@
 
 - 2026-09-27: 初回調査。GitHub リポジトリ（README / BENCHMARKS.md / serve.py）を確認
 - 2026-09-27: `backend = "http"`（laya-serve 経由）で実装。model は日本語の criteria に合わせ `multilingual`。実サーバでは未検証
+- 2026-09-27: ラベル説明を英語に統一したため model を `english` に変更（英語 AG News で english 0.950 > multilingual 0.930）
