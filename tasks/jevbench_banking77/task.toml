@@ -1,0 +1,326 @@
+# jevbench の Banking77（銀行アプリの問い合わせ意図、77 ラベル）を本リポジトリのパイプラインで再現するタスク定義。
+# 出典: https://github.com/dhruvmehra/jevbench（MIT License, Copyright (c) 2026 Dhruv Mehra）
+#   ラベル名・説明: src/jevbench/datasets.py（c983cc4）の BANKING77_RAW（HF のラベル index 順）から、
+#     jevbench と同じ変換（_bank_id / _bank_desc）で機械的に生成した 77 件。手で編集しない
+#       name        = raw.lower().replace("?", "")   例: "Refund_not_showing_up" -> "refund_not_showing_up"
+#       description = "Customer asks about: " + name の "_" を空白にしたもの
+#   instructions: src/jevbench/classifiers/jev.py の build_questions（jevbench が Jev / Laya に渡す指示文）
+# 評価データは `uv run hellow-jev-prepare jevbench` で作る。
+# jevbench の公表値は同じディレクトリの reference.toml、経緯と注意点は tasks/JEVBENCH.md。
+# Laya は選択肢 20 個程度までが推奨のため、77 択では精度が大きく落ちる見込み（jevbench の Laya は 38.2%）。
+
+# 評価データ（リポジトリルートからの相対パス）
+dataset = "data/processed/jevbench_banking77.jsonl"
+# 全モデル共通の指示文。LLM は prompt.md の {instructions}、Jev / Laya は choice 質問の instructions に入る
+instructions = "Which category best describes the text? Pick exactly one."
+# jevbench は Jev / Laya の state にテキストそのもの（文字列）を渡すので揃える
+# （既定の "object" では {"log": テキスト} になり、モデルへの入力が jevbench と変わる）
+state_format = "string"
+
+[[labels]]
+name = "activate_my_card"
+description = "Customer asks about: activate my card"
+
+[[labels]]
+name = "age_limit"
+description = "Customer asks about: age limit"
+
+[[labels]]
+name = "apple_pay_or_google_pay"
+description = "Customer asks about: apple pay or google pay"
+
+[[labels]]
+name = "atm_support"
+description = "Customer asks about: atm support"
+
+[[labels]]
+name = "automatic_top_up"
+description = "Customer asks about: automatic top up"
+
+[[labels]]
+name = "balance_not_updated_after_bank_transfer"
+description = "Customer asks about: balance not updated after bank transfer"
+
+[[labels]]
+name = "balance_not_updated_after_cheque_or_cash_deposit"
+description = "Customer asks about: balance not updated after cheque or cash deposit"
+
+[[labels]]
+name = "beneficiary_not_allowed"
+description = "Customer asks about: beneficiary not allowed"
+
+[[labels]]
+name = "cancel_transfer"
+description = "Customer asks about: cancel transfer"
+
+[[labels]]
+name = "card_about_to_expire"
+description = "Customer asks about: card about to expire"
+
+[[labels]]
+name = "card_acceptance"
+description = "Customer asks about: card acceptance"
+
+[[labels]]
+name = "card_arrival"
+description = "Customer asks about: card arrival"
+
+[[labels]]
+name = "card_delivery_estimate"
+description = "Customer asks about: card delivery estimate"
+
+[[labels]]
+name = "card_linking"
+description = "Customer asks about: card linking"
+
+[[labels]]
+name = "card_not_working"
+description = "Customer asks about: card not working"
+
+[[labels]]
+name = "card_payment_fee_charged"
+description = "Customer asks about: card payment fee charged"
+
+[[labels]]
+name = "card_payment_not_recognised"
+description = "Customer asks about: card payment not recognised"
+
+[[labels]]
+name = "card_payment_wrong_exchange_rate"
+description = "Customer asks about: card payment wrong exchange rate"
+
+[[labels]]
+name = "card_swallowed"
+description = "Customer asks about: card swallowed"
+
+[[labels]]
+name = "cash_withdrawal_charge"
+description = "Customer asks about: cash withdrawal charge"
+
+[[labels]]
+name = "cash_withdrawal_not_recognised"
+description = "Customer asks about: cash withdrawal not recognised"
+
+[[labels]]
+name = "change_pin"
+description = "Customer asks about: change pin"
+
+[[labels]]
+name = "compromised_card"
+description = "Customer asks about: compromised card"
+
+[[labels]]
+name = "contactless_not_working"
+description = "Customer asks about: contactless not working"
+
+[[labels]]
+name = "country_support"
+description = "Customer asks about: country support"
+
+[[labels]]
+name = "declined_card_payment"
+description = "Customer asks about: declined card payment"
+
+[[labels]]
+name = "declined_cash_withdrawal"
+description = "Customer asks about: declined cash withdrawal"
+
+[[labels]]
+name = "declined_transfer"
+description = "Customer asks about: declined transfer"
+
+[[labels]]
+name = "direct_debit_payment_not_recognised"
+description = "Customer asks about: direct debit payment not recognised"
+
+[[labels]]
+name = "disposable_card_limits"
+description = "Customer asks about: disposable card limits"
+
+[[labels]]
+name = "edit_personal_details"
+description = "Customer asks about: edit personal details"
+
+[[labels]]
+name = "exchange_charge"
+description = "Customer asks about: exchange charge"
+
+[[labels]]
+name = "exchange_rate"
+description = "Customer asks about: exchange rate"
+
+[[labels]]
+name = "exchange_via_app"
+description = "Customer asks about: exchange via app"
+
+[[labels]]
+name = "extra_charge_on_statement"
+description = "Customer asks about: extra charge on statement"
+
+[[labels]]
+name = "failed_transfer"
+description = "Customer asks about: failed transfer"
+
+[[labels]]
+name = "fiat_currency_support"
+description = "Customer asks about: fiat currency support"
+
+[[labels]]
+name = "get_disposable_virtual_card"
+description = "Customer asks about: get disposable virtual card"
+
+[[labels]]
+name = "get_physical_card"
+description = "Customer asks about: get physical card"
+
+[[labels]]
+name = "getting_spare_card"
+description = "Customer asks about: getting spare card"
+
+[[labels]]
+name = "getting_virtual_card"
+description = "Customer asks about: getting virtual card"
+
+[[labels]]
+name = "lost_or_stolen_card"
+description = "Customer asks about: lost or stolen card"
+
+[[labels]]
+name = "lost_or_stolen_phone"
+description = "Customer asks about: lost or stolen phone"
+
+[[labels]]
+name = "order_physical_card"
+description = "Customer asks about: order physical card"
+
+[[labels]]
+name = "passcode_forgotten"
+description = "Customer asks about: passcode forgotten"
+
+[[labels]]
+name = "pending_card_payment"
+description = "Customer asks about: pending card payment"
+
+[[labels]]
+name = "pending_cash_withdrawal"
+description = "Customer asks about: pending cash withdrawal"
+
+[[labels]]
+name = "pending_top_up"
+description = "Customer asks about: pending top up"
+
+[[labels]]
+name = "pending_transfer"
+description = "Customer asks about: pending transfer"
+
+[[labels]]
+name = "pin_blocked"
+description = "Customer asks about: pin blocked"
+
+[[labels]]
+name = "receiving_money"
+description = "Customer asks about: receiving money"
+
+[[labels]]
+name = "refund_not_showing_up"
+description = "Customer asks about: refund not showing up"
+
+[[labels]]
+name = "request_refund"
+description = "Customer asks about: request refund"
+
+[[labels]]
+name = "reverted_card_payment"
+description = "Customer asks about: reverted card payment"
+
+[[labels]]
+name = "supported_cards_and_currencies"
+description = "Customer asks about: supported cards and currencies"
+
+[[labels]]
+name = "terminate_account"
+description = "Customer asks about: terminate account"
+
+[[labels]]
+name = "top_up_by_bank_transfer_charge"
+description = "Customer asks about: top up by bank transfer charge"
+
+[[labels]]
+name = "top_up_by_card_charge"
+description = "Customer asks about: top up by card charge"
+
+[[labels]]
+name = "top_up_by_cash_or_cheque"
+description = "Customer asks about: top up by cash or cheque"
+
+[[labels]]
+name = "top_up_failed"
+description = "Customer asks about: top up failed"
+
+[[labels]]
+name = "top_up_limits"
+description = "Customer asks about: top up limits"
+
+[[labels]]
+name = "top_up_reverted"
+description = "Customer asks about: top up reverted"
+
+[[labels]]
+name = "topping_up_by_card"
+description = "Customer asks about: topping up by card"
+
+[[labels]]
+name = "transaction_charged_twice"
+description = "Customer asks about: transaction charged twice"
+
+[[labels]]
+name = "transfer_fee_charged"
+description = "Customer asks about: transfer fee charged"
+
+[[labels]]
+name = "transfer_into_account"
+description = "Customer asks about: transfer into account"
+
+[[labels]]
+name = "transfer_not_received_by_recipient"
+description = "Customer asks about: transfer not received by recipient"
+
+[[labels]]
+name = "transfer_timing"
+description = "Customer asks about: transfer timing"
+
+[[labels]]
+name = "unable_to_verify_identity"
+description = "Customer asks about: unable to verify identity"
+
+[[labels]]
+name = "verify_my_identity"
+description = "Customer asks about: verify my identity"
+
+[[labels]]
+name = "verify_source_of_funds"
+description = "Customer asks about: verify source of funds"
+
+[[labels]]
+name = "verify_top_up"
+description = "Customer asks about: verify top up"
+
+[[labels]]
+name = "virtual_card_not_working"
+description = "Customer asks about: virtual card not working"
+
+[[labels]]
+name = "visa_or_mastercard"
+description = "Customer asks about: visa or mastercard"
+
+[[labels]]
+name = "why_verify_identity"
+description = "Customer asks about: why verify identity"
+
+[[labels]]
+name = "wrong_amount_of_cash_received"
+description = "Customer asks about: wrong amount of cash received"
+
+[[labels]]
+name = "wrong_exchange_rate_for_cash_withdrawal"
+description = "Customer asks about: wrong exchange rate for cash withdrawal"

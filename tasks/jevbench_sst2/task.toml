@@ -1,0 +1,22 @@
+# jevbench の SST-2（映画レビューの感情、2 ラベル）を本リポジトリのパイプラインで再現するタスク定義。
+# 出典: https://github.com/dhruvmehra/jevbench（MIT License, Copyright (c) 2026 Dhruv Mehra）
+#   ラベル名・説明: src/jevbench/datasets.py（c983cc4）から同じ順序でそのまま写した。変更しない
+#   instructions: src/jevbench/classifiers/jev.py の build_questions（jevbench が Jev / Laya に渡す指示文）
+# 評価データは `uv run hellow-jev-prepare jevbench` で作る。
+# jevbench の公表値は同じディレクトリの reference.toml、経緯と注意点は tasks/JEVBENCH.md。
+
+# 評価データ（リポジトリルートからの相対パス）
+dataset = "data/processed/jevbench_sst2.jsonl"
+# 全モデル共通の指示文。LLM は prompt.md の {instructions}、Jev / Laya は choice 質問の instructions に入る
+instructions = "Which category best describes the text? Pick exactly one."
+# jevbench は Jev / Laya の state にテキストそのもの（文字列）を渡すので揃える
+# （既定の "object" では {"log": テキスト} になり、モデルへの入力が jevbench と変わる）
+state_format = "string"
+
+[[labels]]
+name = "negative"
+description = "The sentence expresses negative sentiment about the movie."
+
+[[labels]]
+name = "positive"
+description = "The sentence expresses positive sentiment about the movie."

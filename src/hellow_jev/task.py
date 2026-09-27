@@ -9,6 +9,9 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TASKS_DIR = REPO_ROOT / "tasks"
+# Jev / Laya に渡す state の形（task.toml の state_format）。
+# "object" = {"log": テキスト}（既定）、"string" = テキストそのもの（jevbench と同じ）
+STATE_FORMATS = ("object", "string")
 
 
 @dataclass(frozen=True)
@@ -31,6 +34,7 @@ class Task:
     labels: list[Label]
     instructions: str
     prompt_template: str
+    state_format: str = "object"  # STATE_FORMATS のいずれか。LLM のプロンプトには影響しない
 
     @property
     def label_names(self) -> list[str]:
@@ -58,6 +62,13 @@ def load_task(name: str) -> Task:
     names = [l.name for l in labels]
     if len(set(names)) != len(names):
         raise ValueError(f"duplicate label names in {task_dir}/task.toml")
+    # 未知の値（typo など）は、Jev / Laya を呼び始める前にここで止める
+    state_format = raw.get("state_format", "object")
+    if state_format not in STATE_FORMATS:
+        raise ValueError(
+            f"{task_dir}/task.toml: state_format must be one of "
+            f"{', '.join(repr(f) for f in STATE_FORMATS)} (got {state_format!r})"
+        )
     # prompt.md は最初の "---" 行以降をテンプレートとして扱う
     text = (task_dir / "prompt.md").read_text(encoding="utf-8")
     if "\n---\n" not in text:
@@ -69,6 +80,7 @@ def load_task(name: str) -> Task:
         labels=labels,
         instructions=raw["instructions"],
         prompt_template=prompt,
+        state_format=state_format,
     )
 
 
