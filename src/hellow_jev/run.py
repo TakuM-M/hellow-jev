@@ -1,6 +1,7 @@
 """ベンチマーク実行 CLI。
 
     uv run hellow-jev --config configs/llm_api.toml
+    uv run hellow-jev --config configs/jev.toml --task jevbench_sst2   # 同じ config を別タスクで
 """
 
 from __future__ import annotations
@@ -37,7 +38,16 @@ def _git(*args: str) -> str | None:
     return out.stdout.strip()
 
 
+def available_tasks() -> list[str]:
+    """--task に指定できるタスク名（tasks/ 以下で task.toml を持つディレクトリ）。"""
+    if not TASKS_DIR.is_dir():
+        return []
+    return sorted(d.name for d in TASKS_DIR.iterdir() if (d / "task.toml").is_file())
+
+
 NAME_RE = re.compile(r"[A-Za-z0-9_.-]+")
+# config にも --task にもタスクの指定がないときに使う（本題のログ分類）
+DEFAULT_TASK = "log_classification"
 # 接続先が落ちている等で連続して失敗したら、残りを無駄に待たずに打ち切る
 DEFAULT_MAX_CONSECUTIVE_ERRORS = 10
 
@@ -45,6 +55,7 @@ DEFAULT_MAX_CONSECUTIVE_ERRORS = 10
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True, type=Path)
+    parser.add_argument("--task", help="タスク名（tasks/ 以下のディレクトリ名）。config の task を上書き")
     parser.add_argument("--dataset", type=Path, help="タスク定義の dataset を上書き")
     parser.add_argument("--out-dir", type=Path, default=REPO_ROOT / "results")
     parser.add_argument(
@@ -62,8 +73,15 @@ def main() -> None:
     if "classifier" not in config:
         raise SystemExit(f"{args.config}: [classifier] がありません")
     max_consecutive_errors = config.get("max_consecutive_errors", DEFAULT_MAX_CONSECUTIVE_ERRORS)
+    # --task > config の task > 既定。保存する config.json にも実際に回したタスクを残す
+    config["task"] = args.task or config.get("task", DEFAULT_TASK)
+    tasks = available_tasks()
+    if config["task"] not in tasks:
+        raise SystemExit(
+            f"タスク {config['task']!r} がありません（指定できるもの: {', '.join(tasks) or 'なし'}）"
+        )
 
-    task = load_task(config.get("task", "log_classification"))
+    task = load_task(config["task"])
     dataset_path = args.dataset or task.dataset
     dataset = load_dataset(dataset_path, task.label_names)
     classifier = build_classifier(config["classifier"], task)
@@ -160,7 +178,7 @@ def main() -> None:
 
     (out_dir / "metrics.json").write_text(json.dumps(metrics, ensure_ascii=False, indent=2))
 
-    print(f"[{name}] n={metrics['n']} accuracy={metrics['accuracy']:.3f} "
+    print(f"[{name}] task={task.name} n={metrics['n']} accuracy={metrics['accuracy']:.3f} "
           f"macro_f1={metrics['macro_f1']:.3f} invalid={metrics['invalid_rate']:.3f} "
           f"error={metrics['error_rate']:.3f} retried={metrics['retried']} "
           f"p50={metrics['latency']['p50_ms']:.1f}ms p95={metrics['latency']['p95_ms']:.1f}ms")
