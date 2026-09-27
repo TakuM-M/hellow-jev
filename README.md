@@ -33,7 +33,7 @@ EC などのログ分類タスクを題材に、**Jev / Laya / LLM** の 3 つ�
 ## 使い方
 
 ```bash
-cp .env.example .env         # API キー等を設定
+cp .env.example .env         # API キー等を設定（実行時に自動で読む。既存の環境変数が優先）
 
 # 単体実行（LLM API。LLM_API_KEY が必要）
 uv run hellow-jev --config configs/llm_api.toml
