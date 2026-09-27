@@ -34,7 +34,7 @@ uv run --extra dev pytest
 - `configs/*.toml` はタスク名と分類器設定だけを持つ。データセット・ラベルはタスク側で一元管理する
 - タスク定義（dataset / instructions / labels）は `tasks/log_classification/task.toml`、プロンプトは同ディレクトリの `prompt.md`
 - ラベル外の出力は既定ラベルに寄せず `Prediction.label = None` とし、`invalid_rate` として集計する
-- HTTP は `classifiers/_http.py` の `post_json` に集約（全分類器で同じリトライ条件）。リトライしても失敗した件は run を止めずに `error` として記録し、`error_rate` で集計する（連続 `max_consecutive_errors` 件で打ち切り）
+- HTTP は `classifiers/_http.py` の `HTTPClient` に集約（全分類器で同じリトライ条件。接続は keep-alive で使い回し、張り直した件数は `metrics.json` の `new_connections`）。リトライしても失敗した件は run を止めずに `error` として記録し、`error_rate` で集計する（連続 `max_consecutive_errors` 件で打ち切り）
 - 実行結果は `results/<timestamp>_<name>/` に保存される（git 管理外）。`predictions.jsonl` は 1 件ずつ追記され、`metrics.json` は完走時のみ書かれる。`meta.json` に入力ハッシュ・git commit・実行マシン情報が残る
 - レイテンシは p50 / p95（warmup 除外）で比較する。`metrics.json` の `latency` を参照
 
