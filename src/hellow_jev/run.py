@@ -1,6 +1,6 @@
 """ベンチマーク実行 CLI。
 
-    uv run hellow-jev --config configs/baseline.toml
+    uv run hellow-jev --config configs/llm_api.toml
 """
 
 from __future__ import annotations

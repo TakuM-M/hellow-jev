@@ -11,8 +11,7 @@
 | --- | --- | --- |
 | Jev | API 利用（TypeSafe AI・クローズド） | API 形式判明（`POST /v1/systemone`） |
 | Laya | open weight（`laya-serve` で Jev 互換 HTTP） | 推論方法ほぼ決定 |
-| LLM | API or ローカル | どちらにするか検討中（両方の config を用意） |
-| Baseline | キーワードルール | 実装済み（パイプライン疎通確認用） |
+| LLM | API（Claude Haiku 4.5）/ ローカル（Qwen3 on OpenAI 互換） | 実装済み（ダミーサーバでテスト済み・実 API は未実行） |
 
 ## 評価観点
 
@@ -36,7 +35,6 @@
 
 | model | Acc | Macro-F1 | p50 ms | p95 ms | 件/秒 | ラベル外率 | 入力tok/件 | 概算コスト/1万件 | 実行環境 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| baseline | | | | | | | | 0 | CPU |
 | jev | | | | | | 0 | | | API |
 | laya | | | | | | 0 | | 0 | CPU/GPU |
 | llm_api | | | | | | | | | API |
@@ -61,7 +59,9 @@
 - [x] ブランチ初期化・ディレクトリ構成・共通パイプライン
 - [x] 各モデルの初回調査（`docs/notes/`）
 - [x] Jev の API 仕様を調べて `classifiers/jev.py` を実装（ダミーサーバでテスト済み・実 API は未実行）
-- [ ] LLM の利用形態を決定し実装（api / local）
+- [x] LLM を実装（api: Anthropic Messages API / local: OpenAI 互換。両方の config を用意）
+- [ ] LLM API キーを設定して疎通確認・料金を公式で確認
+- [ ] ローカル LLM サーバを立てて疎通確認（Qwen3 の思考モード無効化方法も確認）
 - [x] Laya の推論方法を決定し実装（`laya-serve` 経由。実サーバは未実行）
 - [ ] 評価用データセットの用意（実ログ or 公開データ）とラベル付け
 - [x] metrics に p50/p95・ラベル外率を追加、比較表の集計スクリプト

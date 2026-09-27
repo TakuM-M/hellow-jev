@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import tomllib
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -15,7 +15,6 @@ TASKS_DIR = REPO_ROOT / "tasks"
 class Label:
     name: str
     description: str
-    keywords: list[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -29,7 +28,6 @@ class Record:
 class Task:
     name: str
     dataset: Path
-    default_label: str
     labels: list[Label]
     instructions: str
     prompt_template: str
@@ -60,8 +58,6 @@ def load_task(name: str) -> Task:
     names = [l.name for l in labels]
     if len(set(names)) != len(names):
         raise ValueError(f"duplicate label names in {task_dir}/task.toml")
-    if raw["default_label"] not in names:
-        raise ValueError(f"default_label {raw['default_label']!r} is not a defined label")
     # prompt.md は最初の "---" 行以降をテンプレートとして扱う
     text = (task_dir / "prompt.md").read_text(encoding="utf-8")
     if "\n---\n" not in text:
@@ -70,7 +66,6 @@ def load_task(name: str) -> Task:
     return Task(
         name=name,
         dataset=REPO_ROOT / raw["dataset"],
-        default_label=raw["default_label"],
         labels=labels,
         instructions=raw["instructions"],
         prompt_template=prompt,

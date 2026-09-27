@@ -1,14 +1,12 @@
-from hellow_jev.classifiers import build_classifier
 from hellow_jev.classifiers.base import Classifier, Prediction
 from hellow_jev.task import load_dataset, load_task
 
 
-def test_baseline_runs_on_sample():
+def test_task_and_dataset_load():
     task = load_task("log_classification")
     data = load_dataset(task.dataset)
-    clf = build_classifier({"type": "baseline"}, task)
-    preds = [clf.classify(r.text).label for r in data]
-    assert all(p in task.label_names for p in preds)
+    assert data
+    assert all(r.label in task.label_names for r in data)
 
 
 def test_prompt_renders():

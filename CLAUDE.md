@@ -9,8 +9,8 @@
 ## コマンド
 
 ```bash
-# ベンチマーク実行（baseline はモデル不要）
-uv run hellow-jev --config configs/baseline.toml
+# ベンチマーク実行（例: LLM API。LLM_API_KEY が必要）
+uv run hellow-jev --config configs/llm_api.toml
 
 # 全 config 一括実行
 ./scripts/run_all.sh
@@ -27,11 +27,12 @@ uv run --extra dev pytest
 
 ## 構成の要点
 
+- LLM は `classifiers/llm.py`。`api_format` で Anthropic Messages API / OpenAI 互換 Chat Completions を切替（`backend = "api" | "local"`）
 - Jev と Laya は同じ `/v1/systemone` プロトコルなので `classifiers/systemone.py` の共通クライアントを使う（接続先・キーだけ違う）
 - 分類器は `src/hellow_jev/classifiers/` に置き、`base.Classifier` を継承して `classify()` を実装する
 - 新しい分類器は `classifiers/__init__.py` の `REGISTRY` に登録し、`configs/` に toml を追加する
 - `configs/*.toml` はタスク名と分類器設定だけを持つ。データセット・ラベルはタスク側で一元管理する
-- タスク定義（dataset / default_label / instructions / labels）は `tasks/log_classification/task.toml`、プロンプトは同ディレクトリの `prompt.md`
+- タスク定義（dataset / instructions / labels）は `tasks/log_classification/task.toml`、プロンプトは同ディレクトリの `prompt.md`
 - ラベル外の出力は既定ラベルに寄せず `Prediction.label = None` とし、`invalid_rate` として集計する
 - 実行結果は `results/<timestamp>_<name>/` に保存される（git 管理外）。`meta.json` に入力ハッシュ・git commit・実行マシン情報が残る
 - レイテンシは p50 / p95（warmup 除外）で比較する。`metrics.json` の `latency` を参照
