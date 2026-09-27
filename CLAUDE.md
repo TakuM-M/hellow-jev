@@ -40,7 +40,7 @@ uv run --extra dev pytest
 
 ## ルール
 
-- 比較の公平性のため、全モデルで同じプロンプト・ラベル定義・データセットを使う
+- 比較の公平性のため、全モデルで同じ指示文・ラベル定義・データセットを使う（LLM は共通の `prompt.md`、Jev / Laya は同じ内容を `choice` 質問で渡す）
 - モデルに渡すテキスト（instructions・ラベル description・prompt テンプレート）は英語で統一する
 - Jev / Laya の API 仕様や使い方が不明な場合は推測で実装せず、確認を求める
 - `data/raw/`・`data/processed/`・`results/`・`.env`（API キー）はコミットしない

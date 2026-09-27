@@ -1,9 +1,9 @@
 # ログ分類プロンプト（共通テンプレート）
 
-jev / laya / llm で同一のプロンプトを使い、条件を揃える。
-`{instructions}`（task.toml）・`{labels}`・`{log}` は実行時に置換する。
-Jev / Laya はプロンプト文字列を受け取らないため、同じ instructions と label description を
-`choice` 質問（instructions / criteria）として渡す。
+LLM に渡すプロンプト。`---` より下がテンプレートで、この説明部分はモデルに送られない。
+`{instructions}`（task.toml）・`{labels}`・`{log}` は実行時に置き換える。
+Jev / Laya はプロンプト文字列を受け取らないので、同じ instructions とラベルの description を
+`choice` 質問（instructions / criteria）として渡し、条件を揃える。
 
 ---
 
