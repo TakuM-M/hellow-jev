@@ -94,3 +94,4 @@
 
 - 2026-09-27: 初回調査。API 形式を互換実装と実レスポンスから確認。公式 docs は未読（egress 制限）
 - 2026-09-27: `classifiers/systemone.py` の共通クライアントで実装。state は `{"log": ...}`、質問 ID は `label`。ダミーサーバでのみテスト済み
+- 2026-09-27: jevbench（`tasks/JEVBENCH.md`）は Jev を OpenRouter の Decisions API（`POST https://openrouter.ai/api/alpha/decisions`、model `typesafe/jev-1.13`）経由で呼んでいる。`state` は文字列のまま、質問 ID は `label` で、公表値が出ているので文字列の state でも動く。本リポジトリはタスクの `state_format` で `{"log": ...}` と文字列を切り替えられるようにした

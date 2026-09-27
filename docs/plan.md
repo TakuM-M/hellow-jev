@@ -72,7 +72,8 @@ TypeSafe AI の判定特化 API **Jev** を手元から呼び出し、EC など�
 ## 最終出力（比較表）
 
 `results/` の run を集計し、`docs/report.md` に表を出す（`uv run hellow-jev-report --out docs/report.md`）。
-config ごとに最新の完走 run を 1 行にまとめる。
+タスクごとに表を分け、(タスク, config) ごとに最新の完走 run を 1 行にまとめる。
+`tasks/<task>/reference.toml` があるタスク（jevbench の再現用）は、公開値を参考値として同じ表に並べる。
 
 | model | n | Acc | Macro-F1 | ラベル外率 | エラー率 | p50 ms | p95 ms | 件/秒 | サーバ p50 ms | 入力tok/件 | コスト/1万件 | 実行環境 | run |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -108,5 +109,7 @@ config ごとに最新の完走 run を 1 行にまとめる。
 - [ ] ローカル LLM サーバを立てて疎通確認（Qwen3 の思考モードを切る方法も確認）
 - [ ] Jev API キーを設定して実 API で疎通確認し、料金を `[pricing]` に記入
 - [ ] laya-serve を立てて疎通確認
+- [x] jevbench の再現を実装（データ準備 `hellow-jev-prepare`・4 タスク・`--task`・参考値付きの比較表。ダミーサーバでのみ確認）
+- [ ] jevbench の再現を実行し、Jev / Laya の値が公表値と合うか確認（Jev の API キーと laya-serve が必要）
 - [ ] 評価用データセットの用意（実ログ or 公開データ）とラベル付け（候補と方針案: `docs/notes/dataset.md`）
 - [ ] 本評価の実行と結果のまとめ（`docs/report.md`）

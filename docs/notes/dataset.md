@@ -57,9 +57,7 @@
 
 ## 方針案
 
-1. **パイプラインの検証（すぐできる）**: Banking77 / AG News から 500 件を取り、jevbench と同じ条件で実行する。Jev・Laya の数値が jevbench と大きくずれなければ、クライアント実装と計測方法が正しいと言える
-   - どちらも HF で公開されている。ラベル説明は jevbench のものを流用できる
-   - 比較の本題ではないので、`tasks/` に別タスクとして置く
+1. **パイプラインの検証** → 実装済み（下の「jevbench の再現」）。Jev・Laya の数値が jevbench と大きくずれなければ、クライアント実装と計測方法が正しいと言える
 2. **本評価用の EC ログ（主）**: 公開ログを 7 ラベルに付け直す
    - RCAEval RE2 の Online Boutique / Sock Shop のログ（performance・payment・shipping・inventory 周り）
    - Loghub の OpenSSH / Apache（auth・security・normal）
@@ -68,6 +66,28 @@
    - 注意: 比較対象の LLM で生成すると、その LLM に有利になりうる。テンプレート + 乱数で作るか、比較対象外のモデルで作り、人が確認する
    - 結果は「実ログ由来」「合成」に分けて集計する
 4. **件数**: 7 クラスで 1 クラスあたり 50〜100 件（計 350〜700 件）。n=500 で ±2.5pt なので、それより小さい差は結論にしない
+
+## jevbench の再現（2026-09-27 実装）
+
+タスクの説明・出典・指標の違いは `tasks/JEVBENCH.md` にまとめた。ここには調査で分かったことだけを書く。
+
+- 評価データは `uv run hellow-jev-prepare jevbench` で作る。HF には繋がらないので、HF の loading script が読んでいた配布元のファイルを同じ手順で読む
+  - AG News / Banking77 の元 CSV は、HF の `dataset_infos.json` に記録されたチェックサムとバイト単位で一致
+  - SST-2 の配布元（dl.fbaipublicfiles.com）は、この環境からは 403。sha256 を固定した GitHub 上のミラーで代用する（独立した 16 リポジトリで同一内容のファイル）
+  - jevbench 本体の `datasets.load()` に同じ元データを渡すと、3 データセットとも出力が完全一致した
+- 出力（n=500, seed=0）。別の環境で作り直したときは、`hellow-jev-prepare` が表示する sha256 をこれと照合する
+  - `jevbench_sst2.jsonl`: negative 256 / positive 244
+    - `017387da1497fea1c650240af1e25b21c2ecf95ddfc16eaa71b6bb94f7535728`
+  - `jevbench_agnews.jsonl`: world 117 / sports 120 / business 128 / sci_tech 135
+    - `a472cdd563e1bd1ccfdf130be05decf7c5593647af70079fe4d7f566bf3054ed`
+  - `jevbench_banking77.jsonl`: 77 ラベルすべて（1 ラベル 1〜14 件）
+    - `936a4a3d37d6753bb4eb2233393c9ee01916adeeab354bdaeed937f1201004d4`
+- Banking77 の 500 件には 77 ラベルがすべて出る → Macro-F1 の平均の取り方（jevbench は全ラベル、本リポジトリは出現ラベル）の違いは結果に影響しない
+- SST-2 は全件の文末に空白がある（GLUE の形式）。jevbench と入力を揃えるため、どこでも strip しない
+- ダミーサーバでの結合確認で p50 が一律 44ms になった。原因はダミーサーバ（Python の `http.server`）の Nagle と遅延 ACK の干渉で、サーバ側で `TCP_NODELAY` にすると 0.4ms に下がった
+  - クライアント（`_http.py`）は既に `TCP_NODELAY` を設定済み
+  - laya-serve は FastAPI + uvicorn（asyncio は既定で `TCP_NODELAY`）なので、実サーバではこの上乗せは起きない見込み
+  - 自前のテスト用サーバを作るときは `disable_nagle_algorithm = True` を付ける
 
 ## 未確認・次にやること
 
@@ -79,3 +99,4 @@
 ## ログ
 
 - 2026-09-27: 初回調査。先行ベンチ（jevbench / jev-eval / jev-benchmark）と、ログ系の公開データ（Loghub / RCAEval / LogEval など）を調べた
+- 2026-09-27: jevbench の再現を実装（`hellow-jev-prepare jevbench`、`tasks/jevbench_*`、`--task`、参考値付きの比較表）。ダミーサーバでのみ確認
