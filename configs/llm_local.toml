@@ -1,0 +1,8 @@
+name = "llm_local"
+dataset = "data/samples/ec_logs_sample.jsonl"
+
+[classifier]
+type = "llm"
+backend = "local"
+# endpoint = "http://localhost:8000/v1"
+# model = ""

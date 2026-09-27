@@ -1,0 +1,7 @@
+name = "jev"
+dataset = "data/samples/ec_logs_sample.jsonl"
+
+[classifier]
+type = "jev"
+# base_url = ""   # 未指定なら環境変数 JEV_API_BASE_URL
+# model = ""
