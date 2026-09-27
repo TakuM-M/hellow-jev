@@ -115,7 +115,7 @@ def render(runs: list[dict]) -> str:
         "",
         "- p50 / p95 はクライアント側の往復時間（API はネットワーク込み）。warmup 分・エラー件は除外",
         "- エラー率はリトライしても応答が得られなかった件の割合（Acc では不正解として数える）",
-        "- サーバ p50 はサーバが返す純推論時間（Laya の X-Inference-Time-Ms など、取れる場合のみ）",
+        "- サーバ p50 はサーバが返す純推論時間（X-Inference-Time-Ms ヘッダがある場合のみ。PyPI 版 laya 0.3.20 は返さない）",
         "- コストは config の [pricing]（USD / 1M tokens）から概算。未設定は -",
     ]
     notes += consistency_warnings(runs)

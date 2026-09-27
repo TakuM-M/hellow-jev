@@ -52,7 +52,7 @@ def test_unknown_classifier_option_is_rejected():
     with pytest.raises(ValueError, match="temprature"):
         build_classifier({"type": "llm", "backend": "local", "model": "m", "temprature": 1.0}, task)
     with pytest.raises(ValueError, match="timeout_sec"):
-        build_classifier({"type": "laya", "timeout_sec": 1}, task)
+        build_classifier({"type": "laya", "model": "english", "timeout_sec": 1}, task)
 
 
 def test_wrong_endpoint_key_is_rejected():
