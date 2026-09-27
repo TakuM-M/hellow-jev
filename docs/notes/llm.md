@@ -1,6 +1,6 @@
 # LLM（比較対象）調査メモ
 
-- 利用形態: API / ローカルの両方を実装（どちらを本命にするかは結果を見て決める）
+- 利用形態: API（Claude Haiku 4.5）/ ローカル（Qwen3 4B）の両方を比較対象にする（`docs/plan.md` の 2×2）
 - 実装: `src/hellow_jev/classifiers/llm.py`（`backend = "api" | "local"`、`api_format = "anthropic" | "openai"`）
 - 設定: `configs/llm_api.toml`, `configs/llm_local.toml`
 
@@ -13,7 +13,7 @@
 
 | 観点 | API | ローカル |
 | --- | --- | --- |
-| 精度 | 高性能モデルを使える | モデルサイズ次第 |
+| 精度 | 同じ軽量クラスならローカルより大きいモデルを使える | モデルサイズ次第 |
 | コスト | 従量課金 | GPU などの初期コスト |
 | データの扱い | ログを外部に送る | 手元で完結 |
 | 再現性 | モデル更新の影響を受ける | バージョンを固定しやすい |

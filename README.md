@@ -1,6 +1,6 @@
 # hellow-jev
 
-**Jev**（TypeSafe AI の判定特化 API）を手元で動かして調べるためのリポジトリ。
+**Jev**（TypeSafe AI の判定特化 API）を手元から呼び出して調べるためのリポジトリ。
 EC などのログ分類を題材に、**Jev / Laya / LLM** の 3 つをベンチマークで比較する。
 
 計画の詳細は [`docs/plan.md`](docs/plan.md) を参照。

@@ -23,7 +23,7 @@ CONSISTENCY_KEYS = {
 }
 
 COLUMNS = [
-    "model", "n", "Acc", "Macro-F1", "ラベル外率", "エラー率", "p50 ms", "p95 ms", "件/秒",
+    "model", "n", "Acc", "Macro-F1", "ラベル外率", "エラー率", "p50 ms", "p95 ms",
     "サーバ p50 ms", "入力tok/件", "コスト/1万件", "実行環境", "run",
 ]
 
@@ -84,7 +84,6 @@ def row(run: dict) -> list[str]:
         f"{m['error_rate']:.3f}" if "error_rate" in m else "-",
         ms(lat, "p50_ms"),
         ms(lat, "p95_ms"),
-        f"{m['throughput_per_sec']:.1f}" if "throughput_per_sec" in m else "-",
         ms(server, "p50_ms"),
         f"{per_record['input_tokens']:.0f}" if "input_tokens" in per_record else "-",
         _cost_per_10k(config, per_record),
