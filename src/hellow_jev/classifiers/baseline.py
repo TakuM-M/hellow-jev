@@ -12,4 +12,4 @@ class KeywordBaseline(Classifier):
             label.name: sum(kw in lowered for kw in label.keywords) for label in self.task.labels
         }
         best = max(scores, key=scores.get)
-        return Prediction(label=best if scores[best] > 0 else "normal", raw=scores)
+        return Prediction(label=best if scores[best] > 0 else self.task.default_label, raw=scores)
