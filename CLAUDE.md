@@ -19,7 +19,7 @@ uv run hellow-jev --config configs/llm_api.toml
 uv run hellow-jev-report --out docs/report.md
 
 # Laya 推論サーバ（Jev 互換 HTTP。別環境で起動）
-pip install "laya[serve]" && LAYA_MODELS=multilingual laya-serve
+pip install "laya[serve]" && LAYA_MODELS=english laya-serve
 
 # テスト
 uv run --extra dev pytest

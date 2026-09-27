@@ -13,6 +13,7 @@ from hellow_jev.task import load_task
 class _Handler(BaseHTTPRequestHandler):
     requests: list = []
     choice = "payment"
+    routing_model = None  # laya-serve が実際に使ったチェックポイント（None なら routing を返さない）
 
     def do_POST(self):
         body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
@@ -22,12 +23,15 @@ class _Handler(BaseHTTPRequestHandler):
             self.send_response(404)
             self.end_headers()
             return
-        resp = json.dumps({
+        payload = {
             "model": "mock",
             "answers": {"label": {"type": "choice", "choice": type(self).choice,
                                   "probabilities": {type(self).choice: 1.0}}},
             "usage": {"input_tokens": 42, "output_tokens": 0},
-        }).encode()
+        }
+        if type(self).routing_model:
+            payload["routing"] = {"model": type(self).routing_model, "reason": "explicit model"}
+        resp = json.dumps(payload).encode()
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.send_header("X-Inference-Time-Ms", "12.50")
@@ -43,6 +47,7 @@ class _Handler(BaseHTTPRequestHandler):
 def server():
     _Handler.requests = []
     _Handler.choice = "payment"
+    _Handler.routing_model = None
     httpd = HTTPServer(("127.0.0.1", 0), _Handler)
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
     yield f"http://127.0.0.1:{httpd.server_port}"
@@ -50,6 +55,7 @@ def server():
 
 
 def test_laya_request_and_parse(server):
+    _Handler.routing_model = "multilingual"
     task = load_task("log_classification")
     clf = build_classifier(
         {"type": "laya", "backend": "http", "endpoint": server, "model": "multilingual"}, task
@@ -89,12 +95,31 @@ def test_jev_requires_key(monkeypatch):
 
 def test_unknown_choice_is_invalid(server):
     _Handler.choice = "not-a-label"
-    clf = build_classifier({"type": "laya", "endpoint": server}, load_task("log_classification"))
+    clf = build_classifier({"type": "laya", "endpoint": server, "model": "english"},
+                           load_task("log_classification"))
     assert clf.classify("x").label is None
 
 
 def test_http_error_is_reported(server):
-    clf = build_classifier({"type": "laya", "endpoint": server + "/wrong"},
+    clf = build_classifier({"type": "laya", "endpoint": server + "/wrong", "model": "english"},
                            load_task("log_classification"))
     with pytest.raises(RuntimeError, match="HTTP 404"):
+        clf.classify("x")
+
+
+def test_laya_rejects_unknown_checkpoint():
+    # laya-serve は未知の model を黙って自動選択に切り替えるので、クライアント側で止める
+    for model in (None, "englsh", "convaiinnovations/laya"):
+        config = {"type": "laya", "endpoint": "http://127.0.0.1:1"}
+        if model:
+            config["model"] = model
+        with pytest.raises(ValueError, match="english / multilingual / typed-decisions"):
+            build_classifier(config, load_task("log_classification"))
+
+
+def test_laya_checkpoint_mismatch_is_error(server):
+    _Handler.routing_model = "multilingual"
+    clf = build_classifier({"type": "laya", "endpoint": server, "model": "english"},
+                           load_task("log_classification"))
+    with pytest.raises(RuntimeError, match="'multilingual'"):
         clf.classify("x")

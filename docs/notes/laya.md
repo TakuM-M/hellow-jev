@@ -26,7 +26,7 @@
 - [x] **Python ライブラリ直接**: `pip install laya` → `Router().predict(state, questions)`
 - [x] **HTTP サーバ（推奨）**: `pip install "laya[serve]"` → `laya-serve`
   - `POST /v1/systemone` で **Jev とワイヤ互換**
-  - レスポンスヘッダ `X-Inference-Time-Ms` で純推論時間も取れる
+  - レスポンスヘッダ `X-Inference-Time-Ms` で純推論時間も取れる。ただし **GitHub の main のみ**。PyPI 版 0.3.20 の serve.py には無い（どちらも version は 0.3.20 で区別できない）。必要なら `pip install "laya[serve] @ git+https://github.com/NandhaKishorM/laya"`
   - 環境変数: `LAYA_DEVICE`, `LAYA_MODELS`, `LAYA_THREADS`, `LAYA_API_KEY` ほか
   - Docker / compose（CUDA 版あり）も同梱
 - [ ] ONNX（`laya[onnx]`）/ MLX（Mac 向け別 repo `laya-mlx`）
@@ -47,6 +47,16 @@
 - 精度（公表）: AG News 0.953 / Emotion 0.600 / **Banking77（77 クラス）0.425〜0.492**
 - ベース版は typed-decisions ベンチでは多数派ベースライン以下（0.36）。FT 版で 0.766
 - 日本語（MASSIVE intent 20 択）: english 0.530 / multilingual 0.640
+
+## laya-serve のモデル指定（ソースで確認: PyPI 0.3.20 と GitHub main の serve.py / router.py）
+
+- `LAYA_MODELS` は **起動時に先読みする**チェックポイントの一覧（空なら全部）。使えるモデルの制限ではない
+- 推論に使うチェックポイントはリクエストの `model` で決まる。未読込なら初回リクエストで遅延ロード（数秒）
+  - → `LAYA_MODELS=multilingual` で起動して `model="english"` を送っても english で推論される（初回だけ遅い）
+- `model` は `english` / `multilingual` / `typed-decisions`（と `en` などの別名）。**未知の名前はエラーにならず、言語判定による自動選択に黙って切り替わる**
+  - `convaiinnovations/laya`（ルートの HF ID）も自動選択扱い
+  - → `classifiers/laya.py` で 3 つの正式名以外を拒否し、レスポンスの `routing.model` と一致しなければエラーにする
+- レスポンスのトップレベル `model` は固定値 `"laya-rl-agent"`。実際のチェックポイントは `routing.model`（`routing.reason` に選択理由）
 
 ## 注意点
 
@@ -72,3 +82,4 @@
 - 2026-09-27: 初回調査。GitHub リポジトリ（README / BENCHMARKS.md / serve.py）を確認
 - 2026-09-27: `backend = "http"`（laya-serve 経由）で実装。model は日本語の criteria に合わせ `multilingual`。実サーバでは未検証
 - 2026-09-27: ラベル説明を英語に統一したため model を `english` に変更（英語 AG News で english 0.950 > multilingual 0.930）
+- 2026-09-27: serve.py / router.py を読んで model 指定の挙動を確認（上記「laya-serve のモデル指定」）。起動手順を `LAYA_MODELS=english` に修正。`X-Inference-Time-Ms` は PyPI 0.3.20 に無いことが判明
