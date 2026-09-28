@@ -178,16 +178,16 @@ def test_reference_rows_are_appended_to_their_task(tmp_path):
     assert list(sections) == ["jevbench_sst2", "注記"]
     lines = sections["jevbench_sst2"].splitlines()
     ours = lines.index(
-        "| jev | 2 | 0.500 | 0.500 | 0.000 | - | - | - | - | - | - | - | x86_64 4cpu | 20260101T000000Z_jev |"
+        "| jev | 2 | 0.500 | 0.500 | 0.000 | - | - | - | - | - | - | x86_64 4cpu | 20260101T000000Z_jev |"
     )
     # 参考値はこちらの run の後。コストは 1000 件あたり $0.0184 → 1 万件あたり $0.1840
     ref = lines.index(
         "| [jevbench] jev (typesafe/jev-1.13) | - | 0.843 | 0.842 | - | 0.004 | 381.0 | 715.0"
-        " | - | - | - | $0.1840 | - | 参考値 |"
+        " | - | - | $0.1840 | - | 参考値 |"
     )
     assert ours < ref
     assert lines[ref + 1] == (
-        "| [jevbench] gpt-4o-mini | - | 0.900 | 0.899 | - | 0.000 | 520.0 | 900.5 | - | - | - | - | - | 参考値 |"
+        "| [jevbench] gpt-4o-mini | - | 0.900 | 0.899 | - | 0.000 | 520.0 | 900.5 | - | - | - | - | 参考値 |"
     )
     assert (
         "- 参考値は [jevbench](https://example.com/summary.md) の公開結果。n=500。レイテンシは jevbench 側の環境で計測"
@@ -198,7 +198,9 @@ def test_reference_rows_are_appended_to_their_task(tmp_path):
 def _main(monkeypatch, capsys, tmp_path, *args):
     monkeypatch.setattr(sys, "argv", [
         "hellow-jev-report", "--results-dir", str(tmp_path / "results"),
-        "--tasks-dir", str(tmp_path / "tasks"), *args,
+        "--tasks-dir", str(tmp_path / "tasks"),
+        # リポジトリの configs/ の単価を読まないよう、存在しない場所を渡す
+        "--configs-dir", str(tmp_path / "configs"), *args,
     ])
     report.main()
     return capsys.readouterr().out

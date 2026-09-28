@@ -14,5 +14,7 @@ model = "jev-1.13.0"
 
 # 比較表のコスト列用（USD / 1M tokens）。report は集計時にこの値を読む
 [pricing]
-input_per_mtok = 0.042     # $42 / 10 億 tokens（2026-09-28 にユーザーが確認）
-output_per_mtok = 0.0      # output は無課金（二次情報。公式では未確認。docs/notes/jev.md）
+# 2026-09-28 にユーザーが確認: "Input tokens: $0.042 / MTok ($42 per billion tokens).
+# Output tokens: FREE (too cheap to meter)."
+input_per_mtok = 0.042
+output_per_mtok = 0.0
