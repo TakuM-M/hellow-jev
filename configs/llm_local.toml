@@ -3,18 +3,25 @@ task = "log_classification"
 # モデルロード・初回推論のコストを除くため、計測前に空打ちする件数
 warmup = 2
 # 比較表の「実行環境」列。レイテンシは推論マシン依存なので必ず書く
-# hardware = "GPU (RTX 4090)"
+hardware = "Apple M1 (8GB)"
 
 [classifier]
 type = "llm"
 backend = "local"
 api_format = "openai"      # OpenAI 互換 /chat/completions（Ollama / vLLM / llama.cpp server）
 # endpoint = "http://localhost:11434/v1"   # 未指定なら環境変数 LLM_LOCAL_ENDPOINT → Ollama 既定
-model = "qwen3:4b"         # Ollama のタグ。vLLM なら "Qwen/Qwen3-4B" など
+# Qwen3-4B-Instruct-2507（Ollama ID 0edcdef34593、Q4_K_M）。思考モードの無い版。
+# Ollama の "qwen3:4b" は Thinking-2507 で、reasoning_effort="none" でも思考が止まらない（docs/notes/llm.md）
+model = "qwen3:4b-instruct"  # Ollama のタグ。vLLM なら "Qwen/Qwen3-4B-Instruct-2507"
 temperature = 0.0
 max_tokens = 32            # ラベル名 1 語だけ返させる。Banking77 の長いラベル名（例: balance_not_updated_after_cheque_or_cash_deposit）が途中で切れない長さ
 # リクエスト body に追加するサーバ固有パラメータ。
-# Qwen3 は思考モードだと出力が <think> で埋まり max_tokens を使い切る（→ ラベル外になる）ので、
-# サーバ側で思考を切る。指定方法はサーバごとに違うため、実サーバで確認してから有効にする（未検証）
-# extra_body = { reasoning_effort = "none" }   # Ollama（/v1 で "none" → think=false。新しめの版のみ。docs/notes/llm.md）
+# 思考のあるモデル（初代 Qwen3 のハイブリッド版など）に替えるときは、サーバ側で思考を切る。
+# 思考モードだと出力が思考で埋まり max_tokens を使い切る（→ ラベル外になる）。Instruct-2507 では不要
+# extra_body = { reasoning_effort = "none" }   # Ollama（/v1 で "none" → think=false。Thinking-2507 には効かない）
 # extra_body = { chat_template_kwargs = { enable_thinking = false } }   # vLLM
+
+# 比較表のコスト列用（USD / 1M tokens）。ローカル実行なので API 課金は無い（マシン代・電力は含まない）
+[pricing]
+input_per_mtok = 0.0
+output_per_mtok = 0.0

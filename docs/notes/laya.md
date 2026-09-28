@@ -84,3 +84,14 @@
 - 2026-09-27: ラベル説明を英語に統一したため model を `english` に変更（英語 AG News で english 0.950 > multilingual 0.930）
 - 2026-09-27: serve.py / router.py を読んで model 指定の挙動を確認（上記「laya-serve のモデル指定」）。起動手順を `LAYA_MODELS=english` に修正。`X-Inference-Time-Ms` は PyPI 0.3.20 に無いことが判明
 - 2026-09-27: laya 0.3.20 のソースで確認。`laya.load("convaiinnovations/laya")` の既定は English（リポジトリ直下）で、laya-serve の `model = "english"` と同じチェックポイント。dict の state は `serialize_state` で JSON 文字列にしてから読むので、state の形（`state_format`）でモデルへの入力が変わる。laya-serve は FastAPI + uvicorn
+- 2026-09-28: Apple M1（8GB）で laya-serve を起動（PyPI **0.3.21**、Python 3.12、別 venv `~/laya-env`）
+  - 起動: `LAYA_HOST=127.0.0.1 LAYA_MODELS=english LAYA_THREADS=4 laya-serve`。**`LAYA_HOST` の既定は `0.0.0.0`**（LAN に公開される）なので 127.0.0.1 を指定する
+  - 環境変数は他に `LAYA_PORT`（既定 8000）/ `LAYA_PRELOAD` / `LAYA_MAX_LOADED` / `LAYA_MAX_CONCURRENT` / `LAYA_LOG_LEVEL` など。CLI 引数は無い
+  - `GET /health` で読込済みモデル・**重みのリビジョン**・デバイスが取れる。english = `55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851`、device は自動で **`mps`**（M1 GPU）
+  - 起動時に `RuntimeWarning: this checkpoint ships invalid temperatures ... Treat confidence from the affected entries as uncalibrated.` が出る。confidence の較正の話で、choice（本リポジトリが使う値）には関係しない見込み
+  - ディスク: venv 約 750MB、重み約 800MB（`~/.cache/huggingface/hub/`）
+- 2026-09-28: 実サーバで初回実行（`log_classification` 16 件、run `20260928T093652Z_laya`、M1 / mps）。accuracy 14/16、エラー・リトライ 0、`routing.model` は全件 `english`
+  - **PyPI 0.3.21 では `X-Inference-Time-Ms` が返る**（`server_latency` が取れた）。0.3.20 には無かったので、0.3.21 で入ったと見られる
+  - レイテンシ: 往復 p50 ≈ 149 ms、サーバ側推論 p50 ≈ 147 ms（差 ≈ 2 ms がローカルの HTTP 分）。T4 の公表値（1 問 39.5 ms）より約 4 倍遅い
+  - usage: input ≈ 146 tok/件、output 0
+  - 誤り: s003（`login success` → auth。Jev と同じ誤り）、s010（`upstream timeout after 30000ms` → normal、confidence 0.28）

@@ -2,6 +2,8 @@ name = "llm_api"
 task = "log_classification"
 # 接続確立などの初回コストを除くため、計測前に空打ちする件数
 warmup = 2
+# 比較表の「実行環境」列。API はリクエスト先を書く
+hardware = "API (Anthropic)"
 
 [classifier]
 type = "llm"

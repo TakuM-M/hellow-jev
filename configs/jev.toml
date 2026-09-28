@@ -2,6 +2,8 @@ name = "jev"
 task = "log_classification"
 # 接続確立などの初回コストを除くため、計測前に空打ちする件数
 warmup = 2
+# 比較表の「実行環境」列。API はリクエスト先を書く
+hardware = "API (TypeSafe)"
 
 [classifier]
 type = "jev"
@@ -10,7 +12,9 @@ model = "jev-1.13.0"
 # base_url = "https://api.typesafe.ai"   # 未指定なら環境変数 JEV_API_BASE_URL → この既定値
 # API キーは環境変数 JEV_API_KEY（config には書かない）
 
-# 比較表のコスト列用（USD / 1M tokens）。公式料金を確認して埋める
-# [pricing]
-# input_per_mtok = 0.0
-# output_per_mtok = 0.0
+# 比較表のコスト列用（USD / 1M tokens）。report は集計時にこの値を読む
+[pricing]
+# 2026-09-28 にユーザーが確認: "Input tokens: $0.042 / MTok ($42 per billion tokens).
+# Output tokens: FREE (too cheap to meter)."
+input_per_mtok = 0.042
+output_per_mtok = 0.0
