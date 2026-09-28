@@ -106,8 +106,14 @@ def row(run: dict, configs_dir: Path | None = None) -> list[str]:
     def ms(d: dict, key: str) -> str:
         return f"{d[key]:.1f}" if key in d else "-"
 
+    # LLM は config 名だけでは中身が分からないので、使った言語モデルを次の行に出す（表のセル内改行は <br>）
+    model = config["name"]
+    classifier = config.get("classifier") or {}
+    if classifier.get("type") == "llm" and classifier.get("model"):
+        model += f"<br>{classifier['model']}"
+
     return [
-        config["name"],
+        model,
         str(m["n"]),
         f"{m['accuracy']:.3f}",
         f"{m['macro_f1']:.3f}",

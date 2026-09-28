@@ -71,6 +71,15 @@ def test_report_cost_uses_current_config_pricing(tmp_path):
     assert report.row(load_runs(results)[0])[10] == "-"
 
 
+def test_llm_row_shows_model_on_next_line(tmp_path):
+    _write_run(tmp_path, "llm_api", "20260101T000000Z", BASE,
+               {"classifier": {"type": "llm", "model": "claude-haiku-4-5-20251001"}})
+    # LLM 以外は model があっても config 名だけ
+    _write_run(tmp_path, "jev", "20260101T000000Z", BASE, {"classifier": {"type": "jev", "model": "jev-1.13.0"}})
+    names = sorted(report.row(run)[0] for run in load_runs(tmp_path))
+    assert names == ["jev", "llm_api<br>claude-haiku-4-5-20251001"]
+
+
 def test_consistency_warnings():
     from hellow_jev.report import consistency_warnings
 
