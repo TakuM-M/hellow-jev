@@ -53,7 +53,7 @@
 → 本リポジトリでは `state = {"log": <ログ>}`、質問 ID `label` の `choice` 1 問で分類し、
 `answers.label.choice` をラベル、`usage` をコスト計算に使う。
 選択肢から選ぶ方式なので、ラベル外の出力は構造上起きない（念のためクライアントでも検証する）。
-⚠️ 実例の state キーは `body`。`log` キーでの実 API 呼び出しはまだ試していない。
+`log` キーの state でも実 API で動くことを確認した（2026-09-28、ログ欄）。
 
 ## 性能・コスト（二次情報。要検証）
 
@@ -95,3 +95,9 @@
 - 2026-09-27: 初回調査。API 形式を互換実装と実レスポンスから確認。公式 docs は未読（egress 制限）
 - 2026-09-27: `classifiers/systemone.py` の共通クライアントで実装。state は `{"log": ...}`、質問 ID は `label`。ダミーサーバでのみテスト済み
 - 2026-09-27: jevbench（`tasks/JEVBENCH.md`）は Jev を OpenRouter の Decisions API（`POST https://openrouter.ai/api/alpha/decisions`、model `typesafe/jev-1.13`）経由で呼んでいる。`state` は文字列のまま、質問 ID は `label` で、公表値が出ているので文字列の state でも動く。本リポジトリはタスクの `state_format` で `{"log": ...}` と文字列を切り替えられるようにした
+- 2026-09-28: 実 API で初回実行（`log_classification` 16 件、run `20260928T091826Z_jev`）。エラー・リトライ 0、accuracy 15/16
+  - state `{"log": ...}` で問題なく動く。レスポンスの model は `jev-1.13.0`
+  - `X-Inference-Time-Ms` ヘッダは返らない（`server_ms` は null）→ レイテンシはネットワーク込みの往復時間のみ。今回の環境で p50 ≈ 162 ms / p95 ≈ 186 ms
+  - warmup 後の本計測で新規接続 0 件 → keep-alive が効いている
+  - usage: input ≈ 476 tok/件、**output は入力によらず 66 tok で一定**（7 択の choice 1 問）
+  - `confidence` は最大の probability と一致しないことがある（s003: confidence 0.91 / probability 0.93）。定義は未確認

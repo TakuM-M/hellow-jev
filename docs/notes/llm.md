@@ -65,3 +65,17 @@
 - 2026-09-27: Jev / Laya の調査を踏まえて、位置づけと候補を整理
 - 2026-09-27: API（Anthropic）/ ローカル（OpenAI 互換）の両方を実装。ダミーサーバでのみテスト済み
 - 2026-09-27: Ollama の OpenAI 互換 API で思考を切る方法（`reasoning_effort: "none"`）を公式 docs で確認。config にコメントで追記
+- 2026-09-28: 実 API（Haiku 4.5）で初回実行（`log_classification` 16 件、run `20260928T092426Z_llm_api`）。accuracy 16/16、invalid・エラー・リトライ 0
+  - **ワークスペースに紐づかない（組織レベルの）API キーは 400 になる**（`anthropic-workspace-id` ヘッダが必須）。Console の Settings → Workspaces でワークスペースを選び、その中でキーを作れば不要（本リポジトリはこちらで対応し、ヘッダ送信は未実装）
+  - usage: input ≈ 184 tok/件、output 4 tok/件（ラベル名だけ返り、stop_reason は全件 `end_turn`）
+  - レイテンシ（ネットワーク込み）: p50 ≈ 657 ms / p95 ≈ 947 ms。同じ環境の Jev（p50 ≈ 162 ms）の約 4 倍
+- 2026-09-28: Apple M1（8GB）に Ollama 0.34.4（Homebrew）を入れて `qwen3:4b` を試験
+  - `qwen3:4b`（ID `359d7dd4bcda`、Q4_K_M、2.5GB）は **context 262144** で、`ollama show` の thinking は levels=true / default=true。コンテキスト長から、初代のハイブリッド版（40K）ではなく **2507 の Thinking 版**と見られる
+  - **`reasoning_effort: "none"` では思考が止まらない**。思考文が `reasoning` 欄ではなく `content` にそのまま出るだけ（`<think>` タグも無い）で、max_tokens=32 を使い切る。指定しない場合は `reasoning` に思考が出て `content` は空
+  - → `qwen3:4b` はこのベンチマーク（ラベル名だけ短く返させる）には使えない。思考なしの `qwen3:4b-instruct`（Instruct-2507）か、思考を切れる初代の `qwen3:4b-q4_K_M` に替える必要がある
+  - **`qwen3:4b-instruct`（ID `0edcdef34593`）を採用**し、config の model を変更した。`ollama show` の Capabilities には thinking と出るが、実際には思考せずラベル名だけ返す（`finish_reason: stop`、2 tok）。extra_body は不要
+- 2026-09-28: `qwen3:4b-instruct` で初回実行（`log_classification` 16 件、run `20260928T094556Z_llm_local`、M1 / Metal 100% GPU）。accuracy 14/16、invalid・エラー 0
+  - レイテンシ: p50 ≈ 271 ms / p95 ≈ 418 ms。usage: input ≈ 170 tok/件、output 2 tok/件
+  - メモリ: 実行中は Ollama 上で 3.2GB（context 4096）。システムの空きは 15% まで下がった → 8GB 機では他モデルと同時に動かさない
+  - 誤り: s003（`login success` → auth。Jev・Laya と同じ）、s013（`brute force suspected` → auth、正解は security）
+  - Ollama は既定で `127.0.0.1:11434` のみで待ち受ける。モデルはアクセスが無いと 5 分でメモリから外れる
