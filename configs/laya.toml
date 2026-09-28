@@ -3,7 +3,7 @@ task = "log_classification"
 # モデルロード・初回推論のコストを除くため、計測前に空打ちする件数
 warmup = 2
 # 比較表の「実行環境」列。レイテンシは推論マシン依存なので必ず書く
-# hardware = "CPU (8 cores)"
+hardware = "Apple M1 (8GB), mps"   # デバイスは laya-serve の /health の device
 
 [classifier]
 type = "laya"
@@ -13,3 +13,8 @@ backend = "http"   # laya-serve（Jev 互換 HTTP）経由
 # laya-serve は未知の名前を黙って自動選択に切り替えるので、この 3 つ以外はクライアント側でエラーにする。
 # サーバは LAYA_MODELS=english で起動すると、このチェックポイントだけを先読みする
 model = "english"
+
+# 比較表のコスト列用（USD / 1M tokens）。ローカル実行なので API 課金は無い（マシン代・電力は含まない）
+[pricing]
+input_per_mtok = 0.0
+output_per_mtok = 0.0

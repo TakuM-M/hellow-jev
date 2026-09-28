@@ -20,3 +20,8 @@ max_tokens = 32            # ラベル名 1 語だけ返させる。Banking77 �
 # 思考モードだと出力が思考で埋まり max_tokens を使い切る（→ ラベル外になる）。Instruct-2507 では不要
 # extra_body = { reasoning_effort = "none" }   # Ollama（/v1 で "none" → think=false。Thinking-2507 には効かない）
 # extra_body = { chat_template_kwargs = { enable_thinking = false } }   # vLLM
+
+# 比較表のコスト列用（USD / 1M tokens）。ローカル実行なので API 課金は無い（マシン代・電力は含まない）
+[pricing]
+input_per_mtok = 0.0
+output_per_mtok = 0.0

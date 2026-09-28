@@ -38,8 +38,10 @@ NOTES = [
     "- p50 / p95 はクライアント側の往復時間（API はネットワーク込み）。warmup 分・エラー件は除外",
     "- 接続は使い回す（keep-alive）。張り直した件数は metrics.json の new_connections",
     "- エラー率はリトライしても応答が得られなかった件の割合（Acc では不正解として数える）",
-    "- サーバ p50 はサーバが返す純推論時間（X-Inference-Time-Ms ヘッダがある場合のみ。PyPI 版 laya 0.3.20 は返さない）",
-    "- コストは config の [pricing]（USD / 1M tokens）から概算。未設定は -",
+    "- サーバ p50 はサーバが返す純推論時間（X-Inference-Time-Ms ヘッダがある場合のみ。laya は 0.3.21 以降が返し、0.3.20 と Jev は返さない）",
+    "- コストは集計時点の configs/<name>.toml の [pricing]（USD / 1M tokens）から概算（無ければ実行時の config）。未設定は -",
+    "- ローカル実行（laya / llm_local）は API 課金が無いので $0。マシン代・電力は含まない",
+    "- 実行環境は実行時の config の hardware（無ければ実行マシンの CPU）。API はリクエスト先を書く",
 ]
 
 
@@ -71,18 +73,26 @@ def latest_per_name(runs: list[dict]) -> list[dict]:
     return list(latest.values())
 
 
-def _cost_per_10k(config: dict, per_record: dict) -> str:
-    pricing = config.get("pricing")
+def current_pricing(configs_dir: Path | None, name: str) -> dict | None:
+    """集計時点の configs/<name>.toml の [pricing]。単価は実験条件ではないので、実行後に分かった値も反映する。"""
+    path = configs_dir / f"{name}.toml" if configs_dir else None
+    if not path or not path.is_file():
+        return None
+    with open(path, "rb") as f:
+        return tomllib.load(f).get("pricing")
+
+
+def _cost_per_10k(pricing: dict | None, per_record: dict) -> str:
     if not pricing:
         return "-"
     usd = (
         per_record.get("input_tokens", 0) * pricing.get("input_per_mtok", 0)
         + per_record.get("output_tokens", 0) * pricing.get("output_per_mtok", 0)
     ) / 1e6 * 10_000
-    return f"${usd:.4f}"
+    return "$0" if usd == 0 else f"${usd:.4f}"
 
 
-def row(run: dict) -> list[str]:
+def row(run: dict, configs_dir: Path | None = None) -> list[str]:
     m, config, meta = run["metrics"], run["config"], run["meta"]
     # 旧形式（latency 統計なし）の run も表示できるようにする
     lat = m.get("latency") or {}
@@ -107,7 +117,7 @@ def row(run: dict) -> list[str]:
         ms(lat, "p95_ms"),
         ms(server, "p50_ms"),
         f"{per_record['input_tokens']:.0f}" if "input_tokens" in per_record else "-",
-        _cost_per_10k(config, per_record),
+        _cost_per_10k(current_pricing(configs_dir, config["name"]) or config.get("pricing"), per_record),
         env,
         run["dir"].name,
     ]
@@ -174,15 +184,18 @@ def _table(rows: list[list[str]]) -> list[str]:
     ]
 
 
-def render(runs: list[dict], tasks_dir: Path = TASKS_DIR) -> str:
-    """タスクごとに見出し・表・注記を並べる。本題のタスクを先頭に、残りはタスク名順。"""
+def render(runs: list[dict], tasks_dir: Path = TASKS_DIR, configs_dir: Path | None = None) -> str:
+    """タスクごとに見出し・表・注記を並べる。本題のタスクを先頭に、残りはタスク名順。
+
+    configs_dir を渡すと、コスト列の単価をそこにある現在の config から読む。
+    """
     by_task: dict[str, list[dict]] = {}
     for run in runs:
         by_task.setdefault(task_of(run), []).append(run)
     lines: list[str] = []
     for task in sorted(by_task, key=lambda t: (t != MAIN_TASK, t)):
         task_runs = by_task[task]
-        rows = [row(r) for r in task_runs]
+        rows = [row(r, configs_dir) for r in task_runs]
         notes = []
         ref = load_reference(tasks_dir / task / "reference.toml")
         if ref:
@@ -203,6 +216,10 @@ def main() -> None:
     parser.add_argument(
         "--tasks-dir", type=Path, default=TASKS_DIR, help="参考値 <task>/reference.toml を探す場所"
     )
+    parser.add_argument(
+        "--configs-dir", type=Path, default=REPO_ROOT / "configs",
+        help="コスト列の単価 <name>.toml の [pricing] を探す場所",
+    )
     parser.add_argument("--task", action="append", help="このタスクの run だけ出す（複数回指定可）")
     parser.add_argument(
         "--all", action="store_true", help="(タスク, config 名) ごとの最新だけでなく全 run を出す"
@@ -218,7 +235,7 @@ def main() -> None:
     if not runs:
         only = f" (task: {', '.join(args.task)})" if args.task else ""
         raise SystemExit(f"no runs found in {args.results_dir}{only}")
-    table = render(runs, args.tasks_dir)
+    table = render(runs, args.tasks_dir, args.configs_dir)
     if args.out:
         args.out.write_text(table, encoding="utf-8")
         print(f"-> {args.out}")

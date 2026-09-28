@@ -44,6 +44,33 @@ def test_report_latest_and_cost(tmp_path):
     assert "| jev | 2 | 1.000 | 0.500 | 0.000 | - | 250.0 | 310.0 | - | 100 | $0.5000 | x86_64 4cpu |" in table
 
 
+def test_report_cost_uses_current_config_pricing(tmp_path):
+    results, configs = tmp_path / "results", tmp_path / "configs"
+    usage = {"usage": {"per_record": {"input_tokens": 100.0, "output_tokens": 2.0}}}
+    # 実行時の config に単価が無くても、集計時点の configs/<name>.toml の [pricing] を使う
+    _write_run(results, "jev", "20260101T000000Z", {**BASE, **usage})
+    # 実行時の単価より集計時点の単価を優先する
+    _write_run(results, "llm", "20260101T000000Z", {**BASE, **usage}, {"pricing": {"input_per_mtok": 9.0}})
+    # 単価 0（ローカル実行）は $0 と出す
+    _write_run(results, "local", "20260101T000000Z", {**BASE, **usage})
+    # configs に無い名前は実行時の config の単価を使う
+    _write_run(results, "old", "20260101T000000Z", {**BASE, **usage}, {"pricing": {"input_per_mtok": 0.5}})
+    configs.mkdir()
+    (configs / "jev.toml").write_text("[pricing]\ninput_per_mtok = 0.042\noutput_per_mtok = 0.0\n")
+    (configs / "llm.toml").write_text("[pricing]\ninput_per_mtok = 1.0\noutput_per_mtok = 5.0\n")
+    (configs / "local.toml").write_text("[pricing]\ninput_per_mtok = 0.0\noutput_per_mtok = 0.0\n")
+
+    cost = {r[0]: r[10] for r in (report.row(run, configs) for run in load_runs(results))}
+    # 100 × 0.042 / 1M × 1 万件 = $0.042
+    assert cost["jev"] == "$0.0420"
+    # (100 × 1 + 2 × 5) / 1M × 1 万件 = $1.1
+    assert cost["llm"] == "$1.1000"
+    assert cost["local"] == "$0"
+    assert cost["old"] == "$0.5000"
+    # configs_dir を渡さなければ実行時の config だけを見る（従来どおり）
+    assert report.row(load_runs(results)[0])[10] == "-"
+
+
 def test_consistency_warnings():
     from hellow_jev.report import consistency_warnings
 
