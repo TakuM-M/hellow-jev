@@ -33,11 +33,8 @@ NOTES = [
 ]
 
 
-def load_predictions(run_dir: Path) -> list[dict] | None:
-    path = run_dir / "predictions.jsonl"
-    if not path.is_file():
-        return None
-    with open(path, encoding="utf-8") as f:
+def load_predictions(run_dir: Path) -> list[dict]:
+    with open(run_dir / "predictions.jsonl", encoding="utf-8") as f:
         return [json.loads(line) for line in f if line.strip()]
 
 
@@ -180,10 +177,7 @@ def probability_sections(names: list[str], preds: list[list[dict]]) -> list[str]
 
 
 def render(runs: list[dict]) -> list[str]:
-    """1 タスク分の誤り分析。predictions.jsonl のある run が無ければ空。"""
-    runs = [r for r in runs if r.get("predictions") is not None]
-    if not runs:
-        return []
+    """1 タスク分の誤り分析。"""
     names = _names(runs)
     preds = [r["predictions"] for r in runs]
     texts: dict[str, str] = {}

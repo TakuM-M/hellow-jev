@@ -20,14 +20,6 @@ from hellow_jev import error_analysis
 from hellow_jev.task import MAIN_TASK, REPO_ROOT, TASKS_DIR
 from hellow_jev.util import md_table
 
-# 行どうしで一致していないと同一条件の比較にならない meta の項目
-CONSISTENCY_KEYS = {
-    "dataset_sha256": "データセット",
-    "task_toml_sha256": "タスク定義（instructions・ラベル説明）",
-    "prompt_sha256": "プロンプト",
-    "git_commit": "コード（git commit）",
-}
-
 COLUMNS = [
     "model", "n", "Acc", "Macro-F1", "エラー率", "p50 ms", "p95 ms",
     "サーバ p50 ms", "入力tok/件", "コスト/1万件", "実行環境", "run",
@@ -64,8 +56,7 @@ def load_runs(results_dir: Path) -> list[dict]:
 
 
 def task_of(run: dict) -> str:
-    # meta に task がない旧形式の run は config、それもなければ本題のタスクとみなす
-    return run["meta"].get("task") or run["config"].get("task") or MAIN_TASK
+    return run["meta"]["task"]
 
 
 def latest_per_name(runs: list[dict]) -> list[dict]:
@@ -98,11 +89,9 @@ def _cost_per_10k(pricing: dict | None, per_record: dict) -> str:
 
 def row(run: dict, configs_dir: Path | None = None) -> list[str]:
     m, config, meta = run["metrics"], run["config"], run["meta"]
-    # 旧形式（latency 統計なし）の run も表示できるようにする
-    lat = m.get("latency") or {}
-    server = m.get("server_latency") or {}
-    per_record = (m.get("usage") or {}).get("per_record", {})
-    host = meta.get("host", {})
+    server = m["server_latency"] or {}  # サーバ時間を返さない分類器（Jev・LLM）は None
+    per_record = m["usage"]["per_record"]
+    host = meta["host"]
     env = config.get("hardware") or " ".join(
         str(x) for x in (host.get("machine"), f"{host['cpu_count']}cpu" if host.get("cpu_count") else None) if x
     ) or "-"
@@ -112,8 +101,8 @@ def row(run: dict, configs_dir: Path | None = None) -> list[str]:
 
     # LLM は config 名だけでは中身が分からないので、使った言語モデルを次の行に出す（表のセル内改行は <br>）
     model = config["name"]
-    classifier = config.get("classifier") or {}
-    if classifier.get("type") == "llm" and classifier.get("model"):
+    classifier = config["classifier"]
+    if classifier["type"] == "llm" and classifier.get("model"):
         model += f"<br>{classifier['model']}"
 
     return [
@@ -121,9 +110,9 @@ def row(run: dict, configs_dir: Path | None = None) -> list[str]:
         str(m["n"]),
         f"{m['accuracy']:.3f}",
         f"{m['macro_f1']:.3f}",
-        f"{m['error_rate']:.3f}" if "error_rate" in m else "-",
-        ms(lat, "p50_ms"),
-        ms(lat, "p95_ms"),
+        f"{m['error_rate']:.3f}",
+        ms(m["latency"], "p50_ms"),
+        ms(m["latency"], "p95_ms"),
         ms(server, "p50_ms"),
         f"{per_record['input_tokens']:.0f}" if "input_tokens" in per_record else "-",
         _cost_per_10k(current_pricing(configs_dir, config["name"]) or config.get("pricing"), per_record),
@@ -173,18 +162,6 @@ def reference_note(ref: dict) -> str:
     return f"- 参考値は {source} の公開結果。{ref.get('note', '')}".rstrip()
 
 
-def consistency_warnings(runs: list[dict]) -> list[str]:
-    """ラベル説明だけ直して一部のモデルを再実行した、などの条件ずれを表の下に警告する。"""
-    warnings = []
-    differ = [what for key, what in CONSISTENCY_KEYS.items() if len({r["meta"].get(key) for r in runs}) > 1]
-    if differ:
-        warnings.append(f"- ⚠️ run 間で異なる（同一条件の比較になっていない）: {', '.join(differ)}")
-    dirty = [r["config"]["name"] for r in runs if r["meta"].get("git_dirty")]
-    if dirty:
-        warnings.append(f"- ⚠️ 未コミットの変更がある状態で実行: {', '.join(dirty)}")
-    return warnings
-
-
 def render(runs: list[dict], tasks_dir: Path = TASKS_DIR, configs_dir: Path | None = None) -> str:
     """タスクごとに見出し・表・注記を並べる。本題のタスクを先頭に、残りはタスク名順。
 
@@ -197,16 +174,12 @@ def render(runs: list[dict], tasks_dir: Path = TASKS_DIR, configs_dir: Path | No
     for task in sorted(by_task, key=lambda t: (t != MAIN_TASK, t)):
         task_runs = by_task[task]
         rows = [row(r, configs_dir) for r in task_runs]
-        notes = []
         ref = load_reference(tasks_dir / task / "reference.toml")
         if ref:
             rows += [reference_row(ref, r) for r in ref.get("rows", [])]
-            notes.append(reference_note(ref))
-        # 別タスクどうしはデータもタスク定義も違って当然なので、条件ずれはタスク内だけで見る
-        notes += consistency_warnings(task_runs)
         lines += [f"## {task}", "", *md_table(COLUMNS, rows), ""]
-        if notes:
-            lines += [*notes, ""]
+        if ref:
+            lines += [reference_note(ref), ""]
         lines += error_analysis.render(task_runs)
     lines += ["## 注記", "", *NOTES, *error_analysis.NOTES]
     return "\n".join(lines) + "\n"

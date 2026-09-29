@@ -52,8 +52,6 @@ def test_errors_and_all_correct():
     assert "| a | - | x | (エラー) |" in out and "| x → (エラー) | 1 | a 1 |" in out
     out = render([_run("a", [_pred("a", "x", "x")])])
     assert "全モデルが全件正解。" in out and "#### 混同ペア" not in out
-    # predictions.jsonl の無い run（旧形式）は誤り分析を出さない
-    assert render([_run("a", None)]) == []
 
 
 def test_text_is_shown_only_if_dataset_unchanged(tmp_path):
