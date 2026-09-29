@@ -1,8 +1,7 @@
 """LLM 分類器を、手元のダミー Anthropic / OpenAI 互換サーバに対して検証する。"""
 
 import json
-import threading
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler
 
 import pytest
 
@@ -46,19 +45,15 @@ class _Handler(BaseHTTPRequestHandler):
 
 
 @pytest.fixture
-def server():
+def server(serve):
     _Handler.requests = []
     _Handler.text = '{"label": "payment"}'
     _Handler.fail_first = 0
-    httpd = HTTPServer(("127.0.0.1", 0), _Handler)
-    threading.Thread(target=httpd.serve_forever, daemon=True).start()
-    yield f"http://127.0.0.1:{httpd.server_port}"
-    httpd.shutdown()
+    return f"http://127.0.0.1:{serve(_Handler).server_port}"
 
 
-def test_anthropic_request_and_parse(server, monkeypatch):
+def test_anthropic_request_and_parse(server, monkeypatch, task):
     monkeypatch.setenv("LLM_API_KEY", "k")
-    task = load_task("log_classification")
     clf = build_classifier({"type": "llm", "backend": "api", "base_url": server,
                             "model": "claude-x"}, task)
     pred = clf.classify("ERROR payment-svc charge failed")
@@ -78,12 +73,12 @@ def test_anthropic_request_and_parse(server, monkeypatch):
     assert body["output_config"]["format"]["schema"]["properties"]["label"]["enum"] == task.label_names
 
 
-def test_openai_local_passes_extra_body(server):
+def test_openai_local_passes_extra_body(server, task):
     _Handler.text = '{"label": "auth"}'
-    clf = build_classifier({"type": "llm", "backend": "local", "endpoint": server + "/v1",
+    clf = build_classifier({"type": "llm", "backend": "local", "base_url": server + "/v1",
                             "model": "qwen3:4b",
                             "extra_body": {"chat_template_kwargs": {"enable_thinking": False}}},
-                           load_task("log_classification"))
+                           task)
     pred = clf.classify("x")
     assert pred.label == "auth"
     assert pred.usage == {"input_tokens": 90, "output_tokens": 3}
@@ -112,7 +107,7 @@ def test_anthropic_json_output_with_system(server, monkeypatch):
 def test_openai_json_output_with_system(server):
     _Handler.text = '{"label": "world"}'
     task = load_task("jevbench_agnews")
-    clf = build_classifier({"type": "llm", "backend": "local", "endpoint": server + "/v1",
+    clf = build_classifier({"type": "llm", "backend": "local", "base_url": server + "/v1",
                             "model": "m"}, task)
     assert clf.classify("some news").label == "world"
     body = _Handler.requests[0]["body"]
@@ -129,27 +124,27 @@ def test_openai_json_output_with_system(server):
 def test_unreadable_output_is_wrong(server, text):
     # jevbench と同じく、JSON として読めない・ラベル外なら None（不正解。正規化しない）
     _Handler.text = text
-    clf = build_classifier({"type": "llm", "backend": "local", "endpoint": server + "/v1",
+    clf = build_classifier({"type": "llm", "backend": "local", "base_url": server + "/v1",
                             "model": "m"}, load_task("jevbench_agnews"))
     assert clf.classify("x").label is None
 
 
-def test_retries_on_rate_limit(server, monkeypatch):
+def test_retries_on_rate_limit(server, monkeypatch, task):
     monkeypatch.setenv("LLM_API_KEY", "k")
     _Handler.fail_first = 2
     clf = build_classifier({"type": "llm", "base_url": server, "model": "m"},
-                           load_task("log_classification"))
+                           task)
     assert clf.classify("x").label == "payment"
     assert len(_Handler.requests) == 3
 
 
-def test_api_requires_key(monkeypatch):
+def test_api_requires_key(monkeypatch, task):
     monkeypatch.delenv("LLM_API_KEY", raising=False)
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     with pytest.raises(RuntimeError, match="LLM_API_KEY"):
-        build_classifier({"type": "llm", "model": "m"}, load_task("log_classification"))
+        build_classifier({"type": "llm", "model": "m"}, task)
 
 
-def test_model_is_required():
+def test_model_is_required(task):
     with pytest.raises(ValueError, match="model"):
-        build_classifier({"type": "llm", "backend": "local"}, load_task("log_classification"))
+        build_classifier({"type": "llm", "backend": "local"}, task)

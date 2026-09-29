@@ -9,12 +9,12 @@ hardware = "Apple M1 (8GB)"
 type = "llm"
 backend = "local"
 api_format = "openai"      # OpenAI 互換 /chat/completions（Ollama / vLLM / llama.cpp server）
-# endpoint = "http://localhost:11434/v1"   # 未指定なら環境変数 LLM_LOCAL_ENDPOINT → Ollama 既定
+# base_url = "http://localhost:11434/v1"   # 未指定なら環境変数 LLM_LOCAL_ENDPOINT → Ollama 既定
 # Qwen3-4B-Instruct-2507（Ollama ID 0edcdef34593、Q4_K_M）。思考モードの無い版。
 # Ollama の "qwen3:4b" は Thinking-2507 で、reasoning_effort="none" でも思考が止まらない（docs/notes/llm.md）
 model = "qwen3:4b-instruct"  # Ollama のタグ。vLLM なら "Qwen/Qwen3-4B-Instruct-2507"
 temperature = 0.0
-max_tokens = 32            # ラベル名 1 語だけ返させる。Banking77 の長いラベル名（例: balance_not_updated_after_cheque_or_cash_deposit）が途中で切れない長さ
+max_tokens = 32            # 出力は {"label": <ラベル名>} の JSON。Banking77 の長いラベル名（例: balance_not_updated_after_cheque_or_cash_deposit）でも途中で切れない長さ
 # リクエスト body に追加するサーバ固有パラメータ。
 # 思考のあるモデル（初代 Qwen3 のハイブリッド版など）に替えるときは、サーバ側で思考を切る。
 # 思考モードだと出力が思考で埋まり max_tokens を使い切る（→ ラベル外になる）。Instruct-2507 では不要

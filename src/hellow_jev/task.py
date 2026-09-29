@@ -9,6 +9,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TASKS_DIR = REPO_ROOT / "tasks"
+# 本題のタスク。run でタスクの指定がないときの既定、report では表の先頭
+MAIN_TASK = "log_classification"
 # Jev / Laya に渡す state の形（task.toml の state_format）。
 # "object" = {"log": テキスト}（既定）、"string" = テキストそのもの（jevbench と同じ）
 STATE_FORMATS = ("object", "string")
@@ -44,18 +46,18 @@ class Task:
     def label_names(self) -> list[str]:
         return [label.name for label in self.labels]
 
-    def _render(self, template: str, log: str) -> str:
+    def _render(self, template: str, text: str) -> str:
         labels = "\n".join(f"- {l.name}: {l.description}" for l in self.labels)
         # str.format だとテンプレート中の { } （JSON の出力例など）で壊れるため単純置換
         return (
             template.replace("{instructions}", self.instructions)
             .replace("{labels}", labels)
-            .replace("{log}", log)
+            .replace("{text}", text)
         )
 
-    def render_prompt(self, log: str) -> str:
+    def render_prompt(self, text: str) -> str:
         """user メッセージ。"""
-        return self._render(self.prompt_template, log)
+        return self._render(self.prompt_template, text)
 
     def render_system(self) -> str | None:
         """system メッセージ（無ければ None）。分類するテキストは入れない。"""

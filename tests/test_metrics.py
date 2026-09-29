@@ -1,4 +1,4 @@
-from hellow_jev.metrics import evaluate
+from hellow_jev.metrics import evaluate, summarize_run
 
 
 def test_perfect():
@@ -46,3 +46,18 @@ def test_errors_are_counted_separately():
     assert abs(m["accuracy"] - 1 / 3) < 1e-9
     assert abs(m["error_rate"] - 1 / 3) < 1e-9
     assert m["confusion"]["b"] == {"<error>": 1, "<invalid>": 1}
+
+
+def test_summarize_run_excludes_errors_from_latency():
+    def p(label, pred, error=None, latency=10.0, attempts=1, server_ms=None):
+        return {"label": label, "pred": pred, "error": error, "latency_ms": latency, "attempts": attempts,
+                "new_connection": False, "server_ms": server_ms, "usage": {"input_tokens": 5}}
+
+    preds = [p("a", "a", server_ms=4.0), p("b", "a", attempts=2), p("b", None, "HTTP 503", 999.0)]
+    m = summarize_run(preds, ["a", "b"], elapsed_sec=2.0)
+    assert m["n"] == 3 and m["error_rate"] == 1 / 3
+    assert m["latency"]["n"] == 2 and m["latency"]["max_ms"] == 10.0  # エラー件のタイムアウト待ちは除く
+    assert m["server_latency"]["n"] == 1
+    assert m["retried"] == 1
+    assert m["usage"]["total"] == {"input_tokens": 15}
+    assert m["throughput_per_sec"] == 1.5

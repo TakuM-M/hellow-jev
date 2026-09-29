@@ -5,20 +5,26 @@ import sys
 import pytest
 
 from hellow_jev import report
-from hellow_jev.report import latest_per_name, load_runs, render, task_of
+from hellow_jev.metrics import latency_stats
+from hellow_jev.report import latest_per_name, load_runs, render
 
 
 def _write_run(root, name, run_id, metrics, config_extra=None, meta_extra=None):
     d = root / f"{run_id}_{name}"
     d.mkdir(parents=True)
-    (d / "config.json").write_text(json.dumps({"name": name, **(config_extra or {})}))
+    (d / "config.json").write_text(json.dumps(
+        {"name": name, "classifier": {"type": name}, **(config_extra or {})}
+    ))
     (d / "meta.json").write_text(json.dumps(
-        {"dataset_sha256": "abc", "host": {"machine": "x86_64", "cpu_count": 4}, **(meta_extra or {})}
+        {"task": "log_classification", "dataset_sha256": "abc",
+         "host": {"machine": "x86_64", "cpu_count": 4}, **(meta_extra or {})}
     ))
     (d / "metrics.json").write_text(json.dumps(metrics))
+    (d / "predictions.jsonl").write_text("")
 
 
-BASE = {"n": 2, "accuracy": 0.5, "macro_f1": 0.5}
+BASE = {"n": 2, "accuracy": 0.5, "macro_f1": 0.5, "error_rate": 0.0, "latency": latency_stats([]),
+        "server_latency": None, "usage": {"total": {}, "per_record": {}}}
 
 
 def _sections(text):
@@ -28,11 +34,10 @@ def _sections(text):
 
 
 def test_report_latest_and_cost(tmp_path):
-    base = {"n": 2, "accuracy": 0.5, "macro_f1": 0.5}
-    _write_run(tmp_path, "jev", "20260101T000000Z", base)
+    _write_run(tmp_path, "jev", "20260101T000000Z", BASE)
     _write_run(
         tmp_path, "jev", "20260102T000000Z",
-        {**base, "accuracy": 1.0,
+        {**BASE, "accuracy": 1.0,
          "latency": {"p50_ms": 250.0, "p95_ms": 310.0},
          "usage": {"per_record": {"input_tokens": 100.0}}},
         {"pricing": {"input_per_mtok": 0.5}},
@@ -41,7 +46,7 @@ def test_report_latest_and_cost(tmp_path):
     assert len(runs) == 1
     table = render(runs)
     # 100 tok/件 × $0.5/1M × 1 万件 = $0.5
-    assert "| jev | 2 | 1.000 | 0.500 | - | 250.0 | 310.0 | - | 100 | $0.5000 | x86_64 4cpu |" in table
+    assert "| jev | 2 | 1.000 | 0.500 | 0.000 | 250.0 | 310.0 | - | 100 | $0.5000 | x86_64 4cpu |" in table
 
 
 def test_report_cost_uses_current_config_pricing(tmp_path):
@@ -80,30 +85,9 @@ def test_llm_row_shows_model_on_next_line(tmp_path):
     assert names == ["jev", "llm_api<br>claude-haiku-4-5-20251001"]
 
 
-def test_consistency_warnings():
-    from hellow_jev.report import consistency_warnings
-
-    def run(name, **meta):
-        base = {"dataset_sha256": "d", "task_toml_sha256": "t", "prompt_sha256": "p",
-                "git_commit": "c", "git_dirty": False}
-        return {"config": {"name": name}, "meta": {**base, **meta}}
-
-    assert consistency_warnings([run("jev"), run("llm")]) == []
-    w = consistency_warnings([run("jev"), run("llm", task_toml_sha256="t2", git_dirty=True)])
-    assert len(w) == 2
-    assert "タスク定義" in w[0]
-    assert "llm" in w[1]
-
-
-def test_task_of_falls_back_for_old_runs():
-    assert task_of({"meta": {"task": "jevbench_sst2"}, "config": {"task": "x"}}) == "jevbench_sst2"
-    assert task_of({"meta": {}, "config": {"task": "jevbench_sst2"}}) == "jevbench_sst2"
-    assert task_of({"meta": {}, "config": {}}) == "log_classification"
-
-
 def test_same_config_on_two_tasks_is_listed_per_task(tmp_path):
     results = tmp_path / "results"
-    # meta に task がない旧形式の run は log_classification の run として扱い、最新の方が残る
+    # 同じ (タスク, config 名) は最新の方が残る
     _write_run(results, "jev", "20260101T000000Z", {**BASE, "accuracy": 0.1})
     _write_run(results, "jev", "20260102T000000Z", {**BASE, "accuracy": 0.2},
                meta_extra={"task": "log_classification"})
@@ -124,29 +108,7 @@ def test_same_config_on_two_tasks_is_listed_per_task(tmp_path):
     assert "0.300" not in sections["jevbench_sst2"]
     assert "| jev | 2 | 0.600 |" in sections["jevbench_agnews"]
     assert "p50 / p95" in sections["注記"]
-
-
-def test_consistency_warnings_are_per_task(tmp_path):
-    results = tmp_path / "results"
-    same = {"task_toml_sha256": "t", "prompt_sha256": "p", "git_commit": "c"}
-    # タスクが違えばデータセットのハッシュが違うのは当然なので、タスクをまたいでは警告しない
-    _write_run(results, "jev", "20260101T000000Z", BASE,
-               meta_extra={**same, "task": "log_classification", "dataset_sha256": "d1"})
-    _write_run(results, "llm_api", "20260102T000000Z", BASE,
-               meta_extra={**same, "task": "log_classification", "dataset_sha256": "d1"})
-    _write_run(results, "jev", "20260103T000000Z", BASE,
-               meta_extra={**same, "task": "jevbench_sst2", "dataset_sha256": "d2"})
-    _write_run(results, "llm_api", "20260104T000000Z", BASE,
-               meta_extra={**same, "task": "jevbench_sst2", "dataset_sha256": "d2",
-                           "task_toml_sha256": "t2", "git_dirty": True})
-
-    sections = _sections(render(latest_per_name(load_runs(results)), tmp_path / "tasks"))
-    assert "⚠️" not in sections["log_classification"]
-    sst2 = sections["jevbench_sst2"]
-    assert "⚠️ タスク定義" in sst2
-    assert "未コミットの変更がある状態で実行: llm_api" in sst2
-    assert "⚠️ データセット" not in sst2
-    assert "⚠️" not in sections["注記"]
+    assert "混同ペア: " in sections["注記"]  # 誤り分析の読み方もタスクごとではなく注記に 1 回
 
 
 REFERENCE = """
@@ -187,7 +149,7 @@ def test_reference_rows_are_appended_to_their_task(tmp_path):
     assert list(sections) == ["jevbench_sst2", "注記"]
     lines = sections["jevbench_sst2"].splitlines()
     ours = lines.index(
-        "| jev | 2 | 0.500 | 0.500 | - | - | - | - | - | - | x86_64 4cpu | 20260101T000000Z_jev |"
+        "| jev | 2 | 0.500 | 0.500 | 0.000 | 0.0 | 0.0 | - | - | - | x86_64 4cpu | 20260101T000000Z_jev |"
     )
     # 参考値はこちらの run の後。コストは 1000 件あたり $0.0184 → 1 万件あたり $0.1840
     ref = lines.index(

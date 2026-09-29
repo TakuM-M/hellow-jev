@@ -2,7 +2,7 @@
 
 LLM に渡すプロンプト。`---` より下がテンプレートで、この説明部分はモデルに送られない。
 `[system]` 以下が system メッセージ、`[user]` 以下が user メッセージになる。
-`{instructions}`（task.toml）・`{labels}`・`{log}` は実行時に置き換える。
+`{instructions}`（task.toml）・`{labels}`・`{text}` は実行時に置き換える。
 Jev / Laya はプロンプト文字列を受け取らないので、同じ instructions とラベルの description を
 `choice` 質問（instructions / criteria）として渡し、条件を揃える。
 
@@ -26,4 +26,4 @@ You are a log classifier for an e-commerce system.
 Respond with JSON only: {"label": "<label id>"}.
 
 [user]
-{log}
+{text}

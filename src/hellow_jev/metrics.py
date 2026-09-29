@@ -92,3 +92,28 @@ def usage_stats(usages: list[dict]) -> dict:
                 total[key] = total.get(key, 0) + value
     n = len(usages)
     return {"total": total, "per_record": {k: v / n for k, v in total.items()} if n else {}}
+
+
+def summarize_run(predictions: list[dict], labels: list[str], elapsed_sec: float) -> dict:
+    """run の predictions（run.py が 1 件ずつ書く dict）から metrics.json の中身を作る。"""
+    metrics = evaluate(
+        [p["label"] for p in predictions],
+        [p["pred"] for p in predictions],
+        labels,
+        errors=[p["error"] is not None for p in predictions],
+    )
+    n = len(predictions)
+    ok = [p for p in predictions if p["error"] is None]
+    metrics["total_sec"] = elapsed_sec
+    metrics["avg_latency_ms"] = elapsed_sec * 1000 / n if n else 0.0
+    metrics["throughput_per_sec"] = n / elapsed_sec if elapsed_sec > 0 else 0.0
+    # 失敗件はタイムアウト待ちなどを含むので、レイテンシ統計からは外す（件数は error_rate で見る）
+    metrics["latency"] = latency_stats([p["latency_ms"] for p in ok])
+    server = [p["server_ms"] for p in ok if p["server_ms"] is not None]
+    metrics["server_latency"] = latency_stats(server) if server else None
+    metrics["usage"] = usage_stats([p["usage"] for p in predictions])
+    # リトライ待ちは latency に含まれる。p95 の悪化がレート制限由来か見分けるために残す
+    metrics["retried"] = sum(p["attempts"] > 1 for p in ok)
+    # 接続は使い回すので、warmup 後は通常 0。多ければサーバが keep-alive せず、毎回の接続確立が乗っている
+    metrics["new_connections"] = sum(p["new_connection"] for p in ok)
+    return metrics

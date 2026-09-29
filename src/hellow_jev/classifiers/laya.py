@@ -26,11 +26,6 @@ CHECKPOINTS = ("english", "multilingual", "typed-decisions")
 
 class LayaClassifier(SystemOneClassifier):
     def __init__(self, task, **options):
-        backend = options.pop("backend", "http")
-        if backend != "http":
-            raise ValueError(f"Laya backend {backend!r} は未対応です（'http' のみ）")
-        if "base_url" in options:
-            raise ValueError("Laya の接続先は endpoint で指定してください（base_url ではなく）")
         # 再現性のためチェックポイントを固定する（未指定だとログごとに自動選択される）
         if options.get("model") not in CHECKPOINTS:
             raise ValueError(
@@ -38,7 +33,7 @@ class LayaClassifier(SystemOneClassifier):
                 f"（{options.get('model')!r}）"
             )
         base_url = (
-            options.pop("endpoint", None) or os.environ.get("LAYA_ENDPOINT") or DEFAULT_ENDPOINT
+            options.pop("base_url", None) or os.environ.get("LAYA_ENDPOINT") or DEFAULT_ENDPOINT
         )
         # laya-serve で LAYA_API_KEY を設定した場合のみ必要
         api_key = os.environ.get("LAYA_API_KEY")

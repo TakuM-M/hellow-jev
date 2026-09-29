@@ -12,7 +12,7 @@ api_format = "anthropic"   # Anthropic Messages API。OpenAI 互換 API なら "
 # 再現性のため日付付きのモデル ID で固定する
 model = "claude-haiku-4-5-20251001"
 temperature = 0.0
-max_tokens = 32            # ラベル名 1 語だけ返させる。Banking77 の長いラベル名（例: balance_not_updated_after_cheque_or_cash_deposit）が途中で切れない長さ
+max_tokens = 32            # 出力は {"label": <ラベル名>} の JSON。Banking77 の長いラベル名（例: balance_not_updated_after_cheque_or_cash_deposit）でも途中で切れない長さ
 # base_url = "https://api.anthropic.com"   # 未指定なら環境変数 LLM_API_BASE_URL → この既定値
 # API キーは環境変数 LLM_API_KEY（無ければ ANTHROPIC_API_KEY）。config には書かない
 

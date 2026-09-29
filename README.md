@@ -9,7 +9,7 @@ EC などのログ分類を題材に、**Jev / Laya / LLM** の 3 つをベン�
 
 ```
 .
-├── configs/                 # 実行設定（モデルごとに 1 ファイル。タスク名と分類器設定だけを書く）
+├── configs/                 # 実行設定（モデルごとに 1 ファイル。タスク名・分類器設定・warmup・実行環境・単価）
 ├── data/
 │   ├── samples/             # 動作確認用の合成サンプル（コミットする）
 │   ├── raw/                 # 生ログ（git 管理外）
@@ -17,17 +17,17 @@ EC などのログ分類を題材に、**Jev / Laya / LLM** の 3 つをベン�
 ├── docs/
 │   ├── plan.md              # 調査計画・評価観点・マイルストーン
 │   └── notes/               # Jev / Laya / LLM それぞれの調査メモ
-├── notebooks/               # 分析用ノートブック
 ├── results/                 # 実行結果（git 管理外）
 ├── scripts/                 # 一括実行などのスクリプト
 ├── src/hellow_jev/
 │   ├── classifiers/         # Jev / Laya / LLM の分類器と共通 HTTP クライアント
 │   ├── envfile.py           # .env の読み込み
 │   ├── metrics.py           # 評価指標
-│   ├── prepare.py           # 評価データを取得・抽出する CLI
+│   ├── prepare/             # 評価データを取得・抽出する CLI（core: 汎用処理、jevbench: データ定義）
 │   ├── run.py               # ベンチマーク実行 CLI
 │   ├── report.py            # 比較表（Markdown）を作る CLI
-│   └── task.py              # タスク定義・データの読み込み
+│   ├── task.py              # タスク定義・データの読み込み
+│   └── util.py              # ハッシュ・書き込み・Markdown 表などの共通処理
 ├── tasks/
 │   ├── log_classification/  # 本題のタスク定義（データセット・ラベル）と共通プロンプト
 │   └── jevbench_*/          # 公開ベンチ jevbench の再現用タスク（説明は tasks/JEVBENCH.md）

@@ -3,9 +3,8 @@
 import base64
 import json
 import socket
-import threading
 import time
-from http.server import BaseHTTPRequestHandler, HTTPServer, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
 
@@ -66,26 +65,18 @@ def no_sleep(monkeypatch):
 
 
 @pytest.fixture
-def server(no_sleep):
+def server(serve, no_sleep):
     _Handler.statuses = []
     _Handler.calls = 0
-    httpd = HTTPServer(("127.0.0.1", 0), _Handler)
-    threading.Thread(target=httpd.serve_forever, daemon=True).start()
-    yield f"http://127.0.0.1:{httpd.server_port}"
-    httpd.shutdown()
+    return f"http://127.0.0.1:{serve(_Handler).server_port}"
 
 
 @pytest.fixture
-def keepalive_server():
+def keepalive_server(serve):
     _KeepAliveHandler.connections = []
     _KeepAliveHandler.requests = []
     _KeepAliveHandler.close_after = 0
-    httpd = ThreadingHTTPServer(("127.0.0.1", 0), _KeepAliveHandler)
-    httpd.daemon_threads = True  # 保持中の接続があってもテスト終了を妨げない
-    threading.Thread(target=httpd.serve_forever, daemon=True).start()
-    yield httpd
-    httpd.shutdown()
-    httpd.server_close()
+    return serve(_KeepAliveHandler, ThreadingHTTPServer)
 
 
 def _url(httpd, path="/v1/x"):
