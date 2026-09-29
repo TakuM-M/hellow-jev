@@ -99,3 +99,10 @@
   - 再実行（`log_classification` 16 件、run `20260929T080714Z_llm_api` / `20260929T080735Z_llm_local`）:
     - Haiku 4.5: accuracy 16/16（前回 16/16）。input 184 → **373 tok/件**、p50 651 → 914 ms。system と user に分けたことに加え、structured outputs でスキーマ分の入力が API 側で足されているとみられる（jevbench の Banking77 でも 2,220 tok/件と Qwen の約 2 倍）
     - Qwen3-4B: accuracy 15/16（前回 14/16）。s013（brute force → security）が正解になり、s003（login success → auth）は引き続き誤り。input 170 → 179 tok/件、p50 268 → 546 ms（制約付き生成のぶん遅い）
+- 2026-09-29: jevbench 4 タスク（各 500 件）を Haiku 4.5・Qwen3-4B で実行。エラー・リトライ 0。比較表は `docs/report.md`
+  - Acc（Haiku / Qwen / 参考: jevbench の GPT-5-mini・Sonnet 5）: SST-2 0.960 / 0.940、AG News 旧 0.832 / 0.784（0.802・0.896）、新 0.850 / 0.766、Banking77 0.758 / 0.662（0.736・0.774）
+  - Haiku は jevbench の GPT-5-mini と Sonnet 5 の間。Banking77 は Jev（0.768）とほぼ同じ
+  - AG News の新ラベル説明は Haiku で +1.8pt、Qwen で −1.8pt（Jev +1.2、Laya −4.4）
+  - レイテンシ p50: Haiku ≈ 750〜820 ms、Qwen ≈ 690〜1,420 ms（Banking77 が最も遅い。入力 ≈ 1,150 tok/件）。Jev・Laya の 4〜8 倍
+  - コスト/1 万件: Haiku は Banking77 で $22.9（入力 ≈ 2,220 tok/件）。Jev は $0.83
+  - 比較表の警告「タスク定義・プロンプト・コードが run 間で異なる」は想定内: Jev / Laya の run（`5f16e82`）以降の task.toml の変更はコメントのみ、`systemone.py` は無変更。プロンプトは LLM だけが使う
