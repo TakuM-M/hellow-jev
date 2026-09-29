@@ -1,5 +1,5 @@
 # jevbench の AG News（ニュースの話題、4 ラベル）を、新ラベル説明で再現するタスク定義。
-# 出典: https://github.com/dhruvmehra/jevbench（MIT License, Copyright (c) 2026 Dhruv Mehra）
+# 出典: https://github.com/dhruvmehra/jevbench（MIT License, Copyright (c) 2026 Dhruv Mehra）。全文: tasks/LICENSE-jevbench
 #   ラベル名・説明: src/jevbench/datasets.py の 55e9102 以降の版（c983cc4 と同じ）から同じ順序でそのまま写した。変更しない
 #     公表表の「jev (new descriptions)」行（Acc 85.8）の再現用。旧版の説明は jevbench_agnews
 #   instructions: src/jevbench/classifiers/jev.py の build_questions（jevbench が Jev / Laya に渡す指示文）

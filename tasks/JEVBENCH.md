@@ -20,7 +20,7 @@ Jev / Laya のクライアントと計測が公表値と合うかを確かめる
 
 ## 出典・ライセンス
 
-- jevbench は MIT License（Copyright (c) 2026 Dhruv Mehra）
+- jevbench は MIT License（Copyright (c) 2026 Dhruv Mehra）。許諾文の全文は `tasks/LICENSE-jevbench`（c983cc4 の `LICENSE` をそのまま複製）
 - ラベル名・説明は `src/jevbench/datasets.py`、Jev / Laya の指示文は `src/jevbench/classifiers/jev.py` から、同じ順序・文言で写した
 - Banking77 の 77 ラベルは `BANKING77_RAW` から jevbench と同じ変換（`_bank_id` / `_bank_desc`）で機械的に生成した
 - 公表値は `docs/results/2026-09-22-n500-summary.md`
