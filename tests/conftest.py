@@ -35,6 +35,6 @@ def task():
         dataset=Path("unused.jsonl"),
         labels=[Label("payment", "Payment failures"), Label("auth", "Login problems")],
         instructions="Classify the log.",
-        prompt_template="{log}",
+        prompt_template="{text}",
         system_template="{instructions}\n{labels}",
     )

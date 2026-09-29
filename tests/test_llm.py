@@ -75,7 +75,7 @@ def test_anthropic_request_and_parse(server, monkeypatch, task):
 
 def test_openai_local_passes_extra_body(server, task):
     _Handler.text = '{"label": "auth"}'
-    clf = build_classifier({"type": "llm", "backend": "local", "endpoint": server + "/v1",
+    clf = build_classifier({"type": "llm", "backend": "local", "base_url": server + "/v1",
                             "model": "qwen3:4b",
                             "extra_body": {"chat_template_kwargs": {"enable_thinking": False}}},
                            task)
@@ -107,7 +107,7 @@ def test_anthropic_json_output_with_system(server, monkeypatch):
 def test_openai_json_output_with_system(server):
     _Handler.text = '{"label": "world"}'
     task = load_task("jevbench_agnews")
-    clf = build_classifier({"type": "llm", "backend": "local", "endpoint": server + "/v1",
+    clf = build_classifier({"type": "llm", "backend": "local", "base_url": server + "/v1",
                             "model": "m"}, task)
     assert clf.classify("some news").label == "world"
     body = _Handler.requests[0]["body"]
@@ -124,7 +124,7 @@ def test_openai_json_output_with_system(server):
 def test_unreadable_output_is_wrong(server, text):
     # jevbench と同じく、JSON として読めない・ラベル外なら None（不正解。正規化しない）
     _Handler.text = text
-    clf = build_classifier({"type": "llm", "backend": "local", "endpoint": server + "/v1",
+    clf = build_classifier({"type": "llm", "backend": "local", "base_url": server + "/v1",
                             "model": "m"}, load_task("jevbench_agnews"))
     assert clf.classify("x").label is None
 

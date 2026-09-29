@@ -11,7 +11,7 @@ API 形式は 2 種類（どちらも _http.HTTPClient で叩く）:
                                Ollama / vLLM / llama.cpp server など
 
 backend = "api"   : 既定 api_format="anthropic"。キーは LLM_API_KEY（無ければ ANTHROPIC_API_KEY）
-backend = "local" : 既定 api_format="openai"、接続先は endpoint → LLM_LOCAL_ENDPOINT → Ollama 既定
+backend = "local" : 既定 api_format="openai"、接続先は base_url → LLM_LOCAL_ENDPOINT → Ollama 既定
 調査メモは docs/notes/llm.md。
 """
 
@@ -38,7 +38,6 @@ class LLMClassifier(Classifier):
         model: str | None = None,
         api_format: str | None = None,
         base_url: str | None = None,
-        endpoint: str | None = None,
         temperature: float = 0.0,
         max_tokens: int = 16,
         timeout: float = 60.0,
@@ -49,11 +48,6 @@ class LLMClassifier(Classifier):
         super().__init__(task, **options)
         if not model:
             raise ValueError("LLM の model を config で指定してください（再現性のため固定する）")
-        # backend ごとに使うキーが違う。もう一方を書いても無視されて別の接続先に行くので拒否する
-        if backend == "api" and endpoint:
-            raise ValueError("backend='api' の接続先は base_url で指定してください（endpoint ではなく）")
-        if backend == "local" and base_url:
-            raise ValueError("backend='local' の接続先は endpoint で指定してください（base_url ではなく）")
         if backend == "api":
             self.api_format = api_format or "anthropic"
             self.api_key = os.environ.get("LLM_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")
@@ -65,7 +59,7 @@ class LLMClassifier(Classifier):
             self.api_format = api_format or "openai"
             # ローカルサーバ側でキーを要求する場合のみ
             self.api_key = os.environ.get("LLM_LOCAL_API_KEY")
-            self.base_url = endpoint or os.environ.get("LLM_LOCAL_ENDPOINT") or LOCAL_ENDPOINT
+            self.base_url = base_url or os.environ.get("LLM_LOCAL_ENDPOINT") or LOCAL_ENDPOINT
         else:
             raise ValueError(f"unknown backend: {backend!r}（'api' | 'local'）")
         if self.api_format not in ("anthropic", "openai"):

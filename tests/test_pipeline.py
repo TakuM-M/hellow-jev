@@ -15,7 +15,7 @@ def test_prompt_renders():
     system = task.render_system()
     assert task.instructions in system
     assert "- payment:" in system
-    assert not any(p in system for p in ("{instructions}", "{labels}", "{log}"))
+    assert not any(p in system for p in ("{instructions}", "{labels}", "{text}"))
     assert task.render_prompt("ERROR something {braces}") == "ERROR something {braces}"
 
 
@@ -48,15 +48,6 @@ def test_unknown_classifier_type_is_rejected():
         build_classifier({"type": "jevv"}, load_task("log_classification"))
 
 
-def test_wrong_endpoint_key_is_rejected():
-    task = load_task("log_classification")
-    with pytest.raises(ValueError, match="endpoint"):
-        build_classifier({"type": "laya", "base_url": "http://x"}, task)
-    with pytest.raises(ValueError, match="endpoint"):
-        build_classifier({"type": "llm", "backend": "local", "model": "m",
-                          "base_url": "http://x"}, task)
-
-
 def _write_task(tmp_path, monkeypatch, template, extra=""):
     import hellow_jev.task as task_module
 
@@ -71,22 +62,22 @@ def _write_task(tmp_path, monkeypatch, template, extra=""):
 
 
 def test_prompt_split_into_system_and_user(tmp_path, monkeypatch):
-    _write_task(tmp_path, monkeypatch, "[system]\n{instructions}\n{labels}\n\n[user]\nText: {log}\n")
+    _write_task(tmp_path, monkeypatch, "[system]\n{instructions}\n{labels}\n\n[user]\nText: {text}\n")
     task = load_task("t")
     assert task.render_system() == "i\n- a: A"
     assert task.render_prompt("x") == "Text: x"
 
 
 def test_prompt_without_headers_is_user_only(tmp_path, monkeypatch):
-    _write_task(tmp_path, monkeypatch, "{instructions}\nText: {log}\n")
+    _write_task(tmp_path, monkeypatch, "{instructions}\nText: {text}\n")
     task = load_task("t")
     assert task.render_system() is None
     assert task.render_prompt("x") == "i\nText: x"
 
 
 def test_prompt_split_errors(tmp_path, monkeypatch):
-    for template in ("[user]\n{log}\n", "[system]\nsys\n", "x\n[system]\ns\n[user]\n{log}\n",
-                     "[system]\n\n[user]\n{log}\n", "[system]\ns\n[user]\n{log}\n[user]\n"):
+    for template in ("[user]\n{text}\n", "[system]\nsys\n", "x\n[system]\ns\n[user]\n{text}\n",
+                     "[system]\n\n[user]\n{text}\n", "[system]\ns\n[user]\n{text}\n[user]\n"):
         _write_task(tmp_path, monkeypatch, template)
         with pytest.raises(ValueError, match="prompt.md"):
             load_task("t")

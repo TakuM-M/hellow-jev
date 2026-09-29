@@ -55,7 +55,7 @@ def server(serve):
 def test_laya_request_and_parse(server, task):
     _Handler.routing_model = "multilingual"
     clf = build_classifier(
-        {"type": "laya", "endpoint": server, "model": "multilingual"}, task
+        {"type": "laya", "base_url": server, "model": "multilingual"}, task
     )
     pred = clf.classify("ERROR payment-svc charge failed")
     assert pred.label == "payment"
@@ -83,7 +83,7 @@ def test_state_format(server, monkeypatch, state_format, expected, task):
     monkeypatch.setenv("JEV_API_KEY", "k")
     task = replace(task, state_format=state_format)
     for config in ({"type": "jev", "base_url": server, "model": "jev-x"},
-                   {"type": "laya", "endpoint": server, "model": "english"}):
+                   {"type": "laya", "base_url": server, "model": "english"}):
         build_classifier(config, task).classify("some text")
     # Jev / Laya は共通クライアントなので、どちらにも同じ state が渡る
     assert [r["body"]["state"] for r in _Handler.requests] == [expected, expected]
@@ -92,7 +92,7 @@ def test_state_format(server, monkeypatch, state_format, expected, task):
 def test_unknown_state_format_is_rejected(tmp_path, monkeypatch, task):
     # load_task を通さずに作った Task でも、黙って既定の形で送らない
     bad = replace(task, state_format="str")
-    clf = build_classifier({"type": "laya", "endpoint": "http://127.0.0.1:1", "model": "english"}, bad)
+    clf = build_classifier({"type": "laya", "base_url": "http://127.0.0.1:1", "model": "english"}, bad)
     with pytest.raises(ValueError, match="unknown state_format"):
         clf.build_request("x")
 
@@ -103,7 +103,7 @@ def test_unknown_state_format_is_rejected(tmp_path, monkeypatch, task):
         'dataset = "d.jsonl"\ninstructions = "i"\nstate_format = "str"\n'
         '[[labels]]\nname = "a"\ndescription = "A"\n'
     )
-    (task_dir / "prompt.md").write_text("notes\n---\n{log}\n")
+    (task_dir / "prompt.md").write_text("notes\n---\n{text}\n")
     monkeypatch.setattr(task_module, "TASKS_DIR", tmp_path)
     with pytest.raises(ValueError, match=r"state_format must be one of 'object', 'string' \(got 'str'\)"):
         load_task("t")
@@ -126,13 +126,13 @@ def test_jev_requires_key(monkeypatch, task):
 
 def test_unknown_choice_is_invalid(server, task):
     _Handler.choice = "not-a-label"
-    clf = build_classifier({"type": "laya", "endpoint": server, "model": "english"},
+    clf = build_classifier({"type": "laya", "base_url": server, "model": "english"},
                            task)
     assert clf.classify("x").label is None
 
 
 def test_http_error_is_reported(server, task):
-    clf = build_classifier({"type": "laya", "endpoint": server + "/wrong", "model": "english"},
+    clf = build_classifier({"type": "laya", "base_url": server + "/wrong", "model": "english"},
                            task)
     with pytest.raises(RuntimeError, match="HTTP 404"):
         clf.classify("x")
@@ -141,7 +141,7 @@ def test_http_error_is_reported(server, task):
 def test_laya_rejects_unknown_checkpoint(task):
     # laya-serve は未知の model を黙って自動選択に切り替えるので、クライアント側で止める
     for model in (None, "englsh", "convaiinnovations/laya"):
-        config = {"type": "laya", "endpoint": "http://127.0.0.1:1"}
+        config = {"type": "laya", "base_url": "http://127.0.0.1:1"}
         if model:
             config["model"] = model
         with pytest.raises(ValueError, match="english / multilingual / typed-decisions"):
@@ -150,7 +150,7 @@ def test_laya_rejects_unknown_checkpoint(task):
 
 def test_laya_checkpoint_mismatch_is_error(server, task):
     _Handler.routing_model = "multilingual"
-    clf = build_classifier({"type": "laya", "endpoint": server, "model": "english"},
+    clf = build_classifier({"type": "laya", "base_url": server, "model": "english"},
                            task)
     with pytest.raises(RuntimeError, match="'multilingual'"):
         clf.classify("x")

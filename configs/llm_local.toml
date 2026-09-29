@@ -9,7 +9,7 @@ hardware = "Apple M1 (8GB)"
 type = "llm"
 backend = "local"
 api_format = "openai"      # OpenAI 互換 /chat/completions（Ollama / vLLM / llama.cpp server）
-# endpoint = "http://localhost:11434/v1"   # 未指定なら環境変数 LLM_LOCAL_ENDPOINT → Ollama 既定
+# base_url = "http://localhost:11434/v1"   # 未指定なら環境変数 LLM_LOCAL_ENDPOINT → Ollama 既定
 # Qwen3-4B-Instruct-2507（Ollama ID 0edcdef34593、Q4_K_M）。思考モードの無い版。
 # Ollama の "qwen3:4b" は Thinking-2507 で、reasoning_effort="none" でも思考が止まらない（docs/notes/llm.md）
 model = "qwen3:4b-instruct"  # Ollama のタグ。vLLM なら "Qwen/Qwen3-4B-Instruct-2507"

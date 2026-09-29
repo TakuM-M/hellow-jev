@@ -2,7 +2,7 @@
 
 LLM に渡すプロンプト。`---` より下がテンプレートで、この説明部分はモデルに送られない。
 `[system]` 以下が system メッセージ、`[user]` 以下が user メッセージになる。
-`{labels}`（`- ラベル名: 説明` の行）・`{log}`（分類するテキスト）は実行時に置き換える。
+`{labels}`（`- ラベル名: 説明` の行）・`{text}`（分類するテキスト）は実行時に置き換える。
 jevbench_sst2 / agnews / agnews_v2 / banking77 で同じ内容にしている（直すときは 4 つとも直す）。
 
 ## 元にしたもの
@@ -29,4 +29,4 @@ Labels:
 Respond with JSON only: {"label": "<label id>"}.
 
 [user]
-{log}
+{text}
