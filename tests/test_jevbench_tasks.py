@@ -7,7 +7,7 @@ import tomllib
 
 import pytest
 
-from hellow_jev import prepare
+from hellow_jev.prepare import jevbench as prepare_jevbench
 from hellow_jev.classifiers import build_classifier
 from hellow_jev.task import REPO_ROOT, TASKS_DIR, load_task
 
@@ -61,7 +61,7 @@ def test_prompt_is_shared():
 @pytest.mark.parametrize("name", TASKS)
 def test_labels_match_prepare(name):
     # ラベルは task.toml と prepare の DatasetSpec（元データの検証用）の 2 か所にある。順序も含めて揃える
-    spec = prepare.JEVBENCH[name.removeprefix("jevbench_").removesuffix("_v2")]
+    spec = prepare_jevbench.JEVBENCH[name.removeprefix("jevbench_").removesuffix("_v2")]
     assert load_task(name).label_names == list(spec.expected)
 
 
