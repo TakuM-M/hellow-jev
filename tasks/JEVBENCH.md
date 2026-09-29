@@ -15,7 +15,7 @@ Jev / Laya のクライアントと計測が公表値と合うかを確かめる
 - 各 500 件。jevbench と同じ抽出（n=500, seed=0）を `hellow-jev-prepare` で作る
 - 各ディレクトリの中身
   - `task.toml`: ラベル・指示文
-  - `prompt.md`: LLM 用（4 つとも同じ内容）
+  - `prompt.md`: LLM 用（4 つとも同じ内容。jevbench の LLM プロンプトをそのまま写した system / user の 2 通）
   - `reference.toml`: jevbench の公表値（比較表の参照値）
 
 ## 出典・ライセンス
@@ -49,7 +49,10 @@ Jev / Laya のクライアントと計測が公表値と合うかを確かめる
 - ◯ **laya**: jevbench は laya 0.3.5 を in-process で実行（Apple silicon の Mac）。本リポジトリは laya-serve 経由
   - どちらも english チェックポイント（`convaiinnovations/laya` = `model = "english"`）
   - laya の版や HF の重みの更新で差が出うる（どちらも重みの版は固定していない）
-- × **LLM**: jevbench は GPT-5-mini / Claude Sonnet 5（OpenRouter、system プロンプト + JSON スキーマの enum 出力）。本リポジトリの LLM config とはモデルも出力方式も違うので参考値（`prompt.md`）
+- △ **LLM**: プロンプトと出力方式は jevbench と同じ。モデルが違うので参考値
+  - 同じもの: system プロンプト（`build_messages` の文言そのまま）、user メッセージ（テキストだけ）、`{"label": <ラベル名の enum>}` の JSON スキーマ出力。jevbench の関数の出力と一致することを確認済み
+  - 違うもの: モデル（jevbench は GPT-5-mini / Claude Sonnet 5 を OpenRouter 経由、本リポジトリは config の Haiku 4.5 / Qwen3-4B）、`max_tokens`（jevbench 200、本リポジトリ 32）、`reasoning` の指定（jevbench は effort=low）
+  - **LLM には指示文（`instructions`）を渡さない**。jevbench の LLM プロンプトに無いため。「全モデルで同じ指示文」（CLAUDE.md）の例外
 - × **BERT**（bert-ft / bert-zs）: 本リポジトリに対応するものはない。参考値
 
 ### Banking77 の Laya

@@ -49,7 +49,6 @@ def test_error_is_recorded_and_run_completes(tmp_path, monkeypatch, data):
     assert preds[0]["error"] == "RuntimeError: HTTP 503" and preds[0]["pred"] is None
     m = json.loads((d / "metrics.json").read_text())
     assert m["error_rate"] == 1 / len(data)
-    assert m["invalid_rate"] == 0.0
     assert m["latency"]["n"] == len(data) - 1
     assert m["retried"] == len(data) - 1
     assert json.loads((d / "meta.json").read_text())["dataset_sha256"]

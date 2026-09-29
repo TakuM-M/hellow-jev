@@ -31,7 +31,7 @@ CONSISTENCY_KEYS = {
 }
 
 COLUMNS = [
-    "model", "n", "Acc", "Macro-F1", "ラベル外率", "エラー率", "p50 ms", "p95 ms",
+    "model", "n", "Acc", "Macro-F1", "エラー率", "p50 ms", "p95 ms",
     "サーバ p50 ms", "入力tok/件", "コスト/1万件", "実行環境", "run",
 ]
 
@@ -123,7 +123,6 @@ def row(run: dict, configs_dir: Path | None = None) -> list[str]:
         str(m["n"]),
         f"{m['accuracy']:.3f}",
         f"{m['macro_f1']:.3f}",
-        f"{m.get('invalid_rate', 0):.3f}",
         f"{m['error_rate']:.3f}" if "error_rate" in m else "-",
         ms(lat, "p50_ms"),
         ms(lat, "p95_ms"),

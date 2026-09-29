@@ -33,21 +33,23 @@ def test_task_loads(name):
     assert len(task.labels) == LABEL_COUNTS[name]
     assert task.instructions == INSTRUCTIONS
     assert task.state_format == "string"
-    # LLM 出力の正規化（Classifier.normalize）は小文字にしてから照合するので、ラベル名も小文字に限る
-    assert all(n == n.lower() for n in task.label_names)
     dataset = "jevbench_agnews.jsonl" if name.startswith("jevbench_agnews") else f"{name}.jsonl"
     assert task.dataset == REPO_ROOT / "data" / "processed" / dataset
 
 
 @pytest.mark.parametrize("name", TASKS)
 def test_prompt_renders(name):
+    # jevbench の build_messages（src/jevbench/classifiers/llm.py）と同じ system / user
     task = load_task(name)
-    prompt = task.render_prompt("a {braced} text")
-    assert prompt.startswith("You are a text classifier.\n" + INSTRUCTIONS)
-    assert prompt.endswith("Text:\na {braced} text")
-    for label in task.labels:
-        assert f"- {label.name}: {label.description}" in prompt
-    assert not any(p in prompt for p in ("{instructions}", "{labels}", "{log}"))
+    lines = "\n".join(f"- {k}: {v}" for k, v in task.criteria().items())
+    assert task.render_system() == (
+        "You are a text classifier. Classify the user's text into exactly one of these labels.\n"
+        f"Labels:\n{lines}\n\n"
+        'Respond with JSON only: {"label": "<label id>"}.'
+    )
+    assert task.render_prompt("a {braced} text") == "a {braced} text"
+    # 指示文は LLM に渡さない（jevbench の LLM プロンプトに無い）
+    assert INSTRUCTIONS not in task.render_system()
 
 
 def test_prompt_is_shared():

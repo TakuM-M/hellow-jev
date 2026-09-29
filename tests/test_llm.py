@@ -12,7 +12,7 @@ from hellow_jev.task import load_task
 
 class _Handler(BaseHTTPRequestHandler):
     requests: list = []
-    text = "payment"
+    text = '{"label": "payment"}'
     fail_first: int = 0
 
     def do_POST(self):
@@ -48,7 +48,7 @@ class _Handler(BaseHTTPRequestHandler):
 @pytest.fixture
 def server():
     _Handler.requests = []
-    _Handler.text = "payment"
+    _Handler.text = '{"label": "payment"}'
     _Handler.fail_first = 0
     httpd = HTTPServer(("127.0.0.1", 0), _Handler)
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
@@ -72,13 +72,14 @@ def test_anthropic_request_and_parse(server, monkeypatch):
     body = sent["body"]
     assert body["model"] == "claude-x"
     assert body["temperature"] == 0.0
-    # Jev / Laya と同じ指示文・ラベル定義を含む共通プロンプトが渡っていること（公平性）
-    assert body["messages"] == [{"role": "user",
-                                 "content": task.render_prompt("ERROR payment-svc charge failed")}]
+    # Jev / Laya と同じ指示文・ラベル定義を含む system が渡っていること（公平性）
+    assert task.instructions in body["system"]
+    assert body["messages"] == [{"role": "user", "content": "ERROR payment-svc charge failed"}]
+    assert body["output_config"]["format"]["schema"]["properties"]["label"]["enum"] == task.label_names
 
 
-def test_openai_local_with_think_block(server):
-    _Handler.text = "<think>\nlooks like a login issue\n</think>\n\nAuth"
+def test_openai_local_passes_extra_body(server):
+    _Handler.text = '{"label": "auth"}'
     clf = build_classifier({"type": "llm", "backend": "local", "endpoint": server + "/v1",
                             "model": "qwen3:4b",
                             "extra_body": {"chat_template_kwargs": {"enable_thinking": False}}},
@@ -92,10 +93,44 @@ def test_openai_local_with_think_block(server):
     assert sent["body"]["chat_template_kwargs"] == {"enable_thinking": False}
 
 
-def test_out_of_label_output_is_invalid(server):
-    _Handler.text = "This looks like a payment problem."
+def test_anthropic_json_output_with_system(server, monkeypatch):
+    monkeypatch.setenv("LLM_API_KEY", "k")
+    _Handler.text = '{"label": "sports"}'
+    task = load_task("jevbench_agnews")
+    clf = build_classifier({"type": "llm", "backend": "api", "base_url": server,
+                            "model": "claude-x"}, task)
+    assert clf.classify("some news").label == "sports"
+    body = _Handler.requests[0]["body"]
+    assert body["system"] == task.render_system()
+    assert body["messages"] == [{"role": "user", "content": "some news"}]
+    schema = body["output_config"]["format"]
+    assert schema["type"] == "json_schema"
+    assert schema["schema"]["properties"]["label"]["enum"] == task.label_names
+    assert "response_format" not in body
+
+
+def test_openai_json_output_with_system(server):
+    _Handler.text = '{"label": "world"}'
+    task = load_task("jevbench_agnews")
     clf = build_classifier({"type": "llm", "backend": "local", "endpoint": server + "/v1",
-                            "model": "m"}, load_task("log_classification"))
+                            "model": "m"}, task)
+    assert clf.classify("some news").label == "world"
+    body = _Handler.requests[0]["body"]
+    assert body["messages"] == [{"role": "system", "content": task.render_system()},
+                                {"role": "user", "content": "some news"}]
+    fmt = body["response_format"]
+    assert fmt["type"] == "json_schema" and fmt["json_schema"]["strict"] is True
+    assert fmt["json_schema"]["schema"]["properties"]["label"]["enum"] == task.label_names
+    assert "output_config" not in body and "system" not in body
+
+
+@pytest.mark.parametrize("text", ["world", '{"label": "World"}', '{"label": "politics"}',
+                                  '{"category": "world"}', '["world"]', '{"label": "wor'])
+def test_unreadable_output_is_wrong(server, text):
+    # jevbench と同じく、JSON として読めない・ラベル外なら None（不正解。正規化しない）
+    _Handler.text = text
+    clf = build_classifier({"type": "llm", "backend": "local", "endpoint": server + "/v1",
+                            "model": "m"}, load_task("jevbench_agnews"))
     assert clf.classify("x").label is None
 
 

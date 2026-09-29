@@ -22,7 +22,7 @@ EC サイトのアプリケーション / インフラログ 1 行（または 1
 ## 評価指標
 
 - Accuracy / Macro-F1 / クラス別 Precision・Recall
-- ラベル外出力率（`invalid_rate`）・エラー率（`error_rate`）
+- エラー率（`error_rate`）
 - レイテンシ（1 件あたりの p50 / p95）
 - コスト（API のトークン数・料金）
 
