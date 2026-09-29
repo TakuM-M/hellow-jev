@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 Jev（判定特化 API）/ Laya（open weight）/ LLM をログ分類でベンチマーク比較するリポジトリ。
-計画は `docs/plan.md`、調査メモは `docs/notes/`、jevbench 再現は `tasks/JEVBENCH.md`。
+調査メモは `docs/notes/`、jevbench 再現は `tasks/JEVBENCH.md`。
 
 ## コマンド
 
@@ -23,6 +23,4 @@ uv run --extra dev pytest
 - 公平性のため全モデルで同じ指示文・ラベル・データを使う。モデルへのテキストは英語
   - 例外: jevbench 再現タスク（`tasks/jevbench_*`）の LLM は jevbench のプロンプトをそのまま使い、指示文を渡さない（`tasks/JEVBENCH.md`）
 - Jev / Laya の API 仕様が不明なら推測で実装せず確認する
-- `data/`・`results/`・`.env` はコミットしない。依存は標準ライブラリのみ
-- 分かったことは `docs/notes/` に追記
-- 返答は日本語で完結
+- `data/`・`results/`・`.env` はコミットしない。
