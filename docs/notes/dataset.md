@@ -88,12 +88,14 @@
   - クライアント（`_http.py`）は既に `TCP_NODELAY` を設定済み
   - laya-serve は FastAPI + uvicorn（asyncio は既定で `TCP_NODELAY`）なので、実サーバではこの上乗せは起きない見込み
   - 自前のテスト用サーバを作るときは `disable_nagle_algorithm = True` を付ける
+- EC ログサンプルの s003（`INFO auth-svc login success`、正解 normal）は jev・laya・qwen3:4b の 3 モデルが auth と誤った（jev 0.94、laya 0.91 と高い確率で）。`auth-svc` の語と、ラベル説明の「auth = Login, session, or token issues」「normal = no action needed」の境界が曖昧なのが原因の可能性。モデルの弱点というよりタスク定義の問題かもしれない（2026-09-28 の run）
 
 ## 未確認・次にやること
 
 - [ ] RCAEval のライセンスと、ログの中身（EC 関連のサービスのログがどれだけあるか）
 - [ ] Loghub の「研究・学術目的のみ」が本調査に当てはまるか（社内評価に使えるか）
 - [ ] arXiv / dev.to / HF / TDS は egress 制限で本文を読めていない（検索結果の要約のみ）。数値は要確認
+- [ ] s003 のラベル説明を直すか（直すなら全モデル再実行）
 - [ ] `open-jev`（jev-eval で言及）が何かを調べる。判定専用×ローカルの候補になりうる
 
 ## ログ
