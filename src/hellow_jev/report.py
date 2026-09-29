@@ -6,6 +6,7 @@
 
 タスクごとに表を分け、(タスク, config 名) ごとに最新の run を 1 行にする（--all で全 run）。
 tasks/<task>/reference.toml があれば、公開ベンチマークの参考値をその表の末尾に足す。
+表の下には predictions.jsonl から誤り分析（誤った件・混同ペア・確率）を出す（error_analysis.py）。
 """
 
 from __future__ import annotations
@@ -15,6 +16,7 @@ import json
 import tomllib
 from pathlib import Path
 
+from hellow_jev import error_analysis
 from hellow_jev.task import REPO_ROOT, TASKS_DIR
 
 # 本題のタスク。表の先頭に出す。meta に task がない旧形式の run もこのタスクとみなす
@@ -42,6 +44,9 @@ NOTES = [
     "- コストは集計時点の configs/<name>.toml の [pricing]（USD / 1M tokens）から概算（無ければ実行時の config）。未設定は -",
     "- ローカル実行（laya / llm_local）は API 課金が無いので $0。マシン代・電力は含まない",
     "- 実行環境は実行時の config の hardware（無ければ実行マシンの CPU）。API はリクエスト先を書く",
+    "- 誤り分析の確率は Jev / Laya が返す probabilities の値（confidence ではない）。LLM は確率を返さないので確率の表から除く",
+    "- jev の確率は小数 2 桁に丸めて返される。確率の表はエラー件を除く",
+    "- 件数が少ないうちは、誤り分析は個別事例として読む（傾向の根拠にはならない）",
 ]
 
 
@@ -55,6 +60,7 @@ def load_runs(results_dir: Path) -> list[dict]:
             "config": json.loads((d / "config.json").read_text()),
             "meta": json.loads((d / "meta.json").read_text()),
             "metrics": json.loads((d / "metrics.json").read_text()),
+            "predictions": error_analysis.load_predictions(d),
         })
     return runs
 
@@ -212,6 +218,7 @@ def render(runs: list[dict], tasks_dir: Path = TASKS_DIR, configs_dir: Path | No
         lines += [f"## {task}", "", *_table(rows), ""]
         if notes:
             lines += [*notes, ""]
+        lines += error_analysis.render(task_runs)
     lines += ["## 注記", "", *NOTES]
     return "\n".join(lines) + "\n"
 
