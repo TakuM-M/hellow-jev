@@ -17,10 +17,20 @@ from hellow_jev.classifiers.systemone import QUESTION_ID
 from hellow_jev.task import load_dataset
 from hellow_jev.util import md_table, sha256_file
 
-MAX_CASES = 20  # 誤った件の表の上限。件数の多いタスク（jevbench など）で表が膨らまないようにする
+MAX_CASES = 10  # 誤った件の表の上限。件数の多いタスク（jevbench など）で表が膨らまないようにする
 MAX_PAIRS = 10  # 混同ペアの表の上限
 THRESHOLDS = (0.5, 0.9)  # 保留（人に回す）の閾値
 TEXT_MAX = 120  # 表に出すテキストの最大文字数
+
+# 誤り分析の各表の読み方。タスクごとに繰り返さないよう、report の「注記」に 1 回だけ出す
+NOTES = [
+    f"- 誤った件: いずれかのモデルが間違えた件を、間違えたモデル数の多い順に最大 {MAX_CASES} 件。"
+    "セルは予測ラベル（✓ は正解）。確率が取れるモデルは（予測の確率 / 正解の確率）を併記",
+    f"- 混同ペア: 正解 → 予測の組ごとの件数（全モデル合計の多い順、最大 {MAX_PAIRS} 組）",
+    "- 自信の低い判定を人に回した場合: 確率が閾値未満の判定を人が見直す（保留）運用の試算。"
+    "保留率 = 人に回った件の割合、自動処理分 Acc = 人に回さなかった件だけの正解率。"
+    "少ない保留率で Acc が上がるほど、確率が誤りを見つける手がかりとして役立っている",
+]
 
 
 def load_predictions(run_dir: Path) -> list[dict] | None:
@@ -94,12 +104,7 @@ def cases_section(names: list[str], preds: list[list[dict]], texts: dict[str, st
             gold.setdefault(p["id"], p["label"])
     wrong = {i: sum(1 for m in by_id if i in m and _is_wrong(m[i])) for i in order}
     ids = sorted((i for i, n in wrong.items() if n), key=lambda i: (-wrong[i], order[i]))
-    lines = [
-        "#### 誤った件", "",
-        "いずれかのモデルが間違えた件。間違えたモデル数の多い順（上限 "
-        f"{MAX_CASES} 件）。セルは予測ラベル（✓ は正解）。確率が取れるモデルは（予測の確率 / 正解の確率）を併記。",
-        "",
-    ]
+    lines = ["#### 誤った件", ""]
     if not ids:
         return lines + ["全モデルが全件正解。", ""]
     rows = [
@@ -126,7 +131,7 @@ def pairs_section(names: list[str], preds: list[list[dict]]) -> list[str]:
          ", ".join(f"{n} {counts[g, pr][n]}" for n in names if counts[g, pr][n])]
         for g, pr in pairs[:MAX_PAIRS]
     ]
-    lines = ["#### 混同ペア", "", f"正解 → 予測の組ごとの件数（全モデル合計の多い順、上限 {MAX_PAIRS} 組）。", ""]
+    lines = ["#### 混同ペア", ""]
     lines += md_table(["正解 → 予測", "件数", "モデル別"], rows)
     if len(pairs) > MAX_PAIRS:
         lines.append(f"\n他 {len(pairs) - MAX_PAIRS} 組")
@@ -169,12 +174,6 @@ def probability_sections(names: list[str], preds: list[list[dict]]) -> list[str]
     header = ["model"] + [h for t in THRESHOLDS for h in (f"閾値 {t} 保留率", f"閾値 {t} 自動処理分 Acc")]
     lines += [
         "", "#### 自信の低い判定を人に回した場合", "",
-        "「確率が閾値未満の判定は自動で処理せず、人が見直す（保留）」という運用を想定した試算。",
-        "",
-        "- 保留率: 人に回った件の割合（人の手間）",
-        "- 自動処理分 Acc: 人に回さなかった件だけで数えた正解率",
-        "- 少ない保留率で Acc が上がるほど、確率が誤りを見つける手がかりとして役立っている。",
-        "",
         *md_table(header, rows),
     ]
     return lines + [""]

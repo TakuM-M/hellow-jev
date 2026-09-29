@@ -91,8 +91,11 @@ def test_consistency_warnings():
     assert consistency_warnings([run("jev"), run("llm")]) == []
     w = consistency_warnings([run("jev"), run("llm", task_toml_sha256="t2", git_dirty=True)])
     assert len(w) == 2
-    assert "タスク定義" in w[0]
+    assert "タスク定義" in w[0] and "プロンプト" not in w[0]
     assert "llm" in w[1]
+    # 異なる項目が複数でも 1 行にまとめる
+    w = consistency_warnings([run("jev"), run("llm", task_toml_sha256="t2", prompt_sha256="p2")])
+    assert w == ["- ⚠️ run 間で異なる（同一条件の比較になっていない）: タスク定義（instructions・ラベル説明）, プロンプト"]
 
 
 def test_task_of_falls_back_for_old_runs():
@@ -124,6 +127,7 @@ def test_same_config_on_two_tasks_is_listed_per_task(tmp_path):
     assert "0.300" not in sections["jevbench_sst2"]
     assert "| jev | 2 | 0.600 |" in sections["jevbench_agnews"]
     assert "p50 / p95" in sections["注記"]
+    assert "混同ペア: " in sections["注記"]  # 誤り分析の読み方もタスクごとではなく注記に 1 回
 
 
 def test_consistency_warnings_are_per_task(tmp_path):
@@ -143,9 +147,9 @@ def test_consistency_warnings_are_per_task(tmp_path):
     sections = _sections(render(latest_per_name(load_runs(results)), tmp_path / "tasks"))
     assert "⚠️" not in sections["log_classification"]
     sst2 = sections["jevbench_sst2"]
-    assert "⚠️ タスク定義" in sst2
+    assert "⚠️ run 間で異なる（同一条件の比較になっていない）: タスク定義" in sst2
     assert "未コミットの変更がある状態で実行: llm_api" in sst2
-    assert "⚠️ データセット" not in sst2
+    assert "データセット" not in sst2.split("⚠️ run 間で異なる")[1].splitlines()[0]
     assert "⚠️" not in sections["注記"]
 
 

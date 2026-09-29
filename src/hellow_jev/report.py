@@ -176,9 +176,9 @@ def reference_note(ref: dict) -> str:
 def consistency_warnings(runs: list[dict]) -> list[str]:
     """ラベル説明だけ直して一部のモデルを再実行した、などの条件ずれを表の下に警告する。"""
     warnings = []
-    for key, what in CONSISTENCY_KEYS.items():
-        if len({r["meta"].get(key) for r in runs}) > 1:
-            warnings.append(f"- ⚠️ {what}が run 間で異なる（同一条件の比較になっていない）")
+    differ = [what for key, what in CONSISTENCY_KEYS.items() if len({r["meta"].get(key) for r in runs}) > 1]
+    if differ:
+        warnings.append(f"- ⚠️ run 間で異なる（同一条件の比較になっていない）: {', '.join(differ)}")
     dirty = [r["config"]["name"] for r in runs if r["meta"].get("git_dirty")]
     if dirty:
         warnings.append(f"- ⚠️ 未コミットの変更がある状態で実行: {', '.join(dirty)}")
@@ -208,7 +208,7 @@ def render(runs: list[dict], tasks_dir: Path = TASKS_DIR, configs_dir: Path | No
         if notes:
             lines += [*notes, ""]
         lines += error_analysis.render(task_runs)
-    lines += ["## 注記", "", *NOTES]
+    lines += ["## 注記", "", *NOTES, *error_analysis.NOTES]
     return "\n".join(lines) + "\n"
 
 
