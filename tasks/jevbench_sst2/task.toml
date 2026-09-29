@@ -1,5 +1,5 @@
 # jevbench の SST-2（映画レビューの感情、2 ラベル）を本リポジトリのパイプラインで再現するタスク定義。
-# 出典: https://github.com/dhruvmehra/jevbench（MIT License, Copyright (c) 2026 Dhruv Mehra）
+# 出典: https://github.com/dhruvmehra/jevbench（MIT License, Copyright (c) 2026 Dhruv Mehra）。全文: tasks/LICENSE-jevbench
 #   ラベル名・説明: src/jevbench/datasets.py（c983cc4）から同じ順序でそのまま写した。変更しない
 #   instructions: src/jevbench/classifiers/jev.py の build_questions（jevbench が Jev / Laya に渡す指示文）
 # 評価データは `uv run hellow-jev-prepare jevbench` で作る。

@@ -1,5 +1,5 @@
 # jevbench の Banking77（銀行アプリの問い合わせ意図、77 ラベル）を本リポジトリのパイプラインで再現するタスク定義。
-# 出典: https://github.com/dhruvmehra/jevbench（MIT License, Copyright (c) 2026 Dhruv Mehra）
+# 出典: https://github.com/dhruvmehra/jevbench（MIT License, Copyright (c) 2026 Dhruv Mehra）。全文: tasks/LICENSE-jevbench
 #   ラベル名・説明: src/jevbench/datasets.py（c983cc4）の BANKING77_RAW（HF のラベル index 順）から、
 #     jevbench と同じ変換（_bank_id / _bank_desc）で機械的に生成した 77 件。手で編集しない
 #       name        = raw.lower().replace("?", "")   例: "Refund_not_showing_up" -> "refund_not_showing_up"
