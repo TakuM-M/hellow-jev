@@ -16,7 +16,9 @@ max_tokens = 32            # ラベル名 1 語だけ返させる。Banking77 �
 # base_url = "https://api.anthropic.com"   # 未指定なら環境変数 LLM_API_BASE_URL → この既定値
 # API キーは環境変数 LLM_API_KEY（無ければ ANTHROPIC_API_KEY）。config には書かない
 
-# 比較表のコスト列用（USD / 1M tokens）。⚠️ 仮置き（公式料金ページで未確認。docs/notes/llm.md）
+# 比較表のコスト列用（USD / 1M tokens）。report は集計時にこの値を読む
+# 2026-09-29 に公式料金ページで確認（https://platform.claude.com/docs/en/about-claude/pricing）:
+# Claude Haiku 4.5 は base input $1 / MTok、output $5 / MTok（Claude API 直、キャッシュ・Batch なし）
 [pricing]
 input_per_mtok = 1.0
 output_per_mtok = 5.0

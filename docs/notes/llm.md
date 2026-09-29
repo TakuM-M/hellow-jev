@@ -45,10 +45,12 @@
 - usage は `input_tokens` / `output_tokens` に揃える（OpenAI 形式の prompt_tokens / completion_tokens を変換）
 - 429 / 500 / 502 / 503 / 504 / 529 と接続エラーは、最大 `max_retries` 回リトライする（Retry-After を優先。Jev / Laya と同じ条件）。**リトライの待ち時間はレイテンシに乗る**
 - サーバ固有のパラメータは config の `extra_body` で body に追加できる
+- 料金 ✅ Haiku 4.5: input $1 / MTok、output $5 / MTok（2026-09-29 に [公式料金ページ](https://platform.claude.com/docs/en/about-claude/pricing) で確認。`configs/llm_api.toml` の `[pricing]` に反映）
+  - この料金は Claude API 直の標準料金。Batch API は半額（$0.50 / $2.50）、キャッシュヒットは input の 0.1 倍。このベンチでは両方とも使っていない
+  - Bedrock / Vertex AI は料金が別。リージョンを指定するエンドポイントは 1.1 倍
 
 ## 未確認
 
-- Haiku 4.5 の料金（config の `[pricing]` は $1 / $5 per MTok で仮置き。公式で要確認）
 - Qwen3 の思考モードの切り方（実サーバでは未検証）
   - vLLM: `chat_template_kwargs.enable_thinking=false`
   - Ollama: `/v1/chat/completions` に `reasoning_effort: "none"` → `think=false` に変換される（GitHub の ollama/docs/api/openai-compatibility.mdx で確認、2026-09-27）。古い版では /v1 で think 指定が無視されるという報告があるので、効かなければ Ollama を更新する
