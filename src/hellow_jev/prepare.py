@@ -36,11 +36,9 @@ from __future__ import annotations
 
 import argparse
 import csv
-import hashlib
 import http.client
 import io
 import json
-import os
 import random
 import sys
 import urllib.request
@@ -51,6 +49,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from hellow_jev.task import REPO_ROOT, Record
+from hellow_jev.util import USER_AGENT, sha256_bytes, sha256_file, write_atomic
 
 DEFAULT_RAW_DIR = REPO_ROOT / "data" / "raw" / "jevbench"
 DEFAULT_OUT_DIR = REPO_ROOT / "data" / "processed"
@@ -260,21 +259,9 @@ JEVBENCH: dict[str, DatasetSpec] = {
 
 
 def fetch_url(url: str) -> bytes:
-    request = urllib.request.Request(url, headers={"User-Agent": "hellow-jev"})
+    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(request, timeout=DOWNLOAD_TIMEOUT_SEC) as resp:
         return resp.read()
-
-
-def _sha256(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
-
-
-def _write_atomic(path: Path, data: bytes) -> None:
-    # 途中で止まっても壊れたファイルがキャッシュとして残らないよう、書き終えてから置き換える
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(path.name + ".part")
-    tmp.write_bytes(data)
-    os.replace(tmp, path)
 
 
 def validate(spec: DatasetSpec, rows: Rows) -> None:
@@ -313,7 +300,7 @@ def _read(spec: DatasetSpec, raw_file: RawFile, data: bytes) -> tuple[Rows, str 
             raise PrepareError(f"zip として読めません（{e}）") from e
         except KeyError:
             raise PrepareError(f"zip 内に {raw_file.member} がありません") from None
-        member_sha256 = _sha256(data)
+        member_sha256 = sha256_bytes(data)
     try:
         rows = spec.parse(data)
     except (UnicodeDecodeError, csv.Error) as e:
@@ -348,7 +335,7 @@ def load_raw(
                 raise PrepareError(
                     f"[{spec.name}] {path}: {e}\n  削除するか、正しいファイルに置き換えてから再実行してください"
                 ) from e
-            return RawData(rows, raw_file, path, _sha256(data), member_sha256, url=None)
+            return RawData(rows, raw_file, path, sha256_bytes(data), member_sha256, url=None)
 
     failures = []
     for raw_file in spec.raw_files:
@@ -357,7 +344,7 @@ def load_raw(
             print(f"[{spec.name}] ダウンロード: {url}", file=sys.stderr)
             try:
                 data = fetch(url)
-                sha256 = _sha256(data)
+                sha256 = sha256_bytes(data)
                 if is_mirror and sha256 != raw_file.sha256:
                     raise PrepareError(f"sha256 が確認済みのファイルと一致しないため使いません（{sha256}）")
                 rows, member_sha256 = _read(spec, raw_file, data)
@@ -366,7 +353,7 @@ def load_raw(
                 print(f"[{spec.name}]   失敗: {e}", file=sys.stderr)
                 continue
             path = raw_dir / raw_file.path
-            _write_atomic(path, data)  # 検証を通ったものだけ保存する
+            write_atomic(path, data)  # 検証を通ったものだけ保存する。途中で止まっても壊れたキャッシュを残さない
             return RawData(rows, raw_file, path, sha256, member_sha256, url=url)
 
     places = "\n".join(f"  - {raw_dir / f.path}（{f.how_to_get}）" for f in spec.raw_files)
@@ -384,13 +371,10 @@ def sample(records: list[Record], n: int, seed: int) -> list[Record]:
 
 
 def write_jsonl(path: Path, records: list[Record]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(path.name + ".part")
-    # OS によらず同じバイト列（= 同じ sha256）になるよう改行は LF に固定する
-    with open(tmp, "w", encoding="utf-8", newline="\n") as f:
-        for r in records:
-            f.write(json.dumps({"id": r.id, "text": r.text, "label": r.label}, ensure_ascii=False) + "\n")
-    os.replace(tmp, path)
+    # バイト列で書くので、OS によらず改行は LF（= 同じ sha256）になる
+    lines = (json.dumps({"id": r.id, "text": r.text, "label": r.label}, ensure_ascii=False) + "\n"
+             for r in records)
+    write_atomic(path, "".join(lines).encode("utf-8"))
 
 
 @dataclass
@@ -416,7 +400,7 @@ def prepare(
     picked = sample(records, n, seed)
     out_path = out_dir / f"jevbench_{spec.name}.jsonl"
     write_jsonl(out_path, picked)
-    return Prepared(spec, raw, out_path, _sha256(out_path.read_bytes()), picked)
+    return Prepared(spec, raw, out_path, sha256_file(out_path), picked)
 
 
 # ---- 表示・CLI ----

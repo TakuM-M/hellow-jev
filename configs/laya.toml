@@ -7,7 +7,6 @@ hardware = "Apple M1 (8GB), mps"   # デバイスは laya-serve の /health の 
 
 [classifier]
 type = "laya"
-backend = "http"   # laya-serve（Jev 互換 HTTP）経由
 # endpoint = "http://localhost:8000"   # 未指定なら環境変数 LAYA_ENDPOINT → この既定値
 # ログ・ラベル説明とも英語なので英語版を使う。multilingual / typed-decisions も指定可。
 # laya-serve は未知の名前を黙って自動選択に切り替えるので、この 3 つ以外はクライアント側でエラーにする。

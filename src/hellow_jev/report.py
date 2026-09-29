@@ -17,10 +17,8 @@ import tomllib
 from pathlib import Path
 
 from hellow_jev import error_analysis
-from hellow_jev.task import REPO_ROOT, TASKS_DIR
-
-# 本題のタスク。表の先頭に出す。meta に task がない旧形式の run もこのタスクとみなす
-MAIN_TASK = "log_classification"
+from hellow_jev.task import MAIN_TASK, REPO_ROOT, TASKS_DIR
+from hellow_jev.util import md_table
 
 # 行どうしで一致していないと同一条件の比較にならない meta の項目
 CONSISTENCY_KEYS = {
@@ -187,14 +185,6 @@ def consistency_warnings(runs: list[dict]) -> list[str]:
     return warnings
 
 
-def _table(rows: list[list[str]]) -> list[str]:
-    return [
-        "| " + " | ".join(COLUMNS) + " |",
-        "| " + " | ".join("---" for _ in COLUMNS) + " |",
-        *("| " + " | ".join(cells) + " |" for cells in rows),
-    ]
-
-
 def render(runs: list[dict], tasks_dir: Path = TASKS_DIR, configs_dir: Path | None = None) -> str:
     """タスクごとに見出し・表・注記を並べる。本題のタスクを先頭に、残りはタスク名順。
 
@@ -214,7 +204,7 @@ def render(runs: list[dict], tasks_dir: Path = TASKS_DIR, configs_dir: Path | No
             notes.append(reference_note(ref))
         # 別タスクどうしはデータもタスク定義も違って当然なので、条件ずれはタスク内だけで見る
         notes += consistency_warnings(task_runs)
-        lines += [f"## {task}", "", *_table(rows), ""]
+        lines += [f"## {task}", "", *md_table(COLUMNS, rows), ""]
         if notes:
             lines += [*notes, ""]
         lines += error_analysis.render(task_runs)

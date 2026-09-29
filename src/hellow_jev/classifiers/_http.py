@@ -24,10 +24,11 @@ from dataclasses import dataclass
 from email.message import Message
 from typing import Any
 
+from hellow_jev.util import USER_AGENT
+
 # レート制限・過負荷・一時的なサーバエラー（529 は Anthropic の overloaded）
 RETRY_STATUS = {429, 500, 502, 503, 504, 529}
 MAX_WAIT_SEC = 60.0  # Retry-After が大きすぎても run が止まり続けないよう上限を設ける
-USER_AGENT = "hellow-jev"
 
 
 @dataclass

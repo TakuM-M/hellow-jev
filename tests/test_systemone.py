@@ -60,7 +60,7 @@ def test_laya_request_and_parse(server):
     _Handler.routing_model = "multilingual"
     task = load_task("log_classification")
     clf = build_classifier(
-        {"type": "laya", "backend": "http", "endpoint": server, "model": "multilingual"}, task
+        {"type": "laya", "endpoint": server, "model": "multilingual"}, task
     )
     pred = clf.classify("ERROR payment-svc charge failed")
     assert pred.label == "payment"

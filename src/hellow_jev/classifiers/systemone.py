@@ -44,8 +44,6 @@ class SystemOneClassifier(Classifier):
         self.url = base_url.rstrip("/") + "/v1/systemone"
         self.api_key = api_key
         self.model = model
-        self.timeout = timeout
-        self.max_retries = max_retries
         self.http = HTTPClient(timeout=timeout, max_retries=max_retries)
 
     def build_state(self, text: str) -> str | dict[str, str]:

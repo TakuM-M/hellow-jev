@@ -8,7 +8,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import statistics
 from collections import Counter
@@ -16,6 +15,7 @@ from pathlib import Path
 
 from hellow_jev.classifiers.systemone import QUESTION_ID
 from hellow_jev.task import load_dataset
+from hellow_jev.util import md_table, sha256_file
 
 MAX_CASES = 20  # 誤った件の表の上限。件数の多いタスク（jevbench など）で表が膨らまないようにする
 MAX_PAIRS = 10  # 混同ペアの表の上限
@@ -44,7 +44,7 @@ def load_texts(meta: dict) -> dict[str, str]:
     path = Path(meta.get("dataset") or "")
     if not meta.get("dataset") or not path.is_file():
         return {}
-    if meta.get("dataset_sha256") and hashlib.sha256(path.read_bytes()).hexdigest() != meta["dataset_sha256"]:
+    if meta.get("dataset_sha256") and sha256_file(path) != meta["dataset_sha256"]:
         return {}
     return {r.id: r.text for r in load_dataset(path)}
 
@@ -64,14 +64,6 @@ def _pred_name(p: dict) -> str:
 
 def _is_wrong(p: dict) -> bool:
     return p.get("pred") != p["label"] or bool(p.get("error"))
-
-
-def _table(header: list[str], rows: list[list[str]]) -> list[str]:
-    return [
-        "| " + " | ".join(header) + " |",
-        "| " + " | ".join("---" for _ in header) + " |",
-        *("| " + " | ".join(cells) + " |" for cells in rows),
-    ]
 
 
 def _names(runs: list[dict]) -> list[str]:
@@ -114,7 +106,7 @@ def cases_section(names: list[str], preds: list[list[dict]], texts: dict[str, st
         [i, _cell_text(texts.get(i)), gold[i], *(_case_cell(m.get(i)) for m in by_id)]
         for i in ids[:MAX_CASES]
     ]
-    lines += _table(["id", "テキスト", "正解", *names], rows)
+    lines += md_table(["id", "テキスト", "正解", *names], rows)
     if len(ids) > MAX_CASES:
         lines.append(f"\n他 {len(ids) - MAX_CASES} 件（全件は results/<run>/predictions.jsonl）")
     return lines + [""]
@@ -135,7 +127,7 @@ def pairs_section(names: list[str], preds: list[list[dict]]) -> list[str]:
         for g, pr in pairs[:MAX_PAIRS]
     ]
     lines = ["#### 混同ペア", "", f"正解 → 予測の組ごとの件数（全モデル合計の多い順、上限 {MAX_PAIRS} 組）。", ""]
-    lines += _table(["正解 → 予測", "件数", "モデル別"], rows)
+    lines += md_table(["正解 → 予測", "件数", "モデル別"], rows)
     if len(pairs) > MAX_PAIRS:
         lines.append(f"\n他 {len(pairs) - MAX_PAIRS} 組")
     return lines + [""]
@@ -165,7 +157,7 @@ def probability_sections(names: list[str], preds: list[list[dict]]) -> list[str]
         ng = [x for x, c in s if not c]
         rows.append([name, *stats(ok, min), *stats(ng, max)])
     lines = ["#### 予測ラベルの確率（確率を返すモデルのみ）", ""]
-    lines += _table(["model", "正解時 n", "正解時 中央値", "正解時 最小", "誤り時 n", "誤り時 中央値", "誤り時 最大"], rows)
+    lines += md_table(["model", "正解時 n", "正解時 中央値", "正解時 最小", "誤り時 n", "誤り時 中央値", "誤り時 最大"], rows)
 
     rows = []
     for name, s in scored:
@@ -183,7 +175,7 @@ def probability_sections(names: list[str], preds: list[list[dict]]) -> list[str]
         "- 自動処理分 Acc: 人に回さなかった件だけで数えた正解率",
         "- 少ない保留率で Acc が上がるほど、確率が誤りを見つける手がかりとして役立っている。",
         "",
-        *_table(header, rows),
+        *md_table(header, rows),
     ]
     return lines + [""]
 

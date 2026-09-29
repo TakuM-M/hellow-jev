@@ -7,7 +7,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import platform
@@ -21,11 +20,8 @@ from pathlib import Path
 from hellow_jev.classifiers import Prediction, build_classifier
 from hellow_jev.envfile import load_env_file
 from hellow_jev.metrics import evaluate, latency_stats, usage_stats
-from hellow_jev.task import REPO_ROOT, TASKS_DIR, load_dataset, load_task
-
-
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+from hellow_jev.task import MAIN_TASK, REPO_ROOT, TASKS_DIR, load_dataset, load_task
+from hellow_jev.util import sha256_file
 
 
 def _git(*args: str) -> str | None:
@@ -46,8 +42,6 @@ def available_tasks() -> list[str]:
 
 
 NAME_RE = re.compile(r"[A-Za-z0-9_.-]+")
-# config にも --task にもタスクの指定がないときに使う（本題のログ分類）
-DEFAULT_TASK = "log_classification"
 # 接続先が落ちている等で連続して失敗したら、残りを無駄に待たずに打ち切る
 DEFAULT_MAX_CONSECUTIVE_ERRORS = 10
 
@@ -73,8 +67,8 @@ def main() -> None:
     if "classifier" not in config:
         raise SystemExit(f"{args.config}: [classifier] がありません")
     max_consecutive_errors = config.get("max_consecutive_errors", DEFAULT_MAX_CONSECUTIVE_ERRORS)
-    # --task > config の task > 既定。保存する config.json にも実際に回したタスクを残す
-    config["task"] = args.task or config.get("task", DEFAULT_TASK)
+    # --task > config の task > 本題のタスク。保存する config.json にも実際に回したタスクを残す
+    config["task"] = args.task or config.get("task", MAIN_TASK)
     tasks = available_tasks()
     if config["task"] not in tasks:
         raise SystemExit(
@@ -98,9 +92,9 @@ def main() -> None:
     meta = {
         "task": task.name,
         "dataset": str(dataset_path),
-        "dataset_sha256": _sha256(dataset_path),
-        "task_toml_sha256": _sha256(task_dir / "task.toml"),
-        "prompt_sha256": _sha256(task_dir / "prompt.md"),
+        "dataset_sha256": sha256_file(dataset_path),
+        "task_toml_sha256": sha256_file(task_dir / "task.toml"),
+        "prompt_sha256": sha256_file(task_dir / "prompt.md"),
         "git_commit": _git("rev-parse", "HEAD"),
         "git_dirty": bool(_git("status", "--porcelain")),
         "warmup": warmup,

@@ -4,7 +4,7 @@
 見出しがあれば system メッセージも付ける。答えは {"label": <ラベル名の enum>} の JSON スキーマで縛り、
 ラベル外を生成できないようにする（Anthropic は output_config.format、OpenAI 互換は response_format。
 jevbench と同じ方式）。Jev / Laya の choice 質問と同じく「選択肢から 1 つ選ぶ」条件に揃えるため。
-API 形式は 2 種類（どちらも標準ライブラリの urllib で叩く）:
+API 形式は 2 種類（どちらも _http.HTTPClient で叩く）:
 
     api_format = "anthropic" : Anthropic Messages API（POST {base_url}/v1/messages）
     api_format = "openai"    : OpenAI 互換 Chat Completions（POST {base_url}/chat/completions）
@@ -73,12 +73,9 @@ class LLMClassifier(Classifier):
         if not self.base_url:
             raise ValueError("base_url（または LLM_API_BASE_URL）を指定してください")
 
-        self.backend = backend
         self.model = model
         self.temperature = temperature
         self.max_tokens = max_tokens
-        self.timeout = timeout
-        self.max_retries = max_retries
         self.extra_body = extra_body or {}
         self.http = HTTPClient(timeout=timeout, max_retries=max_retries)
 

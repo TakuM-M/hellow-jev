@@ -9,6 +9,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TASKS_DIR = REPO_ROOT / "tasks"
+# 本題のタスク。run でタスクの指定がないときの既定、report では表の先頭
+MAIN_TASK = "log_classification"
 # Jev / Laya に渡す state の形（task.toml の state_format）。
 # "object" = {"log": テキスト}（既定）、"string" = テキストそのもの（jevbench と同じ）
 STATE_FORMATS = ("object", "string")
