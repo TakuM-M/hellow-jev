@@ -38,7 +38,7 @@
 - 標準ライブラリのみ。SDK は入れない（HTTP は `classifiers/_http.py` の共通クライアント）
 - `api_format = "anthropic"`: `POST {base_url}/v1/messages`、`x-api-key` + `anthropic-version: 2023-06-01`
   - 既定モデルは `claude-haiku-4-5-20251001`（日付付き ID で固定）。キーは `LLM_API_KEY`、無ければ `ANTHROPIC_API_KEY`
-- `api_format = "openai"`: `POST {endpoint}/chat/completions`（Ollama / vLLM / llama.cpp server）
+- `api_format = "openai"`: `POST {base_url}/chat/completions`（Ollama / vLLM / llama.cpp server）
   - ローカルの既定は Ollama の `http://localhost:11434/v1`、モデルは `qwen3:4b`
 - 共通: temperature=0、max_tokens=16、プロンプトは `task.render_prompt()`（user 1 ターン、system なし）
 - 出力から `<think>...</think>` を除いてから `normalize()` にかける。ラベル外は `None`（invalid）
@@ -106,3 +106,4 @@
   - レイテンシ p50: Haiku ≈ 750〜820 ms、Qwen ≈ 690〜1,420 ms（Banking77 が最も遅い。入力 ≈ 1,150 tok/件）。Jev・Laya の 4〜8 倍
   - コスト/1 万件: Haiku は Banking77 で $22.9（入力 ≈ 2,220 tok/件）。Jev は $0.83
   - 比較表の警告「タスク定義・プロンプト・コードが run 間で異なる」は想定内: Jev / Laya の run（`5f16e82`）以降の task.toml の変更はコメントのみ、`systemone.py` は無変更。プロンプトは LLM だけが使う
+- 2026-09-29: 比較表の条件ずれ警告を廃止（ファイル単位のハッシュ比較ではコメント変更でも出て、実害のある差を示せなかった）。接続先の config キーを `base_url` に統一（local も `endpoint` ではなく `base_url`。環境変数 `LLM_LOCAL_ENDPOINT` は据え置き）。プロンプトのプレースホルダを `{log}` → `{text}` に改名

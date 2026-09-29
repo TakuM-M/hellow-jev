@@ -95,3 +95,4 @@
   - レイテンシ: 往復 p50 ≈ 149 ms、サーバ側推論 p50 ≈ 147 ms（差 ≈ 2 ms がローカルの HTTP 分）。T4 の公表値（1 問 39.5 ms）より約 4 倍遅い
   - usage: input ≈ 146 tok/件、output 0
   - 誤り: s003（`login success` → auth。Jev と同じ誤り）、s010（`upstream timeout after 30000ms` → normal、confidence 0.28）
+- 2026-09-29: config の `backend` オプションを削除（`"http"` しか無く意味が無かった）。接続先の config キーを `endpoint` → `base_url` に統一（環境変数 `LAYA_ENDPOINT` は据え置き）
