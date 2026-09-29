@@ -89,6 +89,13 @@
   - laya-serve は FastAPI + uvicorn（asyncio は既定で `TCP_NODELAY`）なので、実サーバではこの上乗せは起きない見込み
   - 自前のテスト用サーバを作るときは `disable_nagle_algorithm = True` を付ける
 - EC ログサンプルの s003（`INFO auth-svc login success`、正解 normal）は jev・laya・qwen3:4b の 3 モデルが auth と誤った（jev 0.94、laya 0.91 と高い確率で）。`auth-svc` の語と、ラベル説明の「auth = Login, session, or token issues」「normal = no action needed」の境界が曖昧なのが原因の可能性。モデルの弱点というよりタスク定義の問題かもしれない（2026-09-28 の run）
+- Jev で 4 タスクを実行（2026-09-29、`jev-1.13.0` を TypeSafe に直接、各 500 件、エラー 0 件）。Acc は公表値との差が 0.6pt 以内で、n=500 の誤差（±2pt 程度）に十分収まる → Jev のクライアントと指標の計算は jevbench と合っている
+  - SST-2 0.950（公表 0.954）/ AG News 旧 0.844（0.843）/ AG News 新 0.856（0.858）/ Banking77 0.768（0.764）
+  - p50 は 165〜175ms（公表値 376〜389ms は OpenRouter 経由なので比べない）
+- Laya で 4 タスクを実行（2026-09-29、laya-serve 0.3.21 / english `55cf4c4` / M1 8GB mps、各 500 件、エラー 0 件）。公表値のある 3 タスクは **Acc・Macro-F1 とも小数第 3 位まで完全に一致** → laya-serve 経由・`state_format = "string"` で jevbench の in-process 実行と同じ入力になっている
+  - SST-2 0.920 / AG News 旧 0.906 / Banking77 0.382（Macro-F1 0.321）
+  - AG News 新説明は 0.862（公表値なし）。Jev は新説明で +1.2pt だったが、Laya は **-4.4pt**。ラベル説明の書き方への感度がモデルで違う
+  - p50 は 102 / 141 / 178 / 279ms で、公表値（41 / 59 / - / 130ms）の約 2〜2.5 倍。HTTP 経由と M1 8GB のため（jevbench は in-process、Apple silicon の機種は不明）。選択肢が多いほど遅い傾向は同じ
 
 ## 未確認・次にやること
 
@@ -102,3 +109,5 @@
 
 - 2026-09-27: 初回調査。先行ベンチ（jevbench / jev-eval / jev-benchmark）と、ログ系の公開データ（Loghub / RCAEval / LogEval など）を調べた
 - 2026-09-27: jevbench の再現を実装（`hellow-jev-prepare jevbench`、`tasks/jevbench_*`、`--task`、参考値付きの比較表）。ダミーサーバでのみ確認
+- 2026-09-29: Jev で jevbench 4 タスクを実行。公表値と 0.6pt 以内で一致
+- 2026-09-29: Laya で jevbench 4 タスクを実行。公表値と Acc・Macro-F1 が完全一致
