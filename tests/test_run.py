@@ -14,8 +14,10 @@ class _Flaky(Classifier):
 
     answers: dict = {}
     fail: set = set()
+    seen: list = []  # classify に渡されたテキスト（warmup を含む）
 
     def classify(self, text):
+        type(self).seen.append(text)
         if text in type(self).fail:
             raise RuntimeError("HTTP 503")
         return Prediction(label=type(self).answers.get(text), attempts=2)
@@ -39,6 +41,7 @@ def data():
     ds = load_dataset(load_task("log_classification").dataset)
     _Flaky.answers = {r.text: r.label for r in ds}
     _Flaky.fail = {ds[0].text}
+    _Flaky.seen = []
     return ds
 
 
@@ -106,3 +109,19 @@ def test_unknown_task_fails_before_any_call(tmp_path, monkeypatch, data, config_
     with pytest.raises(SystemExit, match=r"'no_such_task'.*log_classification"):
         _run(tmp_path, monkeypatch, f'name = "t"\n{config_task}[classifier]\ntype = "flaky"\n', *args)
     assert not (tmp_path / "results").exists()
+
+
+def test_warmup_calls_are_not_recorded(tmp_path, monkeypatch, data):
+    _Flaky.fail = set()
+    d = _run(tmp_path, monkeypatch, 'name = "t"\nwarmup = 2\n[classifier]\ntype = "flaky"\n')
+    # warmup は評価データ以外の文で空打ちし、predictions には残さない
+    assert len(_Flaky.seen) == len(data) + 2
+    assert not set(_Flaky.seen[:2]) & {r.text for r in data}
+    assert len((d / "predictions.jsonl").read_text().splitlines()) == len(data)
+    assert json.loads((d / "meta.json").read_text())["warmup"] == 2
+    # --warmup は config の warmup を上書きする
+    _Flaky.seen = []
+    (tmp_path / "2").mkdir()
+    d = _run(tmp_path / "2", monkeypatch, 'name = "t"\nwarmup = 2\n[classifier]\ntype = "flaky"\n',
+             "--warmup", "0")
+    assert len(_Flaky.seen) == len(data)

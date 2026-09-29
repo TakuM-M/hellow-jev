@@ -1,3 +1,6 @@
+import pytest
+
+from hellow_jev.classifiers import build_classifier
 from hellow_jev.task import load_dataset, load_task
 
 
@@ -17,8 +20,6 @@ def test_prompt_renders():
 
 
 def test_dataset_validation(tmp_path):
-    import pytest
-
     names = load_task("log_classification").label_names
     ok = '{"id": "a", "text": "x", "label": "payment"}\n'
     cases = {
@@ -35,10 +36,6 @@ def test_dataset_validation(tmp_path):
 
 
 def test_unknown_classifier_option_is_rejected():
-    import pytest
-
-    from hellow_jev.classifiers import build_classifier
-
     task = load_task("log_classification")
     with pytest.raises(ValueError, match="temprature"):
         build_classifier({"type": "llm", "backend": "local", "model": "m", "temprature": 1.0}, task)
@@ -46,11 +43,12 @@ def test_unknown_classifier_option_is_rejected():
         build_classifier({"type": "laya", "model": "english", "timeout_sec": 1}, task)
 
 
+def test_unknown_classifier_type_is_rejected():
+    with pytest.raises(ValueError, match="unknown classifier type 'jevv'"):
+        build_classifier({"type": "jevv"}, load_task("log_classification"))
+
+
 def test_wrong_endpoint_key_is_rejected():
-    import pytest
-
-    from hellow_jev.classifiers import build_classifier
-
     task = load_task("log_classification")
     with pytest.raises(ValueError, match="endpoint"):
         build_classifier({"type": "laya", "base_url": "http://x"}, task)
@@ -87,8 +85,6 @@ def test_prompt_without_headers_is_user_only(tmp_path, monkeypatch):
 
 
 def test_prompt_split_errors(tmp_path, monkeypatch):
-    import pytest
-
     for template in ("[user]\n{log}\n", "[system]\nsys\n", "x\n[system]\ns\n[user]\n{log}\n",
                      "[system]\n\n[user]\n{log}\n", "[system]\ns\n[user]\n{log}\n[user]\n"):
         _write_task(tmp_path, monkeypatch, template)
