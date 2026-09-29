@@ -8,7 +8,7 @@
 
 # 評価データ（リポジトリルートからの相対パス）
 dataset = "data/processed/jevbench_agnews.jsonl"
-# 全モデル共通の指示文。LLM は prompt.md の {instructions}、Jev / Laya は choice 質問の instructions に入る
+# Jev / Laya の choice 質問の instructions に入る。LLM には渡さない（jevbench の LLM プロンプトに無いため。prompt.md）
 instructions = "Which category best describes the text? Pick exactly one."
 # jevbench は Jev / Laya の state にテキストそのもの（文字列）を渡すので揃える
 # （既定の "object" では {"log": テキスト} になり、モデルへの入力が jevbench と変わる）

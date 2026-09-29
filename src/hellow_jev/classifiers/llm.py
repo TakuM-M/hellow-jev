@@ -1,6 +1,9 @@
 """汎用 LLM による分類器（生成で答えるモデルとの比較用）。
 
-共通プロンプト（tasks/<task>/prompt.md）を 1 ターンで投げ、返ってきたラベル名を正規化する。
+共通プロンプト（tasks/<task>/prompt.md）を 1 ターンで投げる。prompt.md に [system] / [user] の
+見出しがあれば system メッセージも付ける。答えは {"label": <ラベル名の enum>} の JSON スキーマで縛り、
+ラベル外を生成できないようにする（Anthropic は output_config.format、OpenAI 互換は response_format。
+jevbench と同じ方式）。Jev / Laya の choice 質問と同じく「選択肢から 1 つ選ぶ」条件に揃えるため。
 API 形式は 2 種類（どちらも標準ライブラリの urllib で叩く）:
 
     api_format = "anthropic" : Anthropic Messages API（POST {base_url}/v1/messages）
@@ -14,8 +17,8 @@ backend = "local" : 既定 api_format="openai"、接続先は endpoint → LLM_L
 
 from __future__ import annotations
 
+import json
 import os
-import re
 from typing import Any
 
 from hellow_jev.classifiers._http import HTTPClient
@@ -24,8 +27,6 @@ from hellow_jev.classifiers.base import Classifier, Prediction
 ANTHROPIC_BASE_URL = "https://api.anthropic.com"
 ANTHROPIC_VERSION = "2023-06-01"
 LOCAL_ENDPOINT = "http://localhost:11434/v1"  # Ollama の OpenAI 互換エンドポイント
-# Qwen3 などの思考モードが出力に混ぜる推論部分
-THINK_RE = re.compile(r"<think>.*?</think>", re.DOTALL)
 
 
 class LLMClassifier(Classifier):
@@ -83,15 +84,39 @@ class LLMClassifier(Classifier):
 
     # --- リクエスト組み立て -------------------------------------------------
 
+    def label_schema(self) -> dict[str, Any]:
+        """答えを縛る JSON スキーマ（jevbench の build_response_format と同じ）。"""
+        return {
+            "type": "object",
+            "properties": {"label": {"type": "string", "enum": self.task.label_names}},
+            "required": ["label"],
+            "additionalProperties": False,
+        }
+
     def build_request(self, text: str) -> tuple[str, dict[str, str], dict[str, Any]]:
         """(url, headers, body) を返す。"""
-        prompt = self.task.render_prompt(text)
+        system = self.task.render_system()
+        messages = [{"role": "user", "content": self.task.render_prompt(text)}]
         body: dict[str, Any] = {
             "model": self.model,
             "max_tokens": self.max_tokens,
             "temperature": self.temperature,
-            "messages": [{"role": "user", "content": prompt}],
         }
+        # system と出力の縛りは API 形式ごとに置き場所が違う
+        if self.api_format == "anthropic":
+            if system is not None:
+                body["system"] = system
+            body["output_config"] = {
+                "format": {"type": "json_schema", "schema": self.label_schema()}}
+        else:
+            if system is not None:
+                messages.insert(0, {"role": "system", "content": system})
+            body["response_format"] = {
+                "type": "json_schema",
+                "json_schema": {"name": "classification", "strict": True,
+                                "schema": self.label_schema()},
+            }
+        body["messages"] = messages
         body.update(self.extra_body)
         headers = {"Content-Type": "application/json"}
         root = self.base_url.rstrip("/")
@@ -131,6 +156,16 @@ class LLMClassifier(Classifier):
         url, headers, body = self.build_request(text)
         resp = self.http.post(url, headers, body)
         output, usage = self.parse_response(resp.body)
-        answer = THINK_RE.sub("", output)
-        return Prediction(label=self.normalize(answer), raw=resp.body, usage=usage,
+        return Prediction(label=self.parse_json(output), raw=resp.body, usage=usage,
                           attempts=resp.attempts, new_connection=resp.new_connection)
+
+    def parse_json(self, answer: str) -> str | None:
+        """{"label": ...} を読む。jevbench と同じく、読めない・ラベル外なら None（不正解）。
+
+        スキーマで縛っているので、None になるのは max_tokens で途中で切れたときなど。正規化（小文字化など）はしない。
+        """
+        try:
+            label = json.loads(answer)["label"]
+        except (ValueError, TypeError, KeyError):
+            return None
+        return label if label in self.task.label_names else None

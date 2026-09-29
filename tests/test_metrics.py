@@ -14,10 +14,10 @@ def test_partial():
     assert m["per_class"]["b"]["precision"] == 0.5
 
 
-def test_invalid_prediction():
+def test_unreadable_prediction_is_wrong():
     m = evaluate(["a", "b"], ["a", None], ["a", "b"])
     assert m["accuracy"] == 0.5
-    assert m["invalid_rate"] == 0.5
+    assert "invalid_rate" not in m
     assert m["confusion"]["b"] == {"<invalid>": 1}
 
 
@@ -41,9 +41,8 @@ def test_usage_stats():
     assert abs(s["per_record"]["input_tokens"] - 40 / 3) < 1e-9
 
 
-def test_errors_are_wrong_but_not_invalid():
+def test_errors_are_counted_separately():
     m = evaluate(["a", "b", "b"], ["a", None, None], ["a", "b"], errors=[False, True, False])
     assert abs(m["accuracy"] - 1 / 3) < 1e-9
     assert abs(m["error_rate"] - 1 / 3) < 1e-9
-    assert abs(m["invalid_rate"] - 1 / 3) < 1e-9
     assert m["confusion"]["b"] == {"<error>": 1, "<invalid>": 1}

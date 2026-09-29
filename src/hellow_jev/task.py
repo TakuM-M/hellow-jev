@@ -12,6 +12,9 @@ TASKS_DIR = REPO_ROOT / "tasks"
 # Jev / Laya に渡す state の形（task.toml の state_format）。
 # "object" = {"log": テキスト}（既定）、"string" = テキストそのもの（jevbench と同じ）
 STATE_FORMATS = ("object", "string")
+# prompt.md のテンプレートを system / user メッセージに分ける見出し行。無ければ全体が user メッセージ
+SYSTEM_HEADER = "[system]"
+USER_HEADER = "[user]"
 
 
 @dataclass(frozen=True)
@@ -33,21 +36,32 @@ class Task:
     dataset: Path
     labels: list[Label]
     instructions: str
-    prompt_template: str
+    prompt_template: str  # user メッセージのテンプレート
     state_format: str = "object"  # STATE_FORMATS のいずれか。LLM のプロンプトには影響しない
+    system_template: str | None = None  # system メッセージのテンプレート（prompt.md に [system] がある場合）
 
     @property
     def label_names(self) -> list[str]:
         return [label.name for label in self.labels]
 
-    def render_prompt(self, log: str) -> str:
+    def _render(self, template: str, log: str) -> str:
         labels = "\n".join(f"- {l.name}: {l.description}" for l in self.labels)
         # str.format だとテンプレート中の { } （JSON の出力例など）で壊れるため単純置換
         return (
-            self.prompt_template.replace("{instructions}", self.instructions)
+            template.replace("{instructions}", self.instructions)
             .replace("{labels}", labels)
             .replace("{log}", log)
         )
+
+    def render_prompt(self, log: str) -> str:
+        """user メッセージ。"""
+        return self._render(self.prompt_template, log)
+
+    def render_system(self) -> str | None:
+        """system メッセージ（無ければ None）。分類するテキストは入れない。"""
+        if self.system_template is None:
+            return None
+        return self._render(self.system_template, "")
 
     def criteria(self) -> dict[str, str]:
         """Jev / Laya の choice 質問に渡す {ラベル名: 説明}。LLM プロンプトの {labels} と同じ内容。"""
@@ -74,14 +88,37 @@ def load_task(name: str) -> Task:
     if "\n---\n" not in text:
         raise ValueError(f"{task_dir}/prompt.md must separate notes and template with '---'")
     prompt = text.split("\n---\n", 1)[1].strip()
+    system, user = _split_prompt(prompt, task_dir)
     return Task(
         name=name,
         dataset=REPO_ROOT / raw["dataset"],
         labels=labels,
         instructions=raw["instructions"],
-        prompt_template=prompt,
+        prompt_template=user,
         state_format=state_format,
+        system_template=system,
     )
+
+
+def _split_prompt(prompt: str, task_dir: Path) -> tuple[str | None, str]:
+    """テンプレートを (system, user) に分ける。見出しが無ければ全体を user とする。
+
+    分ける場合は "[system]" 行で始め、"[user]" 行で user に切り替える。
+    """
+    lines = prompt.split("\n")
+    if SYSTEM_HEADER not in lines and USER_HEADER not in lines:
+        return None, prompt
+    if lines[0] != SYSTEM_HEADER or lines.count(SYSTEM_HEADER) != 1 or lines.count(USER_HEADER) != 1:
+        raise ValueError(
+            f"{task_dir}/prompt.md: split the template as '{SYSTEM_HEADER}' (first line) "
+            f"then '{USER_HEADER}', each exactly once"
+        )
+    i = lines.index(USER_HEADER)
+    system = "\n".join(lines[1:i]).strip()
+    user = "\n".join(lines[i + 1:]).strip()
+    if not system or not user:
+        raise ValueError(f"{task_dir}/prompt.md: system and user templates must not be empty")
+    return system, user
 
 
 def load_dataset(path: Path, label_names: list[str] | None = None) -> list[Record]:

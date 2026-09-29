@@ -81,3 +81,21 @@
   - メモリ: 実行中は Ollama 上で 3.2GB（context 4096）。システムの空きは 15% まで下がった → 8GB 機では他モデルと同時に動かさない
   - 誤り: s003（`login success` → auth。Jev・Laya と同じ）、s013（`brute force suspected` → auth、正解は security）
   - Ollama は既定で `127.0.0.1:11434` のみで待ち受ける。モデルはアクセスが無いと 5 分でメモリから外れる
+- 2026-09-29: jevbench タスク用に、LLM のプロンプトを jevbench と同じ形にした（system / user の 2 通 + JSON スキーマの enum 出力。`prompt.md` の `[system]` / `[user]`、task.toml の `llm_output = "json"`）
+  - Anthropic API は `system` と `output_config: {format: {type: "json_schema", schema}}`、OpenAI 互換は system ロールと `response_format`（jevbench と同じ形）
+  - Haiku 4.5 で確認（Banking77 5 件・AG News 3 件）: 全件 `{"label": ...}` の JSON で返り、stop_reason は `end_turn`。最長ラベル（`balance_not_updated_after_cheque_or_cash_deposit`、50 文字）で output 24 tok → max_tokens=32 で足りる
+  - usage: Banking77 は input ≈ 2,220 tok/件（77 ラベルの説明が system に入るため）、AG News は ≈ 340 tok/件
+- 2026-09-29: Ollama 0.34.4 + `qwen3:4b-instruct` で OpenAI 互換 API の `response_format`（json_schema）を確認
+  - **制約は効く**（生成時に enum の中からしか選べない）。「hello とだけ答えよ」という system に対しても、enum `["zebra_alpha","yak_beta"]` を渡すと `{"label":"zebra_alpha"}` が返った。指示文で JSON を頼むだけ（`response_format` なし）だと、ラベル外の `positive` を返した
+  - `json_object` はラベル外を防げない（JSON の形だけ）。jevbench と同じ `json_schema` を使う
+  - max_tokens が足りないと JSON が途中で切れる（`finish_reason: length`）→ 読めないので invalid になる
+  - パイプライン経由（Banking77 5 件・AG News 3 件、エラー・invalid 0）: 全件 `{"label": ...}` で `finish_reason: stop`。最長ラベルで output 16 tok（Qwen のトークナイザ）→ max_tokens=32 で足りる
+  - Banking77 の入力は ≈ 1,150 tok/件（Claude の約半分。トークナイザの違い）。Ollama の context 4096 に収まり、ログにも `truncated = 0`
+  - レイテンシ: p50 ≈ 850 ms（Banking77）/ 725 ms（AG News）。log_classification（テキスト出力）の 271 ms より遅いのは、プロンプトが長いため
+- 2026-09-29: **LLM の出力を全タスクで JSON スキーマ（ラベル名の enum）に縛る方式に一本化**。`log_classification` も jevbench と同じ system / user の 2 通にした（指示文は残す）
+  - 理由: Jev / Laya は選択肢から選ぶのでラベル外を出さない。LLM だけ自由記述だと、綴りの揺れなどで条件が不利になる
+  - これに伴い **ラベル外率（`invalid_rate`）を指標から削除**。読めない答え（max_tokens で途中で切れた JSON など）は不正解に数えるだけ（混同行列では `<invalid>`）。テキスト出力の経路（`normalize`・`<think>` の除去）も削除
+  - 9/28 の LLM の run 6 件（テキスト出力）は比較できないので削除対象とした
+  - 再実行（`log_classification` 16 件、run `20260929T080714Z_llm_api` / `20260929T080735Z_llm_local`）:
+    - Haiku 4.5: accuracy 16/16（前回 16/16）。input 184 → **373 tok/件**、p50 651 → 914 ms。system と user に分けたことに加え、structured outputs でスキーマ分の入力が API 側で足されているとみられる（jevbench の Banking77 でも 2,220 tok/件と Qwen の約 2 倍）
+    - Qwen3-4B: accuracy 15/16（前回 14/16）。s013（brute force → security）が正解になり、s003（login success → auth）は引き続き誤り。input 170 → 179 tok/件、p50 268 → 546 ms（制約付き生成のぶん遅い）

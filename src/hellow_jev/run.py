@@ -179,7 +179,7 @@ def main() -> None:
     (out_dir / "metrics.json").write_text(json.dumps(metrics, ensure_ascii=False, indent=2))
 
     print(f"[{name}] task={task.name} n={metrics['n']} accuracy={metrics['accuracy']:.3f} "
-          f"macro_f1={metrics['macro_f1']:.3f} invalid={metrics['invalid_rate']:.3f} "
+          f"macro_f1={metrics['macro_f1']:.3f} "
           f"error={metrics['error_rate']:.3f} retried={metrics['retried']} "
           f"p50={metrics['latency']['p50_ms']:.1f}ms p95={metrics['latency']['p95_ms']:.1f}ms")
     print(f"-> {out_dir}")

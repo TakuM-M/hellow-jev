@@ -18,7 +18,7 @@ def _write_run(root, name, run_id, metrics, config_extra=None, meta_extra=None):
     (d / "metrics.json").write_text(json.dumps(metrics))
 
 
-BASE = {"n": 2, "accuracy": 0.5, "macro_f1": 0.5, "invalid_rate": 0.0}
+BASE = {"n": 2, "accuracy": 0.5, "macro_f1": 0.5}
 
 
 def _sections(text):
@@ -28,7 +28,7 @@ def _sections(text):
 
 
 def test_report_latest_and_cost(tmp_path):
-    base = {"n": 2, "accuracy": 0.5, "macro_f1": 0.5, "invalid_rate": 0.0}
+    base = {"n": 2, "accuracy": 0.5, "macro_f1": 0.5}
     _write_run(tmp_path, "jev", "20260101T000000Z", base)
     _write_run(
         tmp_path, "jev", "20260102T000000Z",
@@ -41,7 +41,7 @@ def test_report_latest_and_cost(tmp_path):
     assert len(runs) == 1
     table = render(runs)
     # 100 tok/件 × $0.5/1M × 1 万件 = $0.5
-    assert "| jev | 2 | 1.000 | 0.500 | 0.000 | - | 250.0 | 310.0 | - | 100 | $0.5000 | x86_64 4cpu |" in table
+    assert "| jev | 2 | 1.000 | 0.500 | - | 250.0 | 310.0 | - | 100 | $0.5000 | x86_64 4cpu |" in table
 
 
 def test_report_cost_uses_current_config_pricing(tmp_path):
@@ -60,7 +60,7 @@ def test_report_cost_uses_current_config_pricing(tmp_path):
     (configs / "llm.toml").write_text("[pricing]\ninput_per_mtok = 1.0\noutput_per_mtok = 5.0\n")
     (configs / "local.toml").write_text("[pricing]\ninput_per_mtok = 0.0\noutput_per_mtok = 0.0\n")
 
-    cost = {r[0]: r[10] for r in (report.row(run, configs) for run in load_runs(results))}
+    cost = {r[0]: r[9] for r in (report.row(run, configs) for run in load_runs(results))}
     # 100 × 0.042 / 1M × 1 万件 = $0.042
     assert cost["jev"] == "$0.0420"
     # (100 × 1 + 2 × 5) / 1M × 1 万件 = $1.1
@@ -68,7 +68,7 @@ def test_report_cost_uses_current_config_pricing(tmp_path):
     assert cost["local"] == "$0"
     assert cost["old"] == "$0.5000"
     # configs_dir を渡さなければ実行時の config だけを見る（従来どおり）
-    assert report.row(load_runs(results)[0])[10] == "-"
+    assert report.row(load_runs(results)[0])[9] == "-"
 
 
 def test_llm_row_shows_model_on_next_line(tmp_path):
@@ -187,16 +187,16 @@ def test_reference_rows_are_appended_to_their_task(tmp_path):
     assert list(sections) == ["jevbench_sst2", "注記"]
     lines = sections["jevbench_sst2"].splitlines()
     ours = lines.index(
-        "| jev | 2 | 0.500 | 0.500 | 0.000 | - | - | - | - | - | - | x86_64 4cpu | 20260101T000000Z_jev |"
+        "| jev | 2 | 0.500 | 0.500 | - | - | - | - | - | - | x86_64 4cpu | 20260101T000000Z_jev |"
     )
     # 参考値はこちらの run の後。コストは 1000 件あたり $0.0184 → 1 万件あたり $0.1840
     ref = lines.index(
-        "| [jevbench] jev (typesafe/jev-1.13) | - | 0.843 | 0.842 | - | 0.004 | 381.0 | 715.0"
+        "| [jevbench] jev (typesafe/jev-1.13) | - | 0.843 | 0.842 | 0.004 | 381.0 | 715.0"
         " | - | - | $0.1840 | - | 参考値 |"
     )
     assert ours < ref
     assert lines[ref + 1] == (
-        "| [jevbench] gpt-4o-mini | - | 0.900 | 0.899 | - | 0.000 | 520.0 | 900.5 | - | - | - | - | 参考値 |"
+        "| [jevbench] gpt-4o-mini | - | 0.900 | 0.899 | 0.000 | 520.0 | 900.5 | - | - | - | - | 参考値 |"
     )
     assert (
         "- 参考値は [jevbench](https://example.com/summary.md) の公開結果。n=500。レイテンシは jevbench 側の環境で計測"
