@@ -12,7 +12,7 @@ API 形式は 2 種類（どちらも _http.HTTPClient で叩く）:
 
 backend = "api"   : 既定 api_format="anthropic"。キーは LLM_API_KEY（無ければ ANTHROPIC_API_KEY）
 backend = "local" : 既定 api_format="openai"、接続先は base_url → LLM_LOCAL_ENDPOINT → Ollama 既定
-調査メモは docs/notes/llm.md。
+調査メモは docs/notes/claude_haiku.md（API）, docs/notes/qwen3.md（ローカル）。
 """
 
 from __future__ import annotations

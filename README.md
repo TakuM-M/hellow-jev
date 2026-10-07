@@ -57,7 +57,7 @@ Accuracy (p50 latency) on [jevbench](https://github.com/dhruvmehra/jevbench) tas
 │   ├── raw/                 # Raw logs (not tracked by git)
 │   └── processed/           # Preprocessed data (not tracked by git)
 ├── docs/
-│   └── notes/               # Research notes for Jev / Laya / LLM
+│   └── notes/               # Research notes per classifier model
 ├── results/                 # Run results (not tracked by git)
 ├── scripts/                 # Scripts such as batch runs
 ├── src/hellow_jev/
@@ -160,7 +160,7 @@ EC などのログ分類を題材に、**Jev / Laya / LLM** の 3 つをベン�
 │   ├── raw/                 # 生ログ（git 管理外）
 │   └── processed/           # 前処理済みデータ（git 管理外）
 ├── docs/
-│   └── notes/               # Jev / Laya / LLM それぞれの調査メモ
+│   └── notes/               # 分類モデルごとの調査メモ
 ├── results/                 # 実行結果（git 管理外）
 ├── scripts/                 # 一括実行などのスクリプト
 ├── src/hellow_jev/
