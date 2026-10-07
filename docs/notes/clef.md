@@ -26,3 +26,11 @@
 - 「Jev より 13 倍速い」は Jev p50 524 ms との比較。本リポジトリの Jev 実測は 162〜175 ms
 
 公式ページは egress 制限で未読。上記は検索結果の抜粋と GitHub の実装 PR によるもので、実装前に実 API で確認する（2026-10-07）。
+
+## 参考
+
+- https://blog.cloudflare.com/clef-decision-models/
+- https://developers.cloudflare.com/changelog/post/2026-10-01-clef-workers-ai/
+- https://huggingface.co/Cloudflare/clef
+- https://github.com/pydantic/pydantic-ai/issues/9765
+- https://www.eesel.ai/blog/cloudflare-clef-pricing
