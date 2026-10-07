@@ -34,3 +34,9 @@
 - GPT-6 Luna の input 単価のみ。output は無課金
 
 公式ページは egress 制限で未読。上記は検索結果の抜粋と LiteLLM の実装 PR によるもので、実装前に実 API で確認する（2026-10-07）。
+
+## 参考
+
+- https://developers.openai.com/api/docs/guides/decisions
+- https://developers.openai.com/api/reference/resources/decisions/methods/create
+- https://github.com/BerriAI/litellm/pull/45026
