@@ -66,6 +66,9 @@
 | 中国語の業務判定 64 件 | 64/64 | Laya `research/benchmarks/feishu_zh` |
 | ECE | 0.144〜0.246 | 同上 |
 
+## 関連
+
+- Kev-9B: Apache-2.0 の Jev 代替（精度が Jev に近いと報告あり）
 
 ## 参考
 
